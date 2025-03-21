@@ -15,6 +15,7 @@
 # include <errno.h>
 
 #define GREEN   "\033[32m"
+#define RED     "\033[31m"
 #define RESET   "\033[0m"
 
 typedef struct s_built_in
@@ -26,5 +27,9 @@ typedef struct s_built_in
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
 # endif
+
+//----functions-----
+
+void    print_welcome();
 
 #endif

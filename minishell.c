@@ -361,39 +361,32 @@ int pars_input(char *line)
     return (0);
 }
 
+int check_args(int ac, char **av)
+{
+    if (ac > 1)
+        return 0;
+    if (av[1])
+        return 0;
+}
+
 int main(int ac, char **av, char **env)
 {
     char *line;
-    // int (state) = 0;
-    char **cmd;
-    int quotes;
-    (void)ac;
-    (void)av;
 
+    if (!check_args(ac, av))
+        return 1;
     line = NULL;
-    quotes = 0;
-    cmd = NULL;
+    print_welcome();
     while (1)
     {
-        line = readline(GREEN "minishell$ " RESET);
-        if (line == NULL)
-        {
-            free(line);
-            break ;
-        }
-        if (*line)
-            add_history(line);
-        if (pars_input(line) == 1)
-            quotes = 1;
-        else if (pars_input(line) == 2)
-            quotes = 2;
-        cmd = ft_split(line);
-        if (pars_input(line) == -1)
-            write (2, "Error\n", 6);
-        else
-            check_build_in(cmd, quotes, env);
-        // execute_command(line, &state, env);
-        free(line);
+        line = readline(GREEN "MINISHELL >$ " RESET);
+        // if (is_herdoc(line))
+        //     capture_herdoc(line);
+        // if (is_pip(line)) // if the line end with '|'
+        //     line = ft_strjoin(line, readline(GREEN "MINISHELL >$ " RESET));
+        // if (line != NULL && *line)
+        //     add_history(line);
+        // start(line, env);
     }
     rl_clear_history();
 }
