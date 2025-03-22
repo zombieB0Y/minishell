@@ -1,6 +1,6 @@
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -g3
-SRC = minishell.c welcome.c
+SRC = minishell.c welcome.c garbage_collector.c
 OBJ = $(SRC:.c=.o)
 NAME = minishell
 LIBFT = libft/libft.a
