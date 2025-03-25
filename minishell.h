@@ -31,6 +31,13 @@ typedef struct s_garbage
 	struct s_garbage	*next;
 }						t_garbage;
 
+// Node to track allocated pointers
+typedef struct GCNode
+{
+	void				*ptr;
+	struct GCNode		*next;
+}						GCNode;
+
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
 # endif
@@ -38,7 +45,9 @@ typedef struct s_garbage
 //----functions-----
 
 void					print_welcome(void);
-void					cleanup(t_garbage **garbage);
-void					add_to_garbage(t_garbage **garbage, void *ptr);
-
+// void					cleanup(t_garbage **garbage);
+// void					add_to_garbage(t_garbage **garbage, void *ptr);
+void					*gc_malloc(size_t size);
+void					gc_collect(void);
+void					gc_register(void *ptr);
 #endif

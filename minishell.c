@@ -39,7 +39,7 @@ static char	*substr_dup(const char *start, size_t len)
 {
 	char	*token;
 
-	token = malloc(len + 1);
+	token = gc_malloc(len + 1);
 	if (!token)
 		return (NULL);
 	strncpy(token, start, len);
@@ -47,10 +47,9 @@ static char	*substr_dup(const char *start, size_t len)
 	return (token);
 }
 
-
-char	**tokenize(const char *input, t_garbage **garbage)
+char	**tokenize(const char *input)
 {
-	size_t		tokens_alloc;
+	// (void)garbage;
 	char		**tokens;
 	size_t		token_index;
 	const char	*p = input;
@@ -58,22 +57,23 @@ char	**tokenize(const char *input, t_garbage **garbage)
 	char		quote;
 	const char	*start = p;
 	size_t		len;
-	char		**new_tokens;
+	size_t		i;
 
+	i = 0;
 	if (!input)
 		return (NULL);
-	tokens_alloc = 64;
-	tokens = malloc(sizeof(char *) * tokens_alloc);
-	if (!tokens)
-		return (NULL);
-	add_to_garbage(garbage, tokens);
 	token_index = 0;
+	tokens = NULL;
 	while (*p)
 	{
+		tokens = ft_realloc(tokens, i, sizeof(char *) * (i + 2));
+		if (!tokens)
+		return (NULL);
+		i++;
 		while (*p && is_whitespace(*p))
-			p++;
+		p++;
 		if (!*p)
-			break ;
+		break ;
 		token = NULL;
 		start = p;
 		if (*p == '\'' || *p == '"')
@@ -81,61 +81,49 @@ char	**tokenize(const char *input, t_garbage **garbage)
 			quote = *p;
 			p++;
 			while (*p && *p != quote)
-				p++;
+			p++;
 			if (*p == quote)
-				p++;
+			p++;
+			else
+			{
+				// cleanup(garbage);
+				return (NULL);
+			}
 			len = p - start;
 			token = substr_dup(start, len);
 		}
 		else
 		{
 			while (*p && !is_whitespace(*p) && *p != '\'' && *p != '"')
-				p++;
+			p++;
 			len = p - start;
 			token = substr_dup(start, len);
 		}
 		if (!token)
 		{
-			cleanup(garbage);
+			// cleanup(garbage);
 			return (NULL);
 		}
-		add_to_garbage(garbage, token);
+		// add_to_garbage(garbage, token);
 		tokens[token_index++] = token;
-		if (token_index >= tokens_alloc)
-		{
-			tokens_alloc *= 2;
-			new_tokens = realloc(tokens, sizeof(char *) * tokens_alloc);
-			if (!new_tokens)
-			{
-				for (size_t i = 0; i < token_index; i++)
-					free(tokens[i]);
-				free(tokens);
-				return (NULL);
-			}
-			tokens = new_tokens;
-		}
 	}
+	if (tokens)
+	// add_to_garbage(garbage, tokens);
+	printf("%s\n", tokens[token_index - 1]);
 	tokens[token_index] = NULL;
 	return (tokens);
 }
 
-void	free_tokens(char **tokens)
-{
-	if (!tokens)
-		return ;
-	for (size_t i = 0; tokens[i] != NULL; i++)
-		free(tokens[i]);
-	free(tokens);
-}
-
-void	start(char *line, char **env, t_garbage **garbage)
+void	start(char *line, char **env)
 {
 	(void)env;
 	char **tokens;
 	int i = 0;
 
 	tokens = NULL;
-	tokens = tokenize(line, garbage);
+	tokens = tokenize(line);
+	if (!tokens)
+		return ;
 	while (tokens[i] != NULL)
 	{
 		printf("  %s\n", tokens[i]);
@@ -147,12 +135,12 @@ void	start(char *line, char **env, t_garbage **garbage)
 int	main(int ac, char **av, char **env)
 {
 	char *line;
-	t_garbage *garbage;
+	// t_garbage *garbage;
 	(void)ac;
 	(void)av;
 	(void)env;
-	garbage = NULL;
-	garbage = malloc(sizeof(t_garbage));
+	// garbage = NULL;
+	// garbage = malloc(sizeof(t_garbage));
 	if (!check_args(ac, av))
 		return (1);
 	line = NULL;
@@ -170,8 +158,11 @@ int	main(int ac, char **av, char **env)
 			free(line);
 			continue ;
 		}
+		gc_register(line);
 		add_history(line);
-		start(line, env, &garbage);
+		start(line, env);
+		// free(line);
 	}
+	gc_collect();
 	rl_clear_history();
 }
