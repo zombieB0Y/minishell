@@ -47,6 +47,13 @@ static char	*substr_dup(const char *start, size_t len)
 	return (token);
 }
 
+int	check(char p)
+{
+	if (!is_whitespace(p) && p != '\'' && p != '"' && p != '|' && p != '>')
+		return (0);
+	return (1);
+}
+
 char	**tokenize(const char *input)
 {
 	// (void)garbage;
@@ -66,14 +73,14 @@ char	**tokenize(const char *input)
 	tokens = NULL;
 	while (*p)
 	{
-		tokens = ft_realloc(tokens, i, sizeof(char *) * (i + 2));
-		if (!tokens)
-		return (NULL);
-		i++;
 		while (*p && is_whitespace(*p))
-		p++;
+			p++;
 		if (!*p)
-		break ;
+			break ;
+		tokens = ft_realloc(tokens, sizeof(char *) * i, sizeof(char *) * (i + 2));
+		if (!tokens)
+			return (NULL);
+		i++;
 		token = NULL;
 		start = p;
 		if (*p == '\'' || *p == '"')
@@ -81,21 +88,29 @@ char	**tokenize(const char *input)
 			quote = *p;
 			p++;
 			while (*p && *p != quote)
-			p++;
+				p++;
 			if (*p == quote)
-			p++;
+				p++;
 			else
 			{
-				// cleanup(garbage);
+				ft_putstr_fd("quotes?\n", 2);
 				return (NULL);
 			}
 			len = p - start;
 			token = substr_dup(start, len);
 		}
+		else if (*p == '|' || *p == '>')
+		{
+			if (*p == '|')
+				token = ft_strdup("|");
+			else
+				token = ft_strdup(">");
+			p++;
+		}
 		else
 		{
-			while (*p && !is_whitespace(*p) && *p != '\'' && *p != '"')
-			p++;
+			while (*p && !check(*p))
+				p++;
 			len = p - start;
 			token = substr_dup(start, len);
 		}
@@ -109,7 +124,7 @@ char	**tokenize(const char *input)
 	}
 	if (tokens)
 	// add_to_garbage(garbage, tokens);
-	printf("%s\n", tokens[token_index - 1]);
+	// printf("%s\n", tokens[token_index - 1]);
 	tokens[token_index] = NULL;
 	return (tokens);
 }
