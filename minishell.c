@@ -122,7 +122,7 @@ char	**tokenize(const char *input)
             	token = capture_heredoc(delimiter);
 				if (!token)
 					return (NULL);
-				printf("%s\n", token);
+				// printf("%s\n", token);
 			}
 			else
 			{
