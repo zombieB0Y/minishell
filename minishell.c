@@ -42,10 +42,11 @@ char *capture_heredoc(const char *delimiter)
         return NULL;
     result[0] = '\0';
     size_t result_len = 0;
+	// int flag;
 
     while (1)
 	{
-        line = readline("> ");
+		line = readline("> ");
 		linelen = ft_strlen(line);
         if (linelen < 0)
             break;
@@ -214,7 +215,7 @@ int	main(int ac, char **av, char **env)
 		gc_register(line);
 		add_history(line);
 		start(line, env);
-		free(line);
+		// free(line);
 	}
 	gc_collect();
 	rl_clear_history();
