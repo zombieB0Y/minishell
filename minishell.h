@@ -45,6 +45,11 @@ typedef struct GCNode
 //----functions-----
 
 void					print_welcome(void);
+int						check(char *p);
+char					**tokenize(const char *input);
+char					*substr_dup(const char *start, size_t len);
+int						is_whitespace(char c);
+char					*capture_heredoc(const char *delimiter);
 // void					cleanup(t_garbage **garbage);
 // void					add_to_garbage(t_garbage **garbage, void *ptr);
 void					*gc_malloc(size_t size);
