@@ -28,7 +28,7 @@ static char	*substr_dup(const char *start, size_t len)
 
 int	check(char p)
 {
-	if (!is_whitespace(p) && p != '\'' && p != '"' && p != '|' && p != '>')
+	if (!is_whitespace(p) && p != '\'' && p != '"' && p != '|' && p != '>' && p != '\\')
 		return (0);
 	return (1);
 }
@@ -106,7 +106,7 @@ char	**tokenize(const char *input)
 		start = p;
 		//-------n9der ndir ila l9a '(' i dir tokens = tokenizer(intput) sub shell it9sem b7al shell 
 		//-------and nzid condition dyal ila l9a ')' f tokenize() i rad dok tokens li khda f sub shell...
-		if (*p == '\'' || *p == '"' || (*p == '<' && *(p + 1) == '<')) 
+		if (*p == '\'' || *p == '"' || (*p == '<' && *(p + 1) == '<') || *p == '\\') 
 		{
 			if ((*p == '<' && *(p + 1) == '<'))
 			{
@@ -117,6 +117,8 @@ char	**tokenize(const char *input)
             	while (*p && !is_whitespace(*p))
             	    p++;
             	len = p - start;
+				if (len == 0)
+					return (NULL);
             	char *delimiter = substr_dup(start, len);
             	if (!delimiter)
             	    return NULL;
@@ -125,12 +127,18 @@ char	**tokenize(const char *input)
 					return (NULL);
 				// printf("%s\n", token);
 			}
+			else if (*p == '\\' && (*(p + 1) == '\'' || *(p + 1) == '"'))
+				p += 2;
 			else
 			{
 				quote = *p;
 				p++;
 				while (*p && *p != quote)
+				{
+					if (*p == '\\' && *(p + 1) == quote)
+						p++;
 					p++;
+				}
 				if (*p == quote)
 					p++;
 				else
