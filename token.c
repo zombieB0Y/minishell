@@ -54,7 +54,11 @@ char	**tokenize(const char *input)
 				// printf("%s\n", token);
 			}
 			else if (*p == '\\' && (*(p + 1) == '\'' || *(p + 1) == '"'))
-				ft_memmove(p, p + 1, ft_strlen(p));
+			{
+				ft_memmove(p, p + 1, ft_strlen(p + 1) + 1);
+				token = substr_dup(p, 1);
+				p++;
+			}
 			else
 			{
 				quote = *p;

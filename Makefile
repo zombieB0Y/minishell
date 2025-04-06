@@ -10,7 +10,7 @@ all: $(LIBFT) $(NAME)
 $(LIBFT):
 	$(MAKE) -C libft
 
-$(NAME): $(OBJ)
+$(NAME): $(OBJ) minishell.h
 	$(CC) $(OBJ) $(LIBFT) -lreadline -lhistory -o $(NAME)
 
 clean:

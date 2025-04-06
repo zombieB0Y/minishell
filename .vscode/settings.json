@@ -1,6 +1,7 @@
 {
     "files.autoSave": "onFocusChange",
     "files.associations": {
-        "minishell.h": "c"
+        "minishell.h": "c",
+        "readline.h": "c"
     }
 }

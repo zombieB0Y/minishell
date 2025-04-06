@@ -98,7 +98,7 @@ int	main(int ac, char **av, char **env)
 	print_welcome();
 	while (1)
 	{
-		line = readline(GREEN "MINISHELL >$ " RESET);
+		line = readline("\001" GREEN "\002" "MINISHELL >$ " "\001" RESET "\002");
 		if (!line)
 		{
 			printf("Exit");
