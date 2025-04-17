@@ -1,5 +1,13 @@
 #include "minishell.h"
 
+char	*capture_subshell(void)
+{
+	char	*token;
+
+
+	return (token);
+}
+
 char	**tokenize(const char *input)
 {
 	char **tokens;
@@ -10,6 +18,7 @@ char	**tokenize(const char *input)
 	const char *start = p;
 	size_t len;
 	size_t i;
+	char *delimiter;
 
 	i = 0;
 	if (!input)
@@ -22,8 +31,7 @@ char	**tokenize(const char *input)
 			p++;
 		if (!*p)
 			break ;
-		tokens = ft_realloc(tokens, sizeof(char *) * i, sizeof(char *) * (i
-					+ 2));
+		tokens = ft_realloc(tokens, sizeof(char *) * i, sizeof(char *) * (i	+ 2));
 		if (!tokens)
 			return (NULL);
 		i++;
@@ -43,9 +51,10 @@ char	**tokenize(const char *input)
 				while (*p && !is_whitespace(*p))
 					p++;
 				len = p - start;
+				//--------hna ila kan '\n' khasni ndir dak token dyal newline and error for the heredoc is : bash: syntax error near unexpected token `newline'
 				if (len == 0)
 					return (NULL);
-				char *delimiter = substr_dup(start, len);
+				delimiter = substr_dup(start, len);
 				if (!delimiter)
 					return (NULL);
 				token = capture_heredoc(delimiter);
@@ -60,7 +69,7 @@ char	**tokenize(const char *input)
 				p++;
 			}
 			else
-			{
+			{ //  test \d
 				quote = *p;
 				p++;
 				while (*p && *p != quote)
@@ -80,7 +89,7 @@ char	**tokenize(const char *input)
 				token = substr_dup(start, len);
 			}
 		}
-		else if (*p == '|' || *p == '>')
+		else if (*p == '|' || *p == '>' || *p == '<')
 		{
 			if (*p == '|')
 				token = ft_strdup("|");
@@ -89,9 +98,25 @@ char	**tokenize(const char *input)
 				token = ft_strdup(">>");
 				p++;
 			}
-			else
+			else if (*p == '>')
 				token = ft_strdup(">");
+			else
+				token = ft_strdup("<");
 			p++;
+		}
+		else if (*p == '(')
+		{
+			quote = *p;
+			start = p;
+			while (*p && *p != quote)
+				p++;
+			if (*p == quote)
+				p++;
+			else
+				token = capture_subshell();
+			len = start - p;
+			if (!len && !token)
+				token = capture_subshell();
 		}
 		else
 		{
