@@ -29,25 +29,18 @@ char	*substr_dup(const char *start, size_t len)
 char *capture_heredoc(const char *delimiter)
 {
     char *line = NULL;
-    ssize_t linelen;
-    char *result = malloc(1);
+    size_t linelen;
+    char *result = gc_malloc(1);
     if (!result)
         return NULL;
     result[0] = '\0';
     size_t result_len = 0;
-	// int flag;
-
     while (1)
 	{
-		line = readline("> ");
+		line = readline("heredoc> ");
 		linelen = ft_strlen(line);
-        if (linelen < 0)
-            break;
         if (linelen > 0 && line[linelen - 1] == '\n')
-		{
-            line[linelen - 1] = '\0';
-            linelen--;
-        }
+            line[(linelen--) - 1] = '\0';
         if (ft_strcmp(line, delimiter) == 0)
             break;
         size_t new_size = result_len + linelen + 2;
