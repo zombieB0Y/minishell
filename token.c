@@ -18,37 +18,29 @@ char	**capture(char *start, char *delimiter)
 	return (tokenize(token));	
 }
 
-size_t	strlen2D(char **s)
+size_t	count_2d_array(char **arr)
 {
-	size_t	i;
-
-	i = 0;
-	if (!s || !*s)
-		return 0;
-	while (s)
-	{
+	size_t i = 0;
+	while (arr && arr[i])
 		i++;
-		s++;
-	}
 	return i;
 }
 
-char	**join_2D(char **s1, char **s2)
+t_list	**join_2D(t_list **s1, t_list **s2)
 {
 	size_t	sizeofS1 = 0;
 	size_t	sizeofS2 = 0;
-	int i = 0;
-	sizeofS1 = strlen2D(s1);
-	sizeofS2 = strlen2D(s2);
-	char	**final_tokens = gc_malloc(sizeof(char *) * (sizeofS1 + sizeofS2 + 1));
-	memcpy(final_tokens, s1, (sizeofS1 * sizeof(char *)));
-	memcpy(final_tokens + sizeofS1, s2, (sizeofS2 * sizeof(char *)));
-		while (final_tokens[i] != NULL)
+	sizeofS1 = count_2d_array(s1);
+	sizeofS2 = count_2d_array(s2);
+	printf("%ld , %ld\n", sizeofS1, sizeofS2);
+	while (s1)
 	{
-		printf("%s\n", final_tokens[i]);
-		i++;
+
 	}
-	return (final_tokens);
+	// t_list	**final_tokens = gc_malloc((sizeofS1 + sizeofS2 + 1) * sizeof(t_list *));
+
+	s1[sizeofS1 + sizeofS2] = NULL;
+	return (s1);
 }
 
 char	**tokenize(const char *input)
@@ -59,7 +51,7 @@ char	**tokenize(const char *input)
 	char *token;
 	char quote;
 	char *start = p;
-	size_t len;
+	size_t len = 0;
 	size_t i;
 	char *delimiter;
 	char	**capture_tokens = NULL;
@@ -73,8 +65,6 @@ char	**tokenize(const char *input)
 	while (*p)
 	{
 		flag = 0;
-		token = NULL;
-		capture_tokens = NULL;
 		while (*p && is_whitespace(*p))
 			p++;
 		if (!*p)
@@ -84,6 +74,7 @@ char	**tokenize(const char *input)
 			return (NULL);
 		i++;
 		token = NULL;
+		capture_tokens = NULL;
 		start = p;
 		//-------n9der ndir ila l9a '(' i dir tokens = tokenizer(intput) sub shell it9sem b7al shell
 		//-------and nzid condition dyal ila l9a ')' f tokenize() i rad dok tokens li khda f sub shell...
@@ -163,7 +154,7 @@ char	**tokenize(const char *input)
 			if (*p == quote)
 			{
 				p++;
-				len = start - p;
+				len = p - start;
 				token = substr_dup(start, len);
 			}
 			else
@@ -182,19 +173,23 @@ char	**tokenize(const char *input)
 		if (!token && !capture_tokens)
 			return (NULL);
 		if (!flag)
+		{
 			tokens[token_index++] = token;
+			tokens[token_index] = NULL;
+		}
 		else
 		{
 			printf("hni hna\n");
 			tokens = join_2D(tokens, capture_tokens);
-			token_index = strlen2D(tokens) + 1;
+			token_index = count_2d_array(tokens) + 1;
 		}
 	}
+	printf("%ld\n", token_index);
 	tokens[token_index] = NULL;
 	i = 0;
 	while (tokens[i] != NULL)
 	{
-		printf("%s\n", tokens[i]);
+		printf("s[%ld] = %s\n", i, tokens[i]);
 		i++;
 	}
 	return (tokens);
