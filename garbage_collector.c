@@ -33,7 +33,6 @@ void *gc_malloc(size_t size) {
     void *ptr = malloc((size_t)size);
     if (!ptr)
         return NULL;
-    
     gc_register(ptr);
     return ptr;
 }
