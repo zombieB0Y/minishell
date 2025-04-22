@@ -2,10 +2,12 @@
 # define MINISHELL_H
 
 # include "libft/libft.h"
+# include <ctype.h>
 # include <errno.h>
 # include <fcntl.h>
 # include <readline/history.h>
 # include <readline/readline.h>
+# include <stdbool.h>
 # include <stdint.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -18,7 +20,7 @@
 # define RED "\033[31m"
 # define RESET "\033[0m"
 
-//-------structs--------
+/* ast wa9ila xd */
 // typedef enum
 // {
 // 	AST_COMMAND,
@@ -40,42 +42,53 @@
 // 	int redir_type;   // 0: <, 1: >, 2: >>
 // }						ASTNode;
 
-// typedef enum
-// {
-// 	TOKEN_WORD,
-// 	TOKEN_PIPE,
-// 	TOKEN_AND,
-// 	TOKEN_OR,
-// 	TOKEN_SEMICOLON,
-// 	TOKEN_LEFT_REDIR,
-// 	TOKEN_RIGHT_REDIR,
-// 	TOKEN_DRIGHT_REDIR,
-// 	TOKEN_OPEN_PAREN,
-// 	TOKEN_HEREDOC,
-// 	TOKEN_CLOSE_PAREN,
-// 	TOKEN_EOF
-// }						TokenType;
+/* Token type definitions */
+typedef enum
+{
+	TOKEN_WORD,         // Commands, arguments, etc.
+	TOKEN_PIPE,         // |
+	TOKEN_REDIRECT_IN,  // <
+	TOKEN_REDIRECT_OUT, // >
+	TOKEN_APPEND,       // >>
+	TOKEN_HEREDOC,      // <<
+	TOKEN_AMPERSAND,    // &
+	TOKEN_SEMICOLON,    // ;
+	TOKEN_SUBSHELL,     // $(...) or (...)
+	TOKEN_EOF           // End of input
+}						token_type_t;
 
-// typedef struct Token
-// {
-// 	TokenType			type;
-// 	char				*value;
-// }						Token;
+/* Token structure */
+typedef struct
+{
+	token_type_t		type;
+	char				*value;
+}						token_t;
 
-// typedef struct TokenNode
-// {
-// 	Token				*token;
-// 	struct TokenNode	*next;
-// }						TokenNode;
+/* Token list structure */
+typedef struct token_node
+{
+	token_t				*token;
+	struct token_node	*next;
+}						token_node_t;
 
-// typedef struct
-// {
-// 	const char *buffer; // Pointer to the input string
-// 	size_t length;      // Length of the input string
-// 	size_t position;    // Current position in the buffer
-// 	size_t line;        // Current line number
-// 	size_t column;      // Current column number
-// }						InputBuffer;
+typedef struct
+{
+	token_node_t		*head;
+	token_node_t		*tail;
+	size_t				size;
+}						token_list_t;
+
+/* Lexer state */
+typedef struct
+{
+	char				*input;
+	size_t				input_len;
+	size_t				position;
+	char				current_char;
+	bool				in_single_quote;
+	bool				in_double_quote;
+	int					paren_depth;
+}						lexer_t;
 
 // Node to track allocated pointers
 typedef struct GCNode
@@ -88,11 +101,39 @@ typedef struct GCNode
 #  define BUFFER_SIZE 10
 # endif
 
+// Lexer operations
+lexer_t					*lexer_create(const char *input);
+void					lexer_destroy(lexer_t *lexer);
+void					lexer_advance(lexer_t *lexer);
+char					lexer_peek(lexer_t *lexer, size_t offset);
+bool					lexer_is_at_end(lexer_t *lexer);
+bool					lexer_is_escaped(lexer_t *lexer);
+
+// Token operations
+token_t					*token_create(token_type_t type, char *value);
+void					token_destroy(token_t *token);
+const char				*token_type_to_string(token_type_t type);
+
+// Token list operations
+token_list_t			*token_list_create(void);
+void					token_list_destroy(token_list_t *list);
+void					token_list_add(token_list_t *list, token_t *token);
+void					token_list_print(token_list_t *list);
+
+// Character classification
+bool					is_operator_char(char ch);
+
+// Token generation
+token_t					*read_word(lexer_t *lexer);
+token_t					*read_operator(lexer_t *lexer);
+token_t					*read_quoted_string(lexer_t *lexer, char quote_char);
+token_t					*read_subshell(lexer_t *lexer);
+token_list_t			*tokenize(const char *input);
+
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------
 void					start(char *line);
-// TokenNode				*lexer(InputBuffer *input);
 void					process_command(const char *command);
 //--------functions------------
 int						check(char *p);
@@ -100,11 +141,9 @@ int						is_whitespace(int c);
 int						is_quoted(int c);
 //---------lexer fucntions------------
 int						identifier(int c);
-// int						peek_advance(InputBuffer *input);
-// int						get_peek(InputBuffer *input);
+
 //----------------
 char					*substr_dup(const char *start, size_t len);
-// char					**tokenize(const char *input);
 char					*substr_dup(const char *start, size_t len);
 char					*capture_heredoc(const char *delimiter);
 void					*gc_malloc(size_t size);
