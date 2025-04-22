@@ -9,8 +9,6 @@ void	lexer_destroy(lexer_t *lexer)
 	}
 }
 
-
-
 char	lexer_peek(lexer_t *lexer, size_t offset)
 {
 	size_t	peek_pos;

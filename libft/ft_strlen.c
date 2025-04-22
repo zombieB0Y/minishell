@@ -6,10 +6,11 @@
 /*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 11:22:41 by abenba            #+#    #+#             */
-/*   Updated: 2025/04/21 13:25:58 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/04/22 11:47:39 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 
 size_t	ft_strlen(const char *c)
 {
