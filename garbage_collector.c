@@ -30,10 +30,9 @@ void gc_register(void *ptr) {
  *  A wrapper for malloc() that registers the allocated pointer.
  */
 void *gc_malloc(size_t size) {
-    void *ptr = malloc(size);
+    void *ptr = malloc((size_t)size);
     if (!ptr)
         return NULL;
-    
     gc_register(ptr);
     return ptr;
 }
