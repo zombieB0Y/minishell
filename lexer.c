@@ -397,7 +397,7 @@ void	process_command(const char *command)
 {
 	token_list_t	*tokens;
 
-	printf("Input: '%s'\n", command);
+	// printf("Input: '%s'\n", command);
 	tokens = tokenize(command);
 	// if (tokens)
 	// {
