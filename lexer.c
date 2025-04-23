@@ -325,12 +325,12 @@ token_list_t	*tokenize(const char *input)
 				return (return_quoted_error());
 		}
 		// Check for subshells
-		else if ((lexer->current_char == '(' || (lexer->current_char == ')'
-					&& lexer_peek(lexer, 1) == '(')) && !lexer->in_single_quote
-			&& !lexer->in_double_quote && !lexer_is_escaped(lexer))
-		{
-			token = read_subshell(lexer);
-		}
+		// else if ((lexer->current_char == '(' || (lexer->current_char == ')'
+		// 			&& lexer_peek(lexer, 1) == '(')) && !lexer->in_single_quote
+		// 	&& !lexer->in_double_quote && !lexer_is_escaped(lexer))
+		// {
+		// 	token = read_subshell(lexer);
+		// }
 		// Check for operators
 		else if (is_operator_char(lexer->current_char)
 			&& !lexer->in_single_quote && !lexer->in_double_quote)
