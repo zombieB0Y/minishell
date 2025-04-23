@@ -17,21 +17,7 @@ char	lexer_peek(lexer_t *lexer, size_t offset)
 	return ((peek_pos < lexer->input_len) ? lexer->input[peek_pos] : '\0');
 }
 
-/*
- * Token operations
- */
 
-token_t	*token_create(token_type_t type, char *value)
-{
-	token_t	*token;
-
-	token = (token_t *)malloc(sizeof(token_t));
-	if (!token)
-		return (NULL);
-	token->type = type;
-	token->value = value;
-	return (token);
-}
 
 void	token_destroy(token_t *token)
 {
@@ -73,30 +59,6 @@ void	token_list_destroy(token_list_t *list)
 	free(list);
 }
 
-void	token_list_add(token_list_t *list, token_t *token)
-{
-	token_node_t	*node;
-
-	if (!list || !token)
-		return ;
-	node = (token_node_t *)malloc(sizeof(token_node_t));
-	if (!node)
-		return ;
-	node->token = token;
-	node->next = NULL;
-	if (!list->head)
-	{
-		list->head = node;
-		list->tail = node;
-	}
-	else
-	{
-		list->tail->next = node;
-		list->tail = node;
-	}
-	list->size++;
-}
-
 void	token_list_print(token_list_t *list)
 {
 	token_node_t	*current;
@@ -109,7 +71,7 @@ void	token_list_print(token_list_t *list)
 		printf("Token Type: %s", token_type_to_string(current->token->type));
 		if (current->token->value)
 		{
-			printf(", Value: '%s'", current->token->value);
+			printf(", Value: %s", current->token->value);
 		}
 		printf("\n");
 		current = current->next;
@@ -220,31 +182,32 @@ token_t	*read_operator(lexer_t *lexer)
 token_t	*read_quoted_string(lexer_t *lexer, char quote_char)
 {
 	size_t	length;
-	char	*value;
 
 	size_t start_pos = lexer->position - 1;
 	while (!lexer_is_at_end(lexer))
 	{
-		if (lexer->current_char == quote_char && !lexer_is_escaped(lexer))
+		if (lexer->current_char == quote_char  /* && !lexer_is_escaped(lexer)*/)
 		{
 			lexer_advance(lexer);
+			reset_quotes(lexer, quote_char);
 			break ;
 		}
-		if (lexer->current_char == '\\' && quote_char == '"')
+		else if (lexer->current_char == quote_char)
 		{
 			lexer_advance(lexer);
-			if (lexer_is_at_end(lexer))
-				break ;
+			reset_quotes(lexer, quote_char);
+			break ;
 		}
 		lexer_advance(lexer);
 	}
 	length = lexer->position - start_pos;
-	value = gc_malloc(length + 1);
-	if (!value)
-		return NULL;
-	strncpy(value, lexer->input + start_pos, length);
-	value[length] = '\0';
-	return token_create(TOKEN_WORD, value);
+	return next_token(lexer, length, start_pos);
+	// value = gc_malloc(length + 1);
+	// if (!value)
+	// 	return NULL;
+	// strncpy(value, lexer->input + start_pos, length);
+	// value[length] = '\0';
+	// return token_create(TOKEN_WORD, value);
 }
 
 token_t	*read_subshell(lexer_t *lexer)
@@ -337,30 +300,32 @@ token_list_t	*tokenize(const char *input)
 	while (!lexer_is_at_end(lexer))
 	{
 		// Skip whitespace
-		if (is_whitespace(lexer->current_char) && !lexer->in_single_quote
-			&& !lexer->in_double_quote)
+		if (is_whitespace(lexer->current_char))
 		{
 			lexer_advance(lexer);
 			continue ;
 		}
 		token = NULL;
 		// Check for quotes
-		if (lexer->current_char == '\'' && !lexer->in_double_quote
-			&& !lexer_is_escaped(lexer))
+		if (lexer->current_char == '\'')
 		{
-			lexer->in_single_quote = !lexer->in_single_quote;
+			lexer->in_single_quote = true;
 			lexer_advance(lexer);
 			token = read_quoted_string(lexer, '\'');
+			// !! -- Update location and current char !
+			if (!token)
+				return (return_quoted_error());	
 		}
-		else if (lexer->current_char == '"' && !lexer->in_single_quote
-			&& !lexer_is_escaped(lexer))
+		else if (lexer->current_char == '"' /*&& !lexer_is_escaped(lexer)*/)
 		{
 			lexer->in_double_quote = !lexer->in_double_quote;
 			lexer_advance(lexer);
 			token = read_quoted_string(lexer, '"');
+			if (!token)
+				return (return_quoted_error());
 		}
 		// Check for subshells
-		else if ((lexer->current_char == '(' || (lexer->current_char == '$'
+		else if ((lexer->current_char == '(' || (lexer->current_char == ')'
 					&& lexer_peek(lexer, 1) == '(')) && !lexer->in_single_quote
 			&& !lexer->in_double_quote && !lexer_is_escaped(lexer))
 		{
@@ -378,12 +343,10 @@ token_list_t	*tokenize(const char *input)
 			token = read_word(lexer);
 		}
 		if (token)
-		{
 			token_list_add(tokens, token);
-		}
 		else
 		{
-			// Skip problematic character
+			// Skip ta nchofo ...
 			lexer_advance(lexer);
 		}
 	}
@@ -397,12 +360,12 @@ void	process_command(const char *command)
 {
 	token_list_t	*tokens;
 
-	printf("Input: '%s'\n", command);
+	printf("Input: %s\n", command);
 	tokens = tokenize(command);
 	if (tokens)
 	{
 		token_list_print(tokens);
-		token_list_destroy(tokens);
+		// token_list_destroy(tokens);
 	}
-	printf("\n");
+	// printf("\n");
 }

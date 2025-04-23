@@ -1,5 +1,9 @@
 #include "minishell.h"
 
+/*
+ * Token operations
+ */
+
 token_list_t	*token_list_create(void)
 {
 	token_list_t	*list;
@@ -13,6 +17,57 @@ token_list_t	*token_list_create(void)
 	return (list);
 }
 
+token_t	*token_create(token_type_t type, char *value)
+{
+	token_t	*token;
+
+	token = (token_t *)gc_malloc(sizeof(token_t));
+	if (!token)
+		return (NULL);
+	// I can check expantion here, flag if quoted or any special case
+	token->type = type;
+	token->value = value;
+	return (token);
+}
+
+void	token_list_add(token_list_t *list, token_t *token)
+{
+	token_node_t	*node;
+
+	if (!list || !token)
+		return ;
+	node = (token_node_t *)gc_malloc(sizeof(token_node_t));
+	if (!node)
+		return ;
+	node->token = token;
+	node->next = NULL;
+	if (!list->head)
+	{
+		list->head = node;
+		list->tail = node;
+	}
+	else
+	{
+		list->tail->next = node;
+		list->tail = node;
+	}
+	list->size++;
+}
+token_t	*next_token(lexer_t *lexer, size_t len, size_t start)
+{
+	char	*value;
+
+	if (!lexer->in_double_quote && !lexer->in_single_quote)
+		value = gc_malloc(len + 1);
+	else
+		return NULL;
+		// value = (char *)get_quoted_input(lexer, &len);
+	if (!value)
+		return NULL;
+	ft_strncpy(value, lexer->input + start, len);
+	value[len] = '\0';
+	return (token_create(TOKEN_WORD, value));
+}
 // char	**capture(char *start, char *delimiter)
 // {
 // 	char	*input;

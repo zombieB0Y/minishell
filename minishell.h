@@ -81,9 +81,9 @@ typedef struct
 /* Lexer state */
 typedef struct
 {
-	char				*input;
-	size_t				input_len;
-	size_t				position;
+	char				*input; // 'cc
+	size_t				input_len; // 3
+	size_t				position; //0 1 2 3
 	char				current_char;
 	bool				in_single_quote;
 	bool				in_double_quote;
@@ -111,6 +111,7 @@ bool					lexer_is_escaped(lexer_t *lexer);
 
 // Token operations
 token_t					*token_create(token_type_t type, char *value);
+token_t					*next_token(lexer_t *lexer, size_t len, size_t start);
 void					token_destroy(token_t *token);
 const char				*token_type_to_string(token_type_t type);
 
@@ -127,6 +128,10 @@ bool					is_operator_char(char ch);
 token_t					*read_word(lexer_t *lexer);
 token_t					*read_operator(lexer_t *lexer);
 token_t					*read_quoted_string(lexer_t *lexer, char quote_char);
+void					reset_quotes(lexer_t *lexer, char quote_char);
+void					*get_quoted_input(lexer_t *lexer, size_t *len);
+int						end_capture_quotes(lexer_t *lexer, char *input);
+void					*return_quoted_error(void);
 token_t					*read_subshell(lexer_t *lexer);
 token_list_t			*tokenize(const char *input);
 
@@ -140,9 +145,8 @@ int						check(char *p);
 int						is_whitespace(int c);
 int						is_quoted(int c);
 //---------lexer fucntions------------
-int						identifier(int c);
 
-//----------------
+//-------------Token Type: WORD, Value: s'---
 char					*substr_dup(const char *start, size_t len);
 char					*substr_dup(const char *start, size_t len);
 char					*capture_heredoc(const char *delimiter);
