@@ -40,6 +40,11 @@ void	token_list_add(token_list_t *list, token_t *token)
 	if (!node)
 		return ;
 	node->token = token;
+	node->arguments = NULL;
+	node->files = gc_malloc(sizeof(files_t));
+	node->files->in = -2;
+	node->files->out = -2;
+	node->files->file = NULL;
 	node->next = NULL;
 	if (!list->head)
 	{
@@ -127,13 +132,15 @@ void remove_token_node(token_node_t **head, token_node_t *target)
 // 	return (tokenize(token));	
 // }
 
-// size_t	count_2d_array(char **arr)
-// {
-// 	size_t i = 0;
-// 	while (arr && arr[i])
-// 		i++;
-// 	return i;
-// }
+size_t	count_2d_array(char **arr)
+{
+	size_t i = 0;
+	if (!arr)
+		return i;
+	while (arr && arr[i])
+		i++;
+	return i;
+}
 
 // t_list	**join_2D(t_list **s1, t_list **s2)
 // {

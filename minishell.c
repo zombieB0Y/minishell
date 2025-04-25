@@ -35,7 +35,7 @@ int	main(int ac, char **av, char **env)
 		gc_register(line);
 		add_history(line);
 		start(line);
+		gc_collect();
 	}
-	gc_collect();
 	rl_clear_history();
 }

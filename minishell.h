@@ -64,10 +64,20 @@ typedef struct
 	char				*value;
 }						token_t;
 
+/* Token infile outfile structure */
+typedef struct files
+{
+	int					in;
+	int					out;
+	char				*file;
+}						files_t;
+
 /* Token list structure */
 typedef struct token_node
 {
 	token_t				*token;
+	char				**arguments;
+	files_t				*files;
 	struct token_node	*next;
 }						token_node_t;
 
@@ -142,6 +152,12 @@ void					remove_token_node(token_node_t **head,
 // Error functions
 void					*return_herdoc_error(void);
 void					*return_quoted_error(void);
+
+// Expand fucntions
+token_list_t			*expand(token_list_t *tokens);
+// Grammar fucntions
+token_list_t			*grammar_check(token_list_t *tokens);
+size_t					count_2d_array(char **arr);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------

@@ -168,7 +168,7 @@ token_list_t	*tokenize(const char *input)
 // 		{
 // 			printf("hni hna\n");
 // 			tokens = join_2D(tokens, capture_tokens);
-// 			token_index = count_2d_array(tokens) + 1;
+			// token_index = count_2d_array(tokens) + 1;
 // 		}
 // 	}
 // 	printf("%ld\n", token_index);

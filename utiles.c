@@ -55,16 +55,16 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 			{
 				line = NULL;
 				line = readline("heredoc> ");
+				// ptr = ft_strdup(line);
+				gc_register(line);
 				linelen = ft_strlen(line);
 				if (ft_strcmp(line, delimiter) == 0)
 					break ;
-				if (linelen > 0 && line[linelen - 1] == '\n')
-					line[(linelen--) - 1] = '\0';
 				new_size = result_len + linelen + 2;
 				temp = ft_realloc(head->token->value, result_len, new_size);
 				if (!temp)
 				{
-					free(line);
+					// free(line);
 					return (NULL);
 				}
 				head->token->value = temp;
@@ -73,11 +73,13 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 				head->token->value[result_len] = '\n';
 				result_len++;
 				head->token->value[result_len] = '\0';
-				free(line);
+				// free(line);
 			}
+			if (result_len)
+				head->token->value[result_len - 1] = '\0';
+			else
+				return (NULL);
 		}
-		if (line)
-			free(line);
 		head = head->next;
 	}
 	return tokens;
