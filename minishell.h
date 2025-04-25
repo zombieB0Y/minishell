@@ -81,13 +81,14 @@ typedef struct
 /* Lexer state */
 typedef struct
 {
-	char				*input; // 'cc
-	size_t				input_len; // 3
-	size_t				position; //0 1 2 3
+	char *input;      // 'cc
+	size_t input_len; // 3
+	size_t position;  // 0 1 2 3
 	char				current_char;
-	bool				in_single_quote;
-	bool				in_double_quote;
-	int					paren_depth;
+	bool in_single_quote; // useless f new tokenizer
+	bool in_double_quote; // useless f new tokenizer
+	int					quotes_count;
+
 }						lexer_t;
 
 // Node to track allocated pointers
@@ -112,7 +113,7 @@ bool					lexer_is_escaped(lexer_t *lexer);
 // Token operations
 token_t					*token_create(token_type_t type, char *value);
 token_t					*next_token(lexer_t *lexer, size_t len, size_t start);
-void					token_destroy(token_t *token);
+// void					token_destroy(token_t *token);
 const char				*token_type_to_string(token_type_t type);
 
 // Token list operations
@@ -123,18 +124,24 @@ void					token_list_print(token_list_t *list);
 
 // Character classification
 bool					is_operator_char(char ch);
+bool					is_quotes_char(char ch);
+char					get_quotes(lexer_t *lexer);
 
 // Token generation
 token_t					*read_word(lexer_t *lexer);
 token_t					*read_operator(lexer_t *lexer);
-token_t					*read_quoted_string(lexer_t *lexer, char quote_char);
+char					*read_quoted_string(lexer_t *lexer, char quote_char);
 void					reset_quotes(lexer_t *lexer, char quote_char);
 void					*get_quoted_input(lexer_t *lexer, size_t *len);
 int						end_capture_quotes(lexer_t *lexer, char *input);
-void					*return_quoted_error(void);
-token_t					*read_subshell(lexer_t *lexer);
+// token_t					*read_subshell(lexer_t *lexer);
 token_list_t			*tokenize(const char *input);
+void					remove_token_node(token_node_t **head,
+							token_node_t *target);
 
+// Error functions
+void					*return_herdoc_error(void);
+void					*return_quoted_error(void);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------
@@ -143,14 +150,15 @@ void					process_command(const char *command);
 //--------functions------------
 int						check(char *p);
 int						is_whitespace(int c);
-int						is_quoted(int c);
-//---------lexer fucntions------------
-
+// int						is_quoted(int c);
+//---------alloc fucntions------------
+void					*gc_malloc(size_t size);
+void					gc_free(void *ptr);
+void					gc_remove_ptr(void *ptr);
+void					gc_collect(void);
+void					gc_register(void *ptr);
 //-------------Token Type: WORD, Value: s'---
 char					*substr_dup(const char *start, size_t len);
 char					*substr_dup(const char *start, size_t len);
-char					*capture_heredoc(const char *delimiter);
-void					*gc_malloc(size_t size);
-void					gc_collect(void);
-void					gc_register(void *ptr);
+token_list_t			*capture_heredoc(token_list_t *tokens);
 #endif

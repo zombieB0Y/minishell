@@ -21,7 +21,7 @@ lexer_t	*lexer_create(const char *input)
 		lexer->current_char = '\0';
 	lexer->in_single_quote = false;
 	lexer->in_double_quote = false;
-	lexer->paren_depth = 0;
+	lexer->quotes_count = 0;
 	return (lexer);
 }
 
@@ -98,4 +98,26 @@ void	*return_quoted_error(void)
 {
 	ft_putstr_fd("Quotes ?\n",2);
 	return NULL;
+}
+
+/*
+ * Character classification
+ */
+
+
+bool	is_quotes_char(char ch)
+{
+	return (ch == '\'' || ch == '"');
+}
+
+bool	is_operator_char(char ch)
+{
+	return (ch == '|' || ch == '<' || ch == '>');
+}
+
+char	get_quotes(lexer_t *lexer)
+{
+	if (lexer->input[lexer->position - 1] == '"')
+		return ('"');
+	return ('\'');
 }

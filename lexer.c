@@ -17,8 +17,6 @@ char	lexer_peek(lexer_t *lexer, size_t offset)
 	return ((peek_pos < lexer->input_len) ? lexer->input[peek_pos] : '\0');
 }
 
-
-
 void	token_destroy(token_t *token)
 {
 	if (token)
@@ -79,15 +77,6 @@ void	token_list_print(token_list_t *list)
 }
 
 /*
- * Character classification
- */
-
-bool	is_operator_char(char ch)
-{
-	return (ch == '|' || ch == '<' || ch == '>' || ch == '&' || ch == ')');
-}
-
-/*
  * Token generation
  */
 
@@ -97,38 +86,38 @@ token_t	*read_word(lexer_t *lexer)
 	size_t	length;
 	char	*value;
 
+	// char	c;
 	start_pos = lexer->position;
 	while (!lexer_is_at_end(lexer))
 	{
+		// Handle quote state transitions
+		if (lexer->current_char == '\'' && !lexer->in_double_quote)
+			lexer->in_single_quote = !lexer->in_single_quote;
+		else if (lexer->current_char == '"' && !lexer->in_single_quote)
+			lexer->in_double_quote = !lexer->in_double_quote;
+		// if (lexer->)
+		// {
+		// 	lexer->quotes_count++;
+		// 	lexer->quotes_count %= 2;
+		// }
 		// Stop at whitespace or operator, unless in quotes
 		if (!lexer->in_single_quote && !lexer->in_double_quote)
 		{
 			if (is_whitespace(lexer->current_char)
 				|| is_operator_char(lexer->current_char))
-			{
 				break ;
-			}
 		}
-		// Handle escape sequences
-		if (lexer->current_char == '\\' && !lexer->in_single_quote)
-		{
-			lexer_advance(lexer); // Skip backslash
-			if (lexer_is_at_end(lexer))
-				break ;
-			lexer_advance(lexer); // Skip escaped character
-			continue ;
-		}
-		// Handle quote state transitions
-		if (lexer->current_char == '\'' && !lexer->in_double_quote
-			&& !lexer_is_escaped(lexer))
-		{
-			lexer->in_single_quote = !lexer->in_single_quote;
-		}
-		else if (lexer->current_char == '"' && !lexer->in_single_quote
-			&& !lexer_is_escaped(lexer))
-		{
-			lexer->in_double_quote = !lexer->in_double_quote;
-		}
+		// // Handle escape sequences
+		// if (lexer->current_char == '\\' && !lexer->in_single_quote)
+		// {
+		// 	lexer_advance(lexer); // Skip backslash
+		// 	if (lexer_is_at_end(lexer))
+		// 		break ;
+		// 	lexer_advance(lexer); // Skip escaped character
+		// 	continue ;
+		// }
+		// lexer->in_single_quote
+		// value = read_quoted_string(lexer, )
 		lexer_advance(lexer);
 	}
 	length = lexer->position - start_pos;
@@ -139,222 +128,219 @@ token_t	*read_word(lexer_t *lexer)
 		return (NULL);
 	strncpy(value, lexer->input + start_pos, length);
 	value[length] = '\0';
-	return token_create(TOKEN_WORD, value);
+	return (token_create(TOKEN_WORD, value));
 }
 
 token_t	*read_operator(lexer_t *lexer)
 {
 	// token_type_t	type;
 	// char			*value;
-
-	switch (lexer->current_char)
+	if (lexer->current_char == '|')
 	{
-	case '|':
 		lexer_advance(lexer);
-		return token_create(TOKEN_PIPE, strdup("|"));
-	case '<':
+		return (token_create(TOKEN_PIPE, ft_strdup("|")));
+	}
+	else if (lexer->current_char == '<')
+	{
 		lexer_advance(lexer);
-		if (lexer->current_char == '<')
+		// need to handel <<- && << for herdoc
+		if (lexer->current_char == '<'/* && lexer->input[lexer->position + 1] == '-'*/)
 		{
 			lexer_advance(lexer);
-			return token_create(TOKEN_HEREDOC, strdup("<<"));
+			return (token_create(TOKEN_HEREDOC, ft_strdup("<<")));
 		}
-		return token_create(TOKEN_REDIRECT_IN, strdup("<"));
-	case '>':
+		return (token_create(TOKEN_REDIRECT_IN, ft_strdup("<")));
+	}
+	else if (lexer->current_char == '>')
+	{
 		lexer_advance(lexer);
 		if (lexer->current_char == '>')
 		{
 			lexer_advance(lexer);
-			return token_create(TOKEN_APPEND, strdup(">>"));
+			return (token_create(TOKEN_APPEND, ft_strdup(">>")));
 		}
-		return token_create(TOKEN_REDIRECT_OUT, strdup(">"));
-	case '&':
-		lexer_advance(lexer);
-		return token_create(TOKEN_AMPERSAND, strdup("&"));
-	case ';':
-		lexer_advance(lexer);
-		return token_create(TOKEN_SEMICOLON, strdup(";"));
-	default:
-		return NULL;
-	}
-}
-
-token_t	*read_quoted_string(lexer_t *lexer, char quote_char)
-{
-	size_t	length;
-
-	size_t start_pos = lexer->position - 1;
-	while (!lexer_is_at_end(lexer))
-	{
-		if (lexer->current_char == quote_char  /* && !lexer_is_escaped(lexer)*/)
-		{
-			lexer_advance(lexer);
-			reset_quotes(lexer, quote_char);
-			break ;
-		}
-		else if (lexer->current_char == quote_char)
-		{
-			lexer_advance(lexer);
-			reset_quotes(lexer, quote_char);
-			break ;
-		}
-		lexer_advance(lexer);
-	}
-	length = lexer->position - start_pos;
-	return next_token(lexer, length, start_pos);
-	// value = gc_malloc(length + 1);
-	// if (!value)
-	// 	return NULL;
-	// strncpy(value, lexer->input + start_pos, length);
-	// value[length] = '\0';
-	// return token_create(TOKEN_WORD, value);
-}
-
-token_t	*read_subshell(lexer_t *lexer)
-{
-	size_t	start_pos;
-	bool	is_command_subst;
-	size_t	length;
-	char	*value;
-
-	// Save initial position (either '(' or '$')
-	start_pos = lexer->position;
-	is_command_subst = false;
-	// Check if it's a $( command substitution
-	if (lexer->current_char == '$')
-	{
-		is_command_subst = true;
-		lexer_advance(lexer); // Consume $
-	}
-	// Consume opening parenthesis
-	if (lexer->current_char == '(')
-	{
-		lexer->paren_depth++;
-		lexer_advance(lexer); // Consume (
+		return (token_create(TOKEN_REDIRECT_OUT, ft_strdup(">")));
 	}
 	else
 	{
-		// Not a subshell
-		return NULL;
+		return (NULL);
 	}
-	// Process subshell content
-	while (!lexer_is_at_end(lexer) && lexer->paren_depth > 0)
+}
+
+char	*read_quoted_string(lexer_t *lexer, char quote_char)
+{
+	size_t	length;
+	char	*value;
+	size_t	start_pos;
+
+	value = NULL;
+	start_pos = lexer->position;
+	// lexer->quotes_count++;
+	while (!lexer_is_at_end(lexer))
 	{
-		if (lexer->current_char == '\\')
+		if (lexer->current_char == quote_char)
 		{
-			lexer_advance(lexer); // Skip backslash
-			if (!lexer_is_at_end(lexer))
-				lexer_advance(lexer); // Skip escaped char
-			continue ;
-		}
-		if (lexer->current_char == '\'' && !lexer->in_double_quote
-			&& !lexer_is_escaped(lexer))
-		{
-			lexer->in_single_quote = !lexer->in_single_quote;
-		}
-		else if (lexer->current_char == '"' && !lexer->in_single_quote
-			&& !lexer_is_escaped(lexer))
-		{
-			lexer->in_double_quote = !lexer->in_double_quote;
-		}
-		else if (lexer->current_char == '(' && !lexer->in_single_quote
-			&& !lexer->in_double_quote && !lexer_is_escaped(lexer))
-		{
-			lexer->paren_depth++;
-		}
-		else if (lexer->current_char == ')' && !lexer->in_single_quote
-			&& !lexer->in_double_quote && !lexer_is_escaped(lexer))
-		{
-			lexer->paren_depth--;
+			break;
+			// lexer->quotes_count++;
+			// lexer->quotes_count %= 2;
+			// lexer_advance(lexer);
+			// if (is_whitespace(lexer->current_char) || is_operator_char(lexer->current_char))
+			// 	break ;
 		}
 		lexer_advance(lexer);
 	}
 	length = lexer->position - start_pos;
-	value = (char *)malloc(length + 1);
+	// return (next_token(lexer, length, start_pos));
+	value = gc_malloc(length + 1);
 	if (!value)
-		return NULL;
-	strncpy(value, lexer->input + start_pos, length);
+		return (NULL);
+	ft_strncpy(value, lexer->input + start_pos, length);
 	value[length] = '\0';
-	return token_create(TOKEN_SUBSHELL, value);
+	return (value);
+	// return (token_create(TOKEN_WORD, value));
 }
+
+// token_t	*read_subshell(lexer_t *lexer)
+// {
+// 	size_t	start_pos;
+// 	bool	is_command_subst;
+// 	size_t	length;
+// 	char	*value;
+
+// 	// Save initial position (either '(' or '$')
+// 	start_pos = lexer->position;
+// 	is_command_subst = false;
+// 	// Check if it's a $( command substitution
+// 	if (lexer->current_char == '$')
+// 	{
+// 		is_command_subst = true;
+// 		lexer_advance(lexer); // Consume $
+// 	}
+// 	// Consume opening parenthesis
+// 	if (lexer->current_char == '(')
+// 	{
+// 		lexer->paren_depth++;
+// 		lexer_advance(lexer); // Consume (
+// 	}
+// 	else
+// 	{
+// 		// Not a subshell
+// 		return (NULL);
+// 	}
+// 	// Process subshell content
+// 	while (!lexer_is_at_end(lexer) && lexer->paren_depth > 0)
+// 	{
+// 		if (lexer->current_char == '\\')
+// 		{
+// 			lexer_advance(lexer); // Skip backslash
+// 			if (!lexer_is_at_end(lexer))
+// 				lexer_advance(lexer); // Skip escaped char
+// 			continue ;
+// 		}
+// 		if (lexer->current_char == '\'' && !lexer->in_double_quote
+// 			&& !lexer_is_escaped(lexer))
+// 		{
+// 			lexer->in_single_quote = !lexer->in_single_quote;
+// 		}
+// 		else if (lexer->current_char == '"' && !lexer->in_single_quote
+// 			&& !lexer_is_escaped(lexer))
+// 		{
+// 			lexer->in_double_quote = !lexer->in_double_quote;
+// 		}
+// 		else if (lexer->current_char == '(' && !lexer->in_single_quote
+// 			&& !lexer->in_double_quote && !lexer_is_escaped(lexer))
+// 		{
+// 			lexer->paren_depth++;
+// 		}
+// 		else if (lexer->current_char == ')' && !lexer->in_single_quote
+// 			&& !lexer->in_double_quote && !lexer_is_escaped(lexer))
+// 		{
+// 			lexer->paren_depth--;
+// 		}
+// 		lexer_advance(lexer);
+// 	}
+// 	length = lexer->position - start_pos;
+// 	value = (char *)malloc(length + 1);
+// 	if (!value)
+// 		return (NULL);
+// 	strncpy(value, lexer->input + start_pos, length);
+// 	value[length] = '\0';
+// 	return (token_create(TOKEN_SUBSHELL, value));
+// }
 
 // Main tokenization function
-token_list_t	*tokenize(const char *input)
-{
-	lexer_t			*lexer;
-	token_list_t	*tokens;
-	token_t			*token;
+// token_list_t	*tokenize(const char *input)
+// {
+// 	lexer_t			*lexer;
+// 	token_list_t	*tokens;
+// 	token_t			*token;
+// 	char			*value;
 
-	if (!input)
-		return NULL;
-	lexer = lexer_create(input);
-	if (!lexer)
-		return NULL;
-	tokens = token_list_create();
-	if (!tokens)
-	{
-		// lexer_destroy(lexer);
-		return NULL;
-	}
-	// Process until end of input
-	while (!lexer_is_at_end(lexer))
-	{
-		// Skip whitespace
-		if (is_whitespace(lexer->current_char))
-		{
-			lexer_advance(lexer);
-			continue ;
-		}
-		token = NULL;
-		// Check for quotes
-		if (lexer->current_char == '\'')
-		{
-			lexer->in_single_quote = true;
-			lexer_advance(lexer);
-			token = read_quoted_string(lexer, '\'');
-			// !! -- Update location and current char !
-			if (!token)
-				return (return_quoted_error());	
-		}
-		else if (lexer->current_char == '"' /*&& !lexer_is_escaped(lexer)*/)
-		{
-			lexer->in_double_quote = !lexer->in_double_quote;
-			lexer_advance(lexer);
-			token = read_quoted_string(lexer, '"');
-			if (!token)
-				return (return_quoted_error());
-		}
-		// Check for subshells
-		// else if ((lexer->current_char == '(' || (lexer->current_char == ')'
-		// 			&& lexer_peek(lexer, 1) == '(')) && !lexer->in_single_quote
-		// 	&& !lexer->in_double_quote && !lexer_is_escaped(lexer))
-		// {
-		// 	token = read_subshell(lexer);
-		// }
-		// Check for operators
-		else if (is_operator_char(lexer->current_char)
-			&& !lexer->in_single_quote && !lexer->in_double_quote)
-		{
-			token = read_operator(lexer);
-		}
-		// Default to word token
-		else
-		{
-			token = read_word(lexer);
-		}
-		if (token)
-			token_list_add(tokens, token);
-		else
-		{
-			// Skip ta nchofo ...
-			lexer_advance(lexer);
-		}
-	}
-	// Add EOF token
-	token_list_add(tokens, token_create(TOKEN_EOF, NULL));
-	lexer_destroy(lexer);
-	return tokens;
-}
+// 	if (!input)
+// 		return (NULL);
+// 	lexer = lexer_create(input);
+// 	if (!lexer)
+// 		return NULL;
+// 	tokens = token_list_create();
+// 	if (!tokens)
+// 	{
+// 		// lexer_destroy(lexer);
+// 		return NULL;
+// 	}
+// 	// Process until end of input
+// 	while (!lexer_is_at_end(lexer))
+// 	{
+// 		// Skip whitespace
+// 		if (is_whitespace(lexer->current_char))
+// 		{
+// 			lexer_advance(lexer);
+// 			continue ;
+// 		}
+// 		value = NULL;
+// 		token = NULL;
+// 		// Check for quotes
+// 		if (lexer->current_char == '\'')
+// 		{
+// 			lexer->in_single_quote = true;
+// 			lexer_advance(lexer);
+// 			value = ft_strjoin(value, read_quoted_string(lexer, '\''));
+// 			// !! -- Update location and current char !
+// 			// if (!value)
+// 			// 	return (return_quoted_error());
+// 		}
+// 		if (lexer->current_char == '"')
+// 		{
+// 			lexer->in_double_quote = !lexer->in_double_quote;
+// 			lexer_advance(lexer);
+// 			value = ft_strjoin(value, read_quoted_string(lexer, '"'));
+// 			// if (!token)
+// 			// 	return (return_quoted_error());
+// 		}
+// 		// Check for operators
+// 		else if (is_operator_char(lexer->current_char))
+// 		{
+// 			token = read_operator(lexer);
+// 		}
+// 		// Default to word token
+// 		else if (!token && !value)
+// 		{
+// 			token = read_word(lexer);
+// 		}
+// 		if (value && is_whitespace(lexer->current_char))
+// 			token_list_add(tokens, token_create(TOKEN_WORD, value));
+// 		if (token)
+// 			token_list_add(tokens, token);
+// 		else
+// 		{
+// 			// Skip ta nchofo ...
+// 			lexer_advance(lexer);
+// 		}
+// 	}
+// 	// Add EOF token
+// 	token_list_add(tokens, token_create(TOKEN_EOF, NULL));
+// 	lexer_destroy(lexer);
+// 	return tokens;
+// }
 
 void	process_command(const char *command)
 {
@@ -362,6 +348,7 @@ void	process_command(const char *command)
 
 	printf("Input: %s\n", command);
 	tokens = tokenize(command);
+	tokens = capture_heredoc(tokens);
 	if (tokens)
 	{
 		token_list_print(tokens);

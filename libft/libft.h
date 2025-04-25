@@ -6,7 +6,7 @@
 /*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 07:46:24 by abenba            #+#    #+#             */
-/*   Updated: 2025/04/22 12:17:09 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/04/25 12:10:29 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
+# include "../minishell.h"
 
 typedef struct s_list
 {

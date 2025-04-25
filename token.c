@@ -68,6 +68,47 @@ token_t	*next_token(lexer_t *lexer, size_t len, size_t start)
 	value[len] = '\0';
 	return (token_create(TOKEN_WORD, value));
 }
+
+void	*return_herdoc_error(void)
+{
+	ft_putstr_fd("heredoc ?\n", 2);
+	return (NULL);
+}
+
+/**
+ * @brief Removes a node from a token_node_t linked list by its address.
+ *
+ * This function searches for the node whose address matches `target` and
+ * unlinks it from the list. The list head is updated if needed.
+ *
+ * @param head A pointer to the head pointer of the token_node_t list.
+ * @param target The exact node to remove from the list.
+ */
+void remove_token_node(token_node_t **head, token_node_t *target)
+{
+	if (!head || !*head || !target)
+		return;
+
+	token_node_t *curr = *head;
+	token_node_t *prev = NULL;
+
+	while (curr != NULL)
+	{
+		if (curr == target)
+		{
+			if (prev)
+				prev->next = curr->next;
+			else
+				*head = curr->next; // Removed head
+
+			curr->next = NULL; // Optional: fully detach node
+			return;
+		}
+		prev = curr;
+		curr = curr->next;
+	}
+}
+
 // char	**capture(char *start, char *delimiter)
 // {
 // 	char	*input;
