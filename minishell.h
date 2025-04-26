@@ -51,23 +51,38 @@ typedef enum
 	TOKEN_REDIRECT_OUT, // >
 	TOKEN_APPEND,       // >>
 	TOKEN_HEREDOC,      // <<
-	TOKEN_AMPERSAND,    // &
-	TOKEN_SEMICOLON,    // ;
-	TOKEN_SUBSHELL,     // $(...) or (...)
 	TOKEN_EOF           // End of input
 }						token_type_t;
+
+typedef enum e_open_flags
+{
+	OPEN_CREATE_NEW = O_CREAT | O_TRUNC | O_WRONLY,
+	OPEN_APPEND_NEW = O_CREAT | O_APPEND | O_WRONLY,
+	OPEN_CREAT_ONLY  = O_CREAT | O_WRONLY
+}						t_open_flags;
 
 /* Token structure */
 typedef struct
 {
 	token_type_t		type;
+	t_open_flags		openf;
 	char				*value;
 }						token_t;
+
+/* Token infile outfile structure */
+typedef struct files
+{
+	int					in;
+	int					out;
+	char				*file;
+}						files_t;
 
 /* Token list structure */
 typedef struct token_node
 {
 	token_t				*token;
+	char				**arguments;
+	files_t				*files;
 	struct token_node	*next;
 }						token_node_t;
 
@@ -81,13 +96,14 @@ typedef struct
 /* Lexer state */
 typedef struct
 {
-	char				*input;
-	size_t				input_len;
-	size_t				position;
+	char *input;      // 'cc
+	size_t input_len; // 3
+	size_t position;  // 0 1 2 3
 	char				current_char;
-	bool				in_single_quote;
-	bool				in_double_quote;
-	int					paren_depth;
+	bool in_single_quote; // useless f new tokenizer
+	bool in_double_quote; // useless f new tokenizer
+	int					quotes_count;
+
 }						lexer_t;
 
 // Node to track allocated pointers
@@ -111,7 +127,8 @@ bool					lexer_is_escaped(lexer_t *lexer);
 
 // Token operations
 token_t					*token_create(token_type_t type, char *value);
-void					token_destroy(token_t *token);
+token_t					*next_token(lexer_t *lexer, size_t len, size_t start);
+// void					token_destroy(token_t *token);
 const char				*token_type_to_string(token_type_t type);
 
 // Token list operations
@@ -122,14 +139,30 @@ void					token_list_print(token_list_t *list);
 
 // Character classification
 bool					is_operator_char(char ch);
+bool					is_quotes_char(char ch);
+char					get_quotes(lexer_t *lexer);
 
 // Token generation
 token_t					*read_word(lexer_t *lexer);
 token_t					*read_operator(lexer_t *lexer);
-token_t					*read_quoted_string(lexer_t *lexer, char quote_char);
-token_t					*read_subshell(lexer_t *lexer);
+char					*read_quoted_string(lexer_t *lexer, char quote_char);
+void					reset_quotes(lexer_t *lexer, char quote_char);
+void					*get_quoted_input(lexer_t *lexer, size_t *len);
+int						end_capture_quotes(lexer_t *lexer, char *input);
+// token_t					*read_subshell(lexer_t *lexer);
 token_list_t			*tokenize(const char *input);
+void					remove_token_node(token_node_t **head,
+							token_node_t *target);
 
+// Error functions
+void					*return_herdoc_error(void);
+void					*return_quoted_error(void);
+
+// Expand fucntions
+token_list_t			*expand(token_list_t *tokens);
+// Grammar fucntions
+token_list_t			*grammar_check(token_list_t *tokens);
+size_t					count_2d_array(char **arr);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------
@@ -138,19 +171,15 @@ void					process_command(const char *command);
 //--------functions------------
 int						check(char *p);
 int						is_whitespace(int c);
-int						is_quoted(int c);
-//---------lexer fucntions------------
-int						identifier(int c);
-
-//----------------
-char					*substr_dup(const char *start, size_t len);
-char					*substr_dup(const char *start, size_t len);
-char					*capture_heredoc(const char *delimiter);
+// int						is_quoted(int c);
+//---------alloc fucntions------------
 void					*gc_malloc(size_t size);
+void					gc_free(void *ptr);
+void					gc_remove_ptr(void *ptr);
 void					gc_collect(void);
 void					gc_register(void *ptr);
-
-//----------execution-------------
-int ft_execute(token_list_t *tok);
-char	**ft_split_exc(char const *s);
+//-------------Token Type: WORD, Value: s'---
+char					*substr_dup(const char *start, size_t len);
+char					*substr_dup(const char *start, size_t len);
+token_list_t			*capture_heredoc(token_list_t *tokens);
 #endif

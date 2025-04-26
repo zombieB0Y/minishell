@@ -1,40 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_substr.c                                        :+:      :+:    :+:   */
+/*   ft_strncpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/25 09:31:50 by abenba            #+#    #+#             */
-/*   Updated: 2025/04/25 12:10:11 by zoentifi         ###   ########.fr       */
+/*   Created: 2025/04/22 12:16:14 by zoentifi          #+#    #+#             */
+/*   Updated: 2025/04/22 12:16:47 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_strncpy(char *dest, const char *src, unsigned int n)
 {
-	char			*arr;
 	unsigned int	i;
 
-	if (!s)
-		return (NULL);
-	if (start >= ft_strlen(s))
-		return (ft_strdup(""));
-	if (len > ft_strlen(s) - start)
-		len = (ft_strlen(s) - start);
 	i = 0;
-	arr = (char *)gc_malloc(sizeof(char) * (len + 1));
-	if (!arr)
-		return (NULL);
-	if (len)
+	while (i < n && src[i])
 	{
-		while (s[start] && len)
-		{
-			arr[i++] = s[start++];
-			len--;
-		}
+		dest[i] = src[i];
+		i++;
 	}
-	arr[i] = '\0';
-	return (arr);
+	while (i < n)
+	{
+		dest[i] = '\0';
+		i++;
+	}
+	return (dest);
 }

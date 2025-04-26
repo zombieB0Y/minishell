@@ -5,7 +5,8 @@ void	lexer_advance(lexer_t *lexer)
 	if (lexer->position < lexer->input_len)
 	{
 		lexer->position++;
-		lexer->current_char = lexer->input[lexer->position];
+		if (lexer->position <= lexer->input_len)
+			lexer->current_char = lexer->input[lexer->position];
 	}
 }
 

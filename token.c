@@ -1,5 +1,9 @@
 #include "minishell.h"
 
+/*
+ * Token operations
+ */
+
 token_list_t	*token_list_create(void)
 {
 	token_list_t	*list;
@@ -11,6 +15,113 @@ token_list_t	*token_list_create(void)
 	list->tail = NULL;
 	list->size = 0;
 	return (list);
+}
+
+token_t	*token_create(token_type_t type, char *value)
+{
+	token_t	*token;
+
+	token = (token_t *)gc_malloc(sizeof(token_t));
+	if (!token)
+		return (NULL);
+	// I can check expantion here, flag if quoted or any special case
+	token->type = type;
+	if (type == TOKEN_APPEND || type == TOKEN_REDIRECT_OUT)
+	{
+		if (type == TOKEN_APPEND)
+			token->openf = OPEN_APPEND_NEW;
+		else
+			token->openf = OPEN_CREATE_NEW;
+	}
+	else
+		token->openf = OPEN_CREAT_ONLY;
+	token->value = value;
+	return (token);
+}
+
+void	token_list_add(token_list_t *list, token_t *token)
+{
+	token_node_t	*node;
+
+	if (!list || !token)
+		return ;
+	node = (token_node_t *)gc_malloc(sizeof(token_node_t));
+	if (!node)
+		return ;
+	node->token = token;
+	node->arguments = NULL;
+	node->files = gc_malloc(sizeof(files_t));
+	node->files->in = -2;
+	node->files->out = -2;
+	node->files->file = NULL;
+	node->next = NULL;
+	if (!list->head)
+	{
+		list->head = node;
+		list->tail = node;
+	}
+	else
+	{
+		list->tail->next = node;
+		list->tail = node;
+	}
+	list->size++;
+}
+token_t	*next_token(lexer_t *lexer, size_t len, size_t start)
+{
+	char	*value;
+
+	if (!lexer->in_double_quote && !lexer->in_single_quote)
+		value = gc_malloc(len + 1);
+	else
+		return NULL;
+		// value = (char *)get_quoted_input(lexer, &len);
+	if (!value)
+		return NULL;
+	ft_strncpy(value, lexer->input + start, len);
+	value[len] = '\0';
+	return (token_create(TOKEN_WORD, value));
+}
+
+void	*return_herdoc_error(void)
+{
+	ft_putstr_fd("heredoc ?\n", 2);
+	return (NULL);
+}
+
+/**
+ * @brief Removes a node from a token_node_t linked list by its address.
+ *
+ * This function searches for the node whose address matches `target` and
+ * unlinks it from the list. The list head is updated if needed.
+ *
+ * @param head A pointer to the head pointer of the token_node_t list.
+ * @param target The exact node to remove from the list.
+ */
+void remove_token_node(token_node_t **head, token_node_t *target)
+{
+	if (!head || !*head || !target)
+		return;
+
+	token_node_t *curr = *head;
+	token_node_t *prev = NULL;
+
+	while (curr != NULL)
+	{
+		if (curr == target)
+		{
+			if (prev)
+				prev->next = curr->next;
+			else
+				*head = curr->next; // Removed head
+
+			curr->next = NULL; // Optional: fully detach node
+			
+			return;
+		}
+		prev = curr;
+		curr = curr->next;
+	}
 }
 
 // char	**capture(char *start, char *delimiter)
@@ -31,13 +142,15 @@ token_list_t	*token_list_create(void)
 // 	return (tokenize(token));	
 // }
 
-// size_t	count_2d_array(char **arr)
-// {
-// 	size_t i = 0;
-// 	while (arr && arr[i])
-// 		i++;
-// 	return i;
-// }
+size_t	count_2d_array(char **arr)
+{
+	size_t i = 0;
+	if (!arr)
+		return i;
+	while (arr && arr[i])
+		i++;
+	return i;
+}
 
 // t_list	**join_2D(t_list **s1, t_list **s2)
 // {

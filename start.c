@@ -9,6 +9,8 @@
 // 	input->position = 0;
 // }
 
+
+
 void	start(char *line)
 {
 	process_command(line);
