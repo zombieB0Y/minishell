@@ -38,6 +38,8 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 	// 	return (NULL);
 	// result[0] = '\0';
 	result_len = 0;
+	if (!tokens)
+		return (NULL);
 	size = tokens->size;
 	token_node_t	*head;
 	head = tokens->head;
@@ -51,6 +53,7 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 			head->token->value = NULL;
 			// gc_remove_ptr(head->next);
 			remove_token_node(&tokens->head, head->next);
+			tokens->size--;
 			while (1)
 			{
 				line = NULL;

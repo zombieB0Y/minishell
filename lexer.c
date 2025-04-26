@@ -144,7 +144,8 @@ token_t	*read_operator(lexer_t *lexer)
 	{
 		lexer_advance(lexer);
 		// need to handel <<- && << for herdoc
-		if (lexer->current_char == '<'/* && lexer->input[lexer->position + 1] == '-'*/)
+		if (lexer->current_char == '<' /* && lexer->input[lexer->position
+			+ 1] == '-'*/)
 		{
 			lexer_advance(lexer);
 			return (token_create(TOKEN_HEREDOC, ft_strdup("<<")));
@@ -180,11 +181,11 @@ char	*read_quoted_string(lexer_t *lexer, char quote_char)
 	{
 		if (lexer->current_char == quote_char)
 		{
-			break;
+			break ;
 			// lexer->quotes_count++;
 			// lexer->quotes_count %= 2;
 			// lexer_advance(lexer);
-			// if (is_whitespace(lexer->current_char) || is_operator_char(lexer->current_char))
+			// if (is_whitespace(lexer->current_char)|| is_operator_char(lexer->current_char))
 			// 	break ;
 		}
 		lexer_advance(lexer);
@@ -280,12 +281,12 @@ char	*read_quoted_string(lexer_t *lexer, char quote_char)
 // 		return (NULL);
 // 	lexer = lexer_create(input);
 // 	if (!lexer)
-// 		return NULL;
+// 		return (NULL);
 // 	tokens = token_list_create();
 // 	if (!tokens)
 // 	{
 // 		// lexer_destroy(lexer);
-// 		return NULL;
+// 		return (NULL);
 // 	}
 // 	// Process until end of input
 // 	while (!lexer_is_at_end(lexer))
@@ -339,26 +340,50 @@ char	*read_quoted_string(lexer_t *lexer, char quote_char)
 // 	// Add EOF token
 // 	token_list_add(tokens, token_create(TOKEN_EOF, NULL));
 // 	lexer_destroy(lexer);
-// 	return tokens;
+// 	return (tokens);
+// }
+
+// void	print_tokens(token_node_t *head)
+// {
+// 	int i = 0;
+// 	token_node_t	*curr = head;
+// 	while (curr)
+// 	{
+// 		if (curr->arguments)
+// 		{
+// 			while ()
+// 		}
+// 	}
 // }
 
 void	process_command(const char *command)
 {
 	token_list_t	*tokens;
+	token_node_t	*current;
 
 	printf("Input: %s\n", command);
 	tokens = tokenize(command);
+	if (!tokens)
+		return ;
+	// print_tokens(tokens->head);
 	tokens = capture_heredoc(tokens);
+	if (!tokens)
+		return ;
 	// tokens = expand(tokens);
 	tokens = grammar_check(tokens);
-	if (tokens)
+	if (!tokens)
+		return ;
+	current = tokens->head;
+	while (current)
 	{
-		for (int i = 0; i++; tokens[i])
-		{
-			printf()
+		if (current->arguments)
+		{	
+			for (int i = 0; current->arguments[i]; i++)
+			{
+				printf("%s\n", current->arguments[i]);
+			}
 		}
-		// token_list_print(tokens);
-		// token_list_destroy(tokens);
+		current = current->next;
 	}
 	// printf("\n");
 }

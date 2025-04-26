@@ -57,10 +57,18 @@ typedef enum
 	TOKEN_EOF           // End of input
 }						token_type_t;
 
+typedef enum e_open_flags
+{
+	OPEN_CREATE_NEW = O_CREAT | O_TRUNC | O_WRONLY,
+	OPEN_APPEND_NEW = O_CREAT | O_APPEND | O_WRONLY,
+	OPEN_CREAT_ONLY  = O_CREAT | O_WRONLY
+}						t_open_flags;
+
 /* Token structure */
 typedef struct
 {
 	token_type_t		type;
+	t_open_flags		openf;
 	char				*value;
 }						token_t;
 

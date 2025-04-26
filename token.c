@@ -26,6 +26,15 @@ token_t	*token_create(token_type_t type, char *value)
 		return (NULL);
 	// I can check expantion here, flag if quoted or any special case
 	token->type = type;
+	if (type == TOKEN_APPEND || type == TOKEN_REDIRECT_OUT)
+	{
+		if (type == TOKEN_APPEND)
+			token->openf = OPEN_APPEND_NEW;
+		else
+			token->openf = OPEN_CREATE_NEW;
+	}
+	else
+		token->openf = OPEN_CREAT_ONLY;
 	token->value = value;
 	return (token);
 }
@@ -107,6 +116,7 @@ void remove_token_node(token_node_t **head, token_node_t *target)
 				*head = curr->next; // Removed head
 
 			curr->next = NULL; // Optional: fully detach node
+			
 			return;
 		}
 		prev = curr;
