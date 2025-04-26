@@ -6,7 +6,7 @@
 /*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/04/26 14:51:39 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/04/26 19:50:29 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,9 @@ token_list_t	*grammar_check(token_list_t *tokens)
 	if (!tokens)
 		return (NULL);
 	head = tokens->head;
+	token_list_print(tokens);
+	printf("--------------\n");
+
 	while (head)
 	{
 		if (head->token->type == TOKEN_WORD)
@@ -86,6 +89,10 @@ token_list_t	*grammar_check(token_list_t *tokens)
 				pos = pos->next;
 				i++;
 			}
+			else if (pos->token->type == TOKEN_PIPE)
+			{
+				
+			}
 			pos = head->next;
 			while (pos && pos->token->type == TOKEN_WORD)
 			{
@@ -94,6 +101,8 @@ token_list_t	*grammar_check(token_list_t *tokens)
 				pos = head->next;
 			}
 		}
+	token_list_print(tokens);
+	printf("--------------\n");
 		head = head->next;
 	}
 	return (tokens);
