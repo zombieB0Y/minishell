@@ -380,10 +380,13 @@ void	process_command(const char *command)
 		{	
 			for (int i = 0; current->arguments[i]; i++)
 			{
-				printf("%s\n", current->arguments[i]);
+				printf("arg[%d] = %s\n", i, current->arguments[i]);
+				printf("fd[] = %d\n", current->files->in);
+				printf("fd[] = %d\n", current->files->out);
+			
 			}
 		}
 		current = current->next;
 	}
-	// printf("\n");
+	printf("\n");
 }
