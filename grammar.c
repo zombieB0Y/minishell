@@ -12,6 +12,18 @@
 
 #include "minishell.h"
 
+void print_open_flag(t_open_flags flag)
+{
+	if (flag == OPEN_CREATE_NEW)
+		printf("OPEN_CREATE_NEW\n");
+	else if (flag == OPEN_APPEND_NEW)
+		printf("OPEN_APPEND_NEW\n");
+	else if (flag == OPEN_CREAT_ONLY)
+		printf("OPEN_CREAT_ONLY\n");
+	else
+		printf("Unknown flag: %d\n", flag);
+}
+
 void	*return_redi_error(void)
 {
 	ft_putstr_fd("parse error !\n", 2);
@@ -38,8 +50,8 @@ token_list_t	*grammar_check(token_list_t *tokens)
 	if (!tokens)
 		return (NULL);
 	head = tokens->head;
-	token_list_print(tokens);
-	printf("--------------\n");
+	// token_list_print(tokens);
+	// printf("--------------\n");
 
 	while (head)
 	{
@@ -51,14 +63,15 @@ token_list_t	*grammar_check(token_list_t *tokens)
 			{
 				if (pos->next->token->type == TOKEN_APPEND
 					|| pos->next->token->type == TOKEN_REDIRECT_OUT)
-				{
-					if (pos->next->next->token->type != TOKEN_EOF)
+					{
+					if (pos->next->next)
 					{
 						if (pos->next->next->token->type == TOKEN_WORD)
 						{
 							head->files->file = ft_strdup(pos->next->next->token->value);
+							print_open_flag(pos->next->token->openf);
 							head->files->out = open(head->files->file,
-									pos->token->openf, 0666);
+								pos->next->token->openf, 0666);
 							remove_token_node(&tokens->head, pos->next);
 							remove_token_node(&tokens->head, pos->next);
 							continue ;
@@ -74,7 +87,7 @@ token_list_t	*grammar_check(token_list_t *tokens)
 						if (pos->next->next->token->type == TOKEN_WORD)
 						{
 							head->files->file = ft_strdup(pos->next->next->token->value);
-							head->files->out = open(head->files->file,
+							head->files->in = open(head->files->file,
 									pos->token->openf, 0666);
 							remove_token_node(&tokens->head, pos->next);
 							remove_token_node(&tokens->head, pos->next);
@@ -103,8 +116,8 @@ token_list_t	*grammar_check(token_list_t *tokens)
 				
 			}
 		}
-	token_list_print(tokens);
-	printf("--------------\n");
+	// token_list_print(tokens);
+	// printf("--------------\n");
 		head = head->next;
 	}
 	return (tokens);

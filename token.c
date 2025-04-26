@@ -26,6 +26,7 @@ token_t	*token_create(token_type_t type, char *value)
 		return (NULL);
 	// I can check expantion here, flag if quoted or any special case
 	token->type = type;
+	// token_type_to_string(type);
 	if (type == TOKEN_APPEND || type == TOKEN_REDIRECT_OUT)
 	{
 		if (type == TOKEN_APPEND)
@@ -33,8 +34,9 @@ token_t	*token_create(token_type_t type, char *value)
 		else
 			token->openf = OPEN_CREATE_NEW;
 	}
-	else
+	else if (type == TOKEN_REDIRECT_IN)
 		token->openf = OPEN_CREAT_ONLY;
+	// print_open_flag(token->openf);
 	token->value = value;
 	return (token);
 }

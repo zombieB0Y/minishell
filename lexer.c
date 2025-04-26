@@ -355,12 +355,13 @@ char	*read_quoted_string(lexer_t *lexer, char quote_char)
 // 	}
 // }
 
-void	process_command(const char *command)
+void	process_command(const char *command, char **env, t_env *g_env)
 {
+	(void) env;
 	token_list_t	*tokens;
 	token_node_t	*current;
 
-	printf("Input: %s\n", command);
+	// printf("Input: %s\n", command);
 	tokens = tokenize(command);
 	if (!tokens)
 		return ;
@@ -371,7 +372,7 @@ void	process_command(const char *command)
 	// tokens = expand(tokens);
 	tokens = grammar_check(tokens);
 	if (!tokens)
-		return ;
+	return ;
 	current = tokens->head;
 	// token_list_print(tokens);
 	// while (current)
@@ -388,5 +389,5 @@ void	process_command(const char *command)
 	// 	}
 	// 	current = current->next;
 	// }
-	printf("\n");
+	ft_execute(tokens, g_env);
 }

@@ -15,6 +15,9 @@ int	main(int ac, char **av, char **env)
 	(void)ac;
 	(void)av;
 	(void)env;
+	t_env *g_env = NULL;
+
+	g_env = create_env(env);
 	if (!check_args(ac, av))
 		return (1);
 	print_welcome();
@@ -34,7 +37,7 @@ int	main(int ac, char **av, char **env)
 		}
 		gc_register(line);
 		add_history(line);
-		start(line);
+		start(line, env, g_env);
 		gc_collect();
 	}
 	rl_clear_history();

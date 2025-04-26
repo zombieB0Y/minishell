@@ -58,8 +58,17 @@ typedef enum e_open_flags
 {
 	OPEN_CREATE_NEW = O_CREAT | O_TRUNC | O_WRONLY,
 	OPEN_APPEND_NEW = O_CREAT | O_APPEND | O_WRONLY,
-	OPEN_CREAT_ONLY  = O_CREAT | O_WRONLY
+	OPEN_CREAT_ONLY  = O_CREAT | O_RDONLY
 }						t_open_flags;
+
+/* struct envirmont */
+
+typedef struct env
+{
+	char *key;
+	char *value;
+	struct env *next;
+} t_env;
 
 /* Token structure */
 typedef struct
@@ -129,13 +138,14 @@ bool					lexer_is_escaped(lexer_t *lexer);
 token_t					*token_create(token_type_t type, char *value);
 token_t					*next_token(lexer_t *lexer, size_t len, size_t start);
 // void					token_destroy(token_t *token);
+// printing fuc
 const char				*token_type_to_string(token_type_t type);
-
+void					token_list_print(token_list_t *list);
+void					print_open_flag(t_open_flags flag);
 // Token list operations
 token_list_t			*token_list_create(void);
 void					token_list_destroy(token_list_t *list);
 void					token_list_add(token_list_t *list, token_t *token);
-void					token_list_print(token_list_t *list);
 
 // Character classification
 bool					is_operator_char(char ch);
@@ -166,8 +176,8 @@ size_t					count_2d_array(char **arr);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------
-void					start(char *line);
-void					process_command(const char *command);
+void					start(char *line, char **env, t_env *g_env);
+void					process_command(const char *command, char **env, t_env *g_env);
 //--------functions------------
 int						check(char *p);
 int						is_whitespace(int c);
@@ -182,4 +192,13 @@ void					gc_register(void *ptr);
 char					*substr_dup(const char *start, size_t len);
 char					*substr_dup(const char *start, size_t len);
 token_list_t			*capture_heredoc(token_list_t *tokens);
+
+//----------execution--------
+int ft_execute(token_list_t *tok, t_env *g_env);
+char    **ft_split_n(char const *s, char c);
+t_env *create_env(char **env);
+int ft_env(t_env *g_env);
+int ft_unset(t_env *g_env, char *key);
+char	*ft_strdup_n(const char *s1);
+
 #endif

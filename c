@@ -36,4 +36,3 @@ utiles.c
 utiles.o
 welcome.c
 welcome.o
-"hell0"
