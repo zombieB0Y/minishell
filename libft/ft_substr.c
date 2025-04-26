@@ -3,43 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   ft_substr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:31:50 by abenba            #+#    #+#             */
-/*   Updated: 2024/11/02 19:47:36 by abenba           ###   ########.fr       */
+/*   Updated: 2025/04/25 12:10:11 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "libft.h"
 
-static size_t	ft_check_len(size_t src_len, unsigned int start, size_t len)
-{
-	if (len > src_len - start)
-		len = src_len - start;
-	return (len);
-}
+#include "libft.h"
 
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
-	size_t	i;
-	char	*ptr;
-	size_t	src_len;
+	char			*arr;
+	unsigned int	i;
 
 	if (!s)
 		return (NULL);
-	src_len = ft_strlen(s);
-	i = 0;
-	if (start >= src_len)
+	if (start >= ft_strlen(s))
 		return (ft_strdup(""));
-	len = ft_check_len(src_len, start, len);
-	ptr = (char *)malloc(len + 1);
-	if (!ptr)
+	if (len > ft_strlen(s) - start)
+		len = (ft_strlen(s) - start);
+	i = 0;
+	arr = (char *)gc_malloc(sizeof(char) * (len + 1));
+	if (!arr)
 		return (NULL);
-	while (i < len && s[start])
+	if (len)
 	{
-		ptr[i] = s[start];
-		i++;
-		start++;
+		while (s[start] && len)
+		{
+			arr[i++] = s[start++];
+			len--;
+		}
 	}
-	ptr[i] = '\0';
-	return (ptr);
+	arr[i] = '\0';
+	return (arr);
 }

@@ -1,25 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/22 11:22:41 by abenba            #+#    #+#             */
-/*   Updated: 2025/04/22 11:47:39 by zoentifi         ###   ########.fr       */
+/*   Created: 2025/04/25 16:48:42 by zoentifi          #+#    #+#             */
+/*   Updated: 2025/04/25 19:52:10 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-size_t	ft_strlen(const char *c)
+// hayed l quotes yaaa had bnadem
+
+token_list_t    *expand(token_list_t *tokens)
 {
-	size_t	len;
-
-	len = 0;
-	if (!c)
-		return (0);
-	while (c[len])
-		len++;
-	return (len);
+    
+    return (tokens);
 }

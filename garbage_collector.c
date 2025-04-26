@@ -30,12 +30,44 @@ void gc_register(void *ptr) {
  *  A wrapper for malloc() that registers the allocated pointer.
  */
 void *gc_malloc(size_t size) {
-    void *ptr = malloc(size);
+    void *ptr = malloc((size_t)size);
     if (!ptr)
         return NULL;
-    
     gc_register(ptr);
     return ptr;
+}
+
+/**
+ * @brief Frees a specific pointer and removes its associated GCNode from the list.
+ *
+ * This function searches the GC linked list for the given pointer. If found,
+ * it frees the memory pointed to by `ptr`, removes the corresponding GCNode from
+ * the linked list, and frees the node itself.
+ *
+ * @param ptr The pointer to be freed and removed from the garbage collector.
+ */
+void gc_free(void *ptr)
+{
+	GCNode *curr = gc_head;   // Current node in traversal
+	GCNode *prev = NULL;      // Previous node, needed for unlinking
+
+	while (curr != NULL)
+	{
+		if (curr->ptr == ptr)
+		{
+			// Unlink the current node from the list
+			if (prev != NULL)
+				prev->next = curr->next;
+			else
+				gc_head = curr->next;
+
+			free(curr->ptr);  // Free the actual memory
+			free(curr);       // Free the GC node
+			return;
+		}
+		prev = curr;
+		curr = curr->next;
+	}
 }
 
 /*
@@ -51,6 +83,38 @@ void gc_collect(void) {
         current = next;
     }
     gc_head = NULL;
+}
+
+/**
+ * @brief Removes the node with the given pointer from the GC list.
+ *
+ * This function searches for the node containing the given pointer and
+ * removes it from the global `gc_head` linked list without freeing anything.
+ * If the pointer is not found, the function does nothing.
+ *
+ * @param ptr The pointer to search for and remove from the GC list.
+ */
+void gc_remove_ptr(void *ptr)
+{
+	GCNode *curr = gc_head;
+	GCNode *prev = NULL;
+
+	while (curr != NULL)
+	{
+		if (curr->ptr == ptr)
+		{
+			// Remove node from the list
+			if (prev != NULL)
+				prev->next = curr->next;
+			else
+				gc_head = curr->next;
+
+			curr->next = NULL; // Optional: detach node fully
+			return;
+		}
+		prev = curr;
+		curr = curr->next;
+	}
 }
 
 /*

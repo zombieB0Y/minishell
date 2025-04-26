@@ -2,6 +2,7 @@
     "files.autoSave": "onFocusChange",
     "files.associations": {
         "minishell.h": "c",
-        "readline.h": "c"
+        "readline.h": "c",
+        "libft.h": "c"
     }
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 07:46:24 by abenba            #+#    #+#             */
-/*   Updated: 2025/03/25 22:10:17 by zm               ###   ########.fr       */
+/*   Updated: 2025/04/25 12:10:29 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
+# include "../minishell.h"
 
 typedef struct s_list
 {
@@ -74,5 +75,6 @@ t_list				*ft_lstmap(t_list *lst, void *(*f)(void *),
 int					ft_strcmp(const char *s1, const char *s2);
 int					ft_isspace(char c);
 void				*ft_realloc(void *ptr, size_t old_size, size_t new_size);
+char				*ft_strncpy(char *dest, const char *src, unsigned int n);
 
 #endif
