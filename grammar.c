@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/04/27 11:34:18 by codespace        ###   ########.fr       */
+/*   Updated: 2025/04/27 11:37:47 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,16 +89,18 @@ token_list_t	*grammar_check(token_list_t *tokens)
 				pos = pos->next;
 				i++;
 			}
-			else if (pos->token->type == TOKEN_PIPE)
-			{
-				
-			}
 			pos = head->next;
 			while (pos && pos->token->type == TOKEN_WORD)
 			{
 				remove_token_node(&tokens->head, pos);
 				tokens->size--;
 				pos = head->next;
+			}
+			if (pos->token->type == TOKEN_PIPE)
+			{
+				remove_token_node(&tokens->head, pos);
+				tokens->size--;
+				
 			}
 		}
 	token_list_print(tokens);
