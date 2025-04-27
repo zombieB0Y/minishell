@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g3
+CFLAGS = -Wall -Wextra -Werror -ggdb
 SRC = minishell.c welcome.c garbage_collector.c utiles.c start.c lexer.c lexer_utiles.c token.c lexer_manipulation.c test.c expand.c grammar.c ft_execute.c ft_split_n.c ft_builtins.c ft_strdup_n.c
 OBJ = $(SRC:.c=.o)
 NAME = minishell

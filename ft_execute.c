@@ -5,39 +5,41 @@ int ft_isprint(int c)
     return (c >= 32 && c <= 126);
 }
 
-// int ft_strcmp(const char *s1, const char *s2)
-// {
-//     if (!s1 || !s2)
-//         return 0;
-//     while (*s1 && (*s1 == *s2)) {
-//         s1++;
-//         s2++;
-//     }
-//     return *(unsigned char *)s1 - *(unsigned char *)s2;
-// }
+int	ft_lstsize_n(t_env *lst)
+{
+	int	count;
 
-// char	*ft_strdup(const char *s1)
-// {
-// 	char	*copy;
-// 	size_t	i;
+	count = 0;
+	if (lst)
+	{
+		while (lst)
+		{
+			lst = lst->next;
+			count++;
+		}
+	}
+	return (count);
+}
 
-//     if (!s1)
-//     {
-//         return (NULL);
-//     }
-// 	i = strlen(s1);
-// 	copy = (char *)malloc((i + 1) *sizeof(char));
-// 	if (!copy)
-// 		return (NULL);
-// 	i = 0;
-// 	while (s1[i])
-// 	{
-// 		copy[i] = s1[i];
-// 		i++;
-// 	}
-// 	copy[i] = '\0';
-// 	return (copy);
-// }
+char **env_to_char(t_env *g_env)
+{
+    int (list_size) = ft_lstsize_n(g_env);
+    char (**env) = NULL;
+    int (i) = 0;
+    if (list_size != 0)
+    {
+        env = (char **)gc_malloc((list_size + 1) * sizeof(char *));
+        while (g_env)
+        {
+            env[i] = ft_strjoin(g_env->key, "=");
+            env[i] = ft_strjoin(env[i], g_env->value);
+            i++;
+            g_env = g_env->next;
+        }
+        env[i] = NULL;
+    }
+    return (env);
+}
 
 t_env *create_node(char **env, int i)
 {
@@ -104,21 +106,15 @@ int ft_exc(token_node_t *tok, t_env *g_env)
     char	*tmp;
 	char	*full_path;
 	int		i;
-    (void) g_env;
+    char *p;
+    char **envchar = env_to_char(g_env);
 
-    char *p = ft_getenv("PATH", g_env);
+    if (ft_strcmp(tok->arguments[0], "env") == 0)
+        return (ft_env(g_env));
+    else if (ft_strcmp(tok->arguments[0], "unset") == 0)
+        return (ft_unset(g_env, tok->arguments[1]));
 
-    // token_node_t *cur = tok;
-    // while (cur)
-    // {
-    //     if (ft_strcmp(cur->arguments[0], "env") == 0)
-    //         return (ft_env(g_env));
-    //     else if (ft_strcmp(cur->arguments[0], "unset") == 0)
-    //         return (ft_unset(g_env, cur->arguments[1]));
-    //     else if (cur->next == NULL)
-    //         break ;
-    //     cur = cur->next;
-    // }
+    p = ft_getenv("PATH", g_env);
     if (!p)
     {
         write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
@@ -131,7 +127,7 @@ int ft_exc(token_node_t *tok, t_env *g_env)
 	full_path = NULL;
     if (access(tok->arguments[0], X_OK) == 0)
     {
-        execve(tok->arguments[0], tok->arguments, NULL);
+        execve(tok->arguments[0], tok->arguments, envchar);
 		free(full_path);
     }
 	while (path[i])
@@ -153,7 +149,7 @@ int ft_exc(token_node_t *tok, t_env *g_env)
             }
             if (tok->files->out != -2)
                     dup2(tok->files->out, 1);
-			execve(full_path, tok->arguments, NULL);
+			execve(full_path, tok->arguments, envchar);
 			exit(1);
 		}
 		i++;
@@ -172,7 +168,7 @@ int ft_pip(int pip_num, token_list_t *tok, t_env *g_env) {
     int (i) = 0;
     
     while (i <= pip_num) {
-        int curr_pipe = i % 2; // int1 = int2 in2 = !int2
+        int curr_pipe = i % 2;
         int prev_pipe = (i + 1) % 2;
         
         if (i < pip_num) {
@@ -217,18 +213,7 @@ int ft_pip(int pip_num, token_list_t *tok, t_env *g_env) {
 
 int ft_execute(token_list_t *tok, t_env *g_env)
 {
-    int num_pip = number_of_pip(tok);
-    // token_node_t *cur = tok->head;
-    // while (cur)
-    // {
-    //     if (ft_strcmp(cur->arguments[0], "env") == 0)
-    //         return (ft_env(g_env));
-    //     else if (ft_strcmp(cur->arguments[0], "unset") == 0)
-    //         return (ft_unset(g_env, cur->arguments[1]));
-    //     else if (cur->next == NULL)
-    //         break ;
-    //     cur = cur->next;
-    // }
+    int (num_pip) = number_of_pip(tok);
     ft_pip(num_pip, tok, g_env);
     return 0;
 }
