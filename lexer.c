@@ -29,8 +29,7 @@ void	token_destroy(token_t *token)
 const char	*token_type_to_string(token_type_t type)
 {
 	static const char	*type_names[] = {"WORD", "PIPE", "REDIRECT_IN",
-			"REDIRECT_OUT", "APPEND", "HEREDOC", "AMPERSAND", "SEMICOLON",
-			"SUBSHELL", "EOF"};
+			"REDIRECT_OUT", "APPEND", "HEREDOC", "EOF"};
 
 	return (type_names[type]);
 }
@@ -374,16 +373,20 @@ void	process_command(const char *command)
 	if (!tokens)
 		return ;
 	current = tokens->head;
-	while (current)
-	{
-		if (current->arguments)
-		{	
-			for (int i = 0; current->arguments[i]; i++)
-			{
-				printf("%s\n", current->arguments[i]);
-			}
-		}
-		current = current->next;
-	}
-	// printf("\n");
+	// token_list_print(tokens);
+	// while (current)
+	// {
+	// 	if (current->arguments)
+	// 	{	
+	// 		for (int i = 0; current->arguments[i]; i++)
+	// 		{
+	// 			printf("arg[%d] = %s\n", i, current->arguments[i]);
+	// 			printf("fd[] = %d\n", current->files->in);
+	// 			printf("fd[] = %d\n", current->files->out);
+			
+	// 		}
+	// 	}
+	// 	current = current->next;
+	// }
+	printf("\n");
 }

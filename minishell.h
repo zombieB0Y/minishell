@@ -51,9 +51,6 @@ typedef enum
 	TOKEN_REDIRECT_OUT, // >
 	TOKEN_APPEND,       // >>
 	TOKEN_HEREDOC,      // <<
-	TOKEN_AMPERSAND,    // &
-	TOKEN_SEMICOLON,    // ;
-	TOKEN_SUBSHELL,     // $(...) or (...)
 	TOKEN_EOF           // End of input
 }						token_type_t;
 

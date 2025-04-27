@@ -85,6 +85,7 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 		}
 		head = head->next;
 	}
+	// token_list_print(tokens);
 	return tokens;
 }
 	// while (1)
