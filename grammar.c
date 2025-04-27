@@ -50,7 +50,7 @@ token_list_t	*grammar_check(token_list_t *tokens)
 			while (pos && pos->token->type == TOKEN_WORD)
 			{
 				printf("hani hna\n");
-				if (pos->next->token->type == TOKEN_AMPERSAND || pos->next->token->type == TOKEN_REDIRECT_OUT)
+				if (pos->next->token->type == TOKEN_AMPER || pos->next->token->type == TOKEN_REDIRECT_OUT)
 				{
 					if (pos->next->next)
 					{

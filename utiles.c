@@ -27,7 +27,7 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 	char	*line;
 	size_t	linelen;
 	size_t	result_len;
-	size_t	size;
+	// size_t	size;
 	size_t	new_size = 0;
 	char	*temp;
 	char	*delimiter;
@@ -40,7 +40,7 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 	result_len = 0;
 	if (!tokens)
 		return (NULL);
-	size = tokens->size;
+	// size = tokens->size;
 	token_node_t	*head;
 	head = tokens->head;
 	while (head)
