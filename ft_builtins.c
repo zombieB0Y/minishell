@@ -1,13 +1,18 @@
 # include "minishell.h"
 
-int ft_env(t_env *g_env)
+int ft_env(t_env *g_env, int num)
 {
-    while (g_env)
+    if (g_env)
     {
-        printf("%s=%s\n", g_env->key, g_env->value);
-        g_env = g_env->next;
+        while (g_env)
+        {
+            printf("%s=%s\n", g_env->key, g_env->value);
+            g_env = g_env->next;
+        }
     }
-    return (0);
+    if (num == 0)
+        return (0);
+    exit(0);
 }
 
 void free_node(t_env *g_env)
@@ -18,28 +23,67 @@ void free_node(t_env *g_env)
     free(g_env);
 }
 
-int ft_unset(t_env *g_env, char *key)
+int ft_unset(t_env *g_env, token_node_t *tok, int num)
 {
-    t_env *node = NULL;
-    if (!key)
-    {
+    t_env *cur = NULL;
+    t_env *prv = NULL;
+    int i;
+    int y = 0;
+    int flag = 0;
+
+    if (!tok)
         return (0);
-    }
-    if (ft_strcmp(g_env->key, key) == 0)
+    
+    cur = g_env;
+    if (g_env)
     {
-        free_node(g_env);
-        return (0);
-    }
-    while (g_env->next)
-    {
-        if (ft_strcmp(g_env->next->key, key) == 0)
+        while (cur)
         {
-            node = g_env->next;
-            g_env->next = g_env->next->next;
-            free_node(node);
-            return (0);
+            i = 1;
+            while (tok->arguments[i])
+            {
+                if (ft_strcmp(cur->key, tok->arguments[i]) == 0)
+                {
+                    // printf("%s %s\n",cur->key, tok->arguments[i]);
+                    if (y != 0)
+                        prv->next = cur->next;
+                    free_node(cur);
+                    flag = 1;
+                    break ;
+                }
+                i++;
+            }
+            y++;
+            prv = cur;
+            if (flag == 1)
+            {
+                flag = 0;
+                cur = g_env;
+            }
+            else
+                cur = cur->next;
         }
-        g_env = g_env->next;
     }
-    return (0);
+    if (num == 0)
+        return (0);
+    exit(0);
+}
+
+int ft_pwd(t_env *env, int num)
+{
+    t_env *curr;
+
+    curr = env;
+    if (env)
+    {
+        while (curr)
+        {
+            if (ft_strcmp(curr->key, "PWD") == 0)
+                printf("%s\n", curr->value);
+            curr = curr->next;
+        }
+    }
+    if (num == 0)
+        return (0);
+    exit(0);
 }

@@ -194,11 +194,14 @@ char					*substr_dup(const char *start, size_t len);
 token_list_t			*capture_heredoc(token_list_t *tokens);
 
 //----------execution--------
-int ft_execute(token_list_t *tok, t_env *g_env);
-char    **ft_split_n(char const *s, char c);
-t_env *create_env(char **env);
-int ft_env(t_env *g_env);
-int ft_unset(t_env *g_env, char *key);
-char	*ft_strdup_n(const char *s1);
+int						ft_execute(token_list_t *tok, t_env *g_env);
+char					**ft_split_n(char const *s, char c);
+t_env					*create_env(char **env);
+int						ft_env(t_env *g_env, int num);
+int						ft_unset(t_env *g_env, token_node_t *tok, int num);
+char					*ft_strdup_n(const char *s1);
+void					free_env(t_env *g_env);
+void					ft_free(char **ptr);
+int 					ft_pwd(t_env *env, int num);
 
 #endif

@@ -70,6 +70,7 @@ t_env *create_env(char **env)
         node = node->next;
         i++;
     }
+    node->next = NULL;
     return (head);
 }
 
@@ -101,7 +102,7 @@ char *ft_getenv(char *key, t_env *g_env)
     return (value);
 }
 
-int ft_exc(token_node_t *tok, t_env *g_env)
+void ft_exc(token_node_t *tok, t_env *g_env, int num)
 {
     char	*tmp;
 	char	*full_path;
@@ -110,9 +111,9 @@ int ft_exc(token_node_t *tok, t_env *g_env)
     char **envchar = env_to_char(g_env);
 
     if (ft_strcmp(tok->arguments[0], "env") == 0)
-        return (ft_env(g_env));
+        ft_env(g_env, num);
     else if (ft_strcmp(tok->arguments[0], "unset") == 0)
-        return (ft_unset(g_env, tok->arguments[1]));
+        ft_unset(g_env, tok, num);
 
     p = ft_getenv("PATH", g_env);
     if (!p)
@@ -159,18 +160,27 @@ int ft_exc(token_node_t *tok, t_env *g_env)
 		write(2, "command not found\n", 18);
         exit(127);
     }
-    return (0);
 }
 
 int ft_pip(int pip_num, token_list_t *tok, t_env *g_env) {
     int pipes[2][2];
     pid_t pids[pip_num + 1];
     int (i) = 0;
-    
+
+    if (pip_num == 0)
+    {
+        if (ft_strcmp(tok->head->arguments[0], "env") == 0)
+            return (ft_env(g_env, pip_num));
+        else if (ft_strcmp(tok->head->arguments[0], "unset") == 0)
+            return (ft_unset(g_env, tok->head, pip_num));
+        else if (ft_strcmp(tok->head->arguments[0], "pwd") == 0)
+            return (ft_pwd(g_env, pip_num));
+    }
     while (i <= pip_num) {
         int curr_pipe = i % 2;
         int prev_pipe = (i + 1) % 2;
-        
+
+
         if (i < pip_num) {
             if (pipe(pipes[curr_pipe]) == -1) {
                 perror("pipe");
@@ -195,7 +205,7 @@ int ft_pip(int pip_num, token_list_t *tok, t_env *g_env) {
                 close(pipes[curr_pipe][0]);
                 close(pipes[curr_pipe][1]);
             }
-            ft_exc(tok->head, g_env);
+            ft_exc(tok->head, g_env, pip_num);
         }
         if (i > 0) {
             close(pipes[prev_pipe][0]);
