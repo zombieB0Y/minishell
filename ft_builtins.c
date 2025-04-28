@@ -118,18 +118,98 @@ int ft_echo(char **arguments, int num)
 
 void export_print(t_env *g_env)
 {
+    int printed_count = 0;
+    int total_count = 0;
+    t_env *curr;
+    t_env *temp;
+    t_env *to_print;
+
+    curr = g_env;
+    while (curr)
+    {
+        total_count++;
+        curr = curr->next;
+    }
+
+    while (printed_count < total_count - 1)
+    {
+        to_print = NULL;
+        temp = g_env;
+        while (temp)
+        {
+            if (temp->flag == 0)
+            {
+                if (!to_print || ft_strcmp(temp->key, to_print->key) < 0)
+                    to_print = temp;
+            }
+            temp = temp->next;
+        }
+        if (to_print && ft_strcmp(to_print->key, "_") != 0)
+        {
+            printf("declare -x %s=\"%s\"\n", to_print->key, to_print->value);
+            to_print->flag = 1;
+            printed_count++;
+        }
+    }
+}
+
+void flag_to_zero(t_env *g_env)
+{
     while (g_env)
     {
-        printf("declare -x %s=%s\n", g_env->key, g_env->value);
+        g_env->flag = 0;
         g_env = g_env->next;
     }
+}
+
+void add_to_env(t_env **env, char *arguments)
+{
+    t_env (*node) = NULL;
+    t_env (*curr) = *env;
+    char *in_env;
+    int (y) = equal_sign(arguments);
+
+    in_env = ft_substr(arguments, 0, y);
+    if (ft_strcmp(curr->key, in_env) == 0)
+    {
+        printf("%s\n", ft_substr(arguments, y + 1, ft_strlen(arguments)));
+        free(curr->value);
+        curr->value = ft_substr_n(arguments, y + 1, ft_strlen(arguments));
+        return ;
+    }
+    while(curr->next)
+    {
+        if (ft_strcmp(curr->next->key, in_env) == 0)
+        {
+            curr->next->value = ft_substr_n(arguments, y + 1, ft_strlen(arguments));
+            return ;
+        }
+        curr = curr->next;
+    }
+    node = malloc(sizeof(t_env));
+    node->key = ft_substr_n(arguments, 0, y);
+    node->value = ft_substr_n(arguments, y + 1, ft_strlen(arguments));
+    node->next = NULL;
+    node->flag = 0;
+    curr->next = node;
 }
 
 int ft_export(char **arguments, t_env *g_env, int num)
 {
     int (i) = 1;
     if (!arguments[i])
+    {
         export_print(g_env);
+        flag_to_zero(g_env);
+    }
+    else
+    {
+        while (arguments[i])
+        {
+            add_to_env(&g_env, arguments[i]);
+            i++;
+        }
+    }
     if (num == 0)
         return (0);
     exit(0);

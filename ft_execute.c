@@ -56,6 +56,7 @@ t_env *create_node(char **env, int i)
     node = malloc(sizeof(t_env));
     node->key = ft_substr_n(env[i], 0, y);
     node->value = ft_substr_n(env[i], y + 1, ft_strlen(env[i]));
+    node->flag = 0;
     return (node);
 }
 

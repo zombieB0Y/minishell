@@ -67,6 +67,7 @@ typedef struct env
 {
 	char *key;
 	char *value;
+	int flag;
 	struct env *next;
 } t_env;
 
@@ -220,5 +221,7 @@ void					ft_free(char **ptr);
 int 					ft_pwd(t_env *env, int num);
 int						ft_echo(char **arguments, int num);
 int						ft_export(char **arguments, t_env *g_env, int num);
+int						ft_lstsize_n(t_env *lst);
+int						equal_sign(char *env);
 
 #endif
