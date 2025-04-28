@@ -114,6 +114,10 @@ void ft_exc(token_node_t *tok, t_env *g_env, int num)
         ft_env(g_env, num);
     else if (ft_strcmp(tok->arguments[0], "unset") == 0)
         ft_unset(g_env, tok, num);
+    else if (ft_strcmp(tok->arguments[0], "pwd") == 0)
+        ft_pwd(g_env, num);
+    else if (ft_strcmp(tok->arguments[0], "echo") == 0)
+        ft_echo(tok->arguments, num);
 
     p = ft_getenv("PATH", g_env);
     if (!p)
@@ -175,6 +179,8 @@ int ft_pip(int pip_num, token_list_t *tok, t_env *g_env) {
             return (ft_unset(g_env, tok->head, pip_num));
         else if (ft_strcmp(tok->head->arguments[0], "pwd") == 0)
             return (ft_pwd(g_env, pip_num));
+        else if (ft_strcmp(tok->head->arguments[0], "echo") == 0)
+            return (ft_echo(tok->head->arguments, pip_num));
     }
     while (i <= pip_num) {
         int curr_pipe = i % 2;

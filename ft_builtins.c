@@ -44,7 +44,6 @@ int ft_unset(t_env *g_env, token_node_t *tok, int num)
             {
                 if (ft_strcmp(cur->key, tok->arguments[i]) == 0)
                 {
-                    // printf("%s %s\n",cur->key, tok->arguments[i]);
                     if (y != 0)
                         prv->next = cur->next;
                     free_node(cur);
@@ -86,4 +85,31 @@ int ft_pwd(t_env *env, int num)
     if (num == 0)
         return (0);
     exit(0);
+}
+
+int ft_echo(char **arguments, int num)
+{
+    int (i) = 1;
+    int (flag) = 0;
+    char *str;
+
+    str = NULL;
+    if (ft_strcmp(arguments[i], "-n") == 0)
+    {
+        flag = 1;
+        i++;
+    }
+    while (arguments[i])
+    {
+        printf("%s", arguments[i]);
+        i++;
+        if (arguments[i])
+            printf(" ");
+    }
+    if (flag == 0)
+        printf("\n");
+    if (num == 0)
+        return (0);
+    else
+        exit(0);
 }

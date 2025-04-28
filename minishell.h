@@ -203,5 +203,6 @@ char					*ft_strdup_n(const char *s1);
 void					free_env(t_env *g_env);
 void					ft_free(char **ptr);
 int 					ft_pwd(t_env *env, int num);
+int						ft_echo(char **arguments, int num);
 
 #endif
