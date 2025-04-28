@@ -34,3 +34,31 @@ char	*ft_strdup_n(const char *s1)
 	copy[i] = '\0';
 	return (copy);
 }
+
+char	*ft_substr_n(char const *s, unsigned int start, size_t len)
+{
+	char			*arr;
+	unsigned int	i;
+
+	if (!s)
+		return (NULL);
+	if (start >= ft_strlen(s))
+		return (ft_strdup_n(""));
+	if (len > ft_strlen(s) - start)
+		len = (ft_strlen(s) - start);
+	i = 0;
+	arr = (char *)malloc(sizeof(char) * (len + 1));
+	if (!arr)
+		return (NULL);
+	if (len)
+	{
+		while (s[start] && len)
+		{
+			arr[i++] = s[start++];
+			len--;
+		}
+	}
+	arr[i] = '\0';
+	return (arr);
+}
+

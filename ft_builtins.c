@@ -94,6 +94,8 @@ int ft_echo(char **arguments, int num)
     char *str;
 
     str = NULL;
+    if (!arguments[i])
+        printf("\n");
     if (ft_strcmp(arguments[i], "-n") == 0)
     {
         flag = 1;
@@ -112,4 +114,23 @@ int ft_echo(char **arguments, int num)
         return (0);
     else
         exit(0);
+}
+
+void export_print(t_env *g_env)
+{
+    while (g_env)
+    {
+        printf("declare -x %s=%s\n", g_env->key, g_env->value);
+        g_env = g_env->next;
+    }
+}
+
+int ft_export(char **arguments, t_env *g_env, int num)
+{
+    int (i) = 1;
+    if (!arguments[i])
+        export_print(g_env);
+    if (num == 0)
+        return (0);
+    exit(0);
 }

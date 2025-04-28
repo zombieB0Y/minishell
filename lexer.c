@@ -369,7 +369,7 @@ void	process_command(const char *command, char **env, t_env *g_env)
 	tokens = capture_heredoc(tokens);
 	if (!tokens)
 		return ;
-	// tokens = expand(tokens);
+	// tokens = expand(tokens, g_env);
 	tokens = grammar_check(tokens);
 	if (!tokens)
 	return ;

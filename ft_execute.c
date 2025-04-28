@@ -41,14 +41,21 @@ char **env_to_char(t_env *g_env)
     return (env);
 }
 
+int equal_sign(char *env)
+{
+    int (i) = 0;
+    while (env[i] != '=')
+        i++;
+    return (i);
+}
+
 t_env *create_node(char **env, int i)
 {
-    char (**key_value) = NULL;
+    int (y) = equal_sign(env[i]);
     t_env *node = NULL;
-    key_value = ft_split_n(env[i], '=');
     node = malloc(sizeof(t_env));
-    node->key = ft_strdup_n(key_value[0]);
-    node->value = ft_strdup_n(key_value[1]);
+    node->key = ft_substr_n(env[i], 0, y);
+    node->value = ft_substr_n(env[i], y + 1, ft_strlen(env[i]));
     return (node);
 }
 
@@ -118,6 +125,8 @@ void ft_exc(token_node_t *tok, t_env *g_env, int num)
         ft_pwd(g_env, num);
     else if (ft_strcmp(tok->arguments[0], "echo") == 0)
         ft_echo(tok->arguments, num);
+    else if (ft_strcmp(tok->arguments[0], "export") == 0)
+        ft_export(tok->arguments, g_env, num);
 
     p = ft_getenv("PATH", g_env);
     if (!p)
@@ -181,6 +190,8 @@ int ft_pip(int pip_num, token_list_t *tok, t_env *g_env) {
             return (ft_pwd(g_env, pip_num));
         else if (ft_strcmp(tok->head->arguments[0], "echo") == 0)
             return (ft_echo(tok->head->arguments, pip_num));
+        else if (ft_strcmp(tok->head->arguments[0], "export") == 0)
+            return (ft_export(tok->head->arguments, g_env, pip_num));
     }
     while (i <= pip_num) {
         int curr_pipe = i % 2;

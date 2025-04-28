@@ -95,6 +95,20 @@ typedef struct token_node
 	struct token_node	*next;
 }						token_node_t;
 
+// typedef struct files
+// {
+// 	char				*file;
+// 	token_type_t		type;
+// 	struct files		*next;
+// }						files_t;
+
+// typedef struct token_node
+// {
+// 	char				**arguments;
+// 	files_t				*files;
+// 	struct token_node	*next;
+// }						token_node_t;
+
 typedef struct
 {
 	token_node_t		*head;
@@ -169,7 +183,7 @@ void					*return_herdoc_error(void);
 void					*return_quoted_error(void);
 
 // Expand fucntions
-token_list_t			*expand(token_list_t *tokens);
+token_list_t			*expand(token_list_t *tokens, t_env *g_env);
 // Grammar fucntions
 token_list_t			*grammar_check(token_list_t *tokens);
 size_t					count_2d_array(char **arr);
@@ -199,10 +213,12 @@ char					**ft_split_n(char const *s, char c);
 t_env					*create_env(char **env);
 int						ft_env(t_env *g_env, int num);
 int						ft_unset(t_env *g_env, token_node_t *tok, int num);
+char					*ft_substr_n(char const *s, unsigned int start, size_t len);
 char					*ft_strdup_n(const char *s1);
 void					free_env(t_env *g_env);
 void					ft_free(char **ptr);
 int 					ft_pwd(t_env *env, int num);
 int						ft_echo(char **arguments, int num);
+int						ft_export(char **arguments, t_env *g_env, int num);
 
 #endif
