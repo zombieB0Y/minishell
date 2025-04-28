@@ -40,8 +40,8 @@ const char	*token_type_to_string(token_type_t type)
 
 void	token_list_destroy(token_list_t *list)
 {
-	token_node_t	*current;
-	token_node_t	*next;
+	lol	*current;
+	lol	*next;
 
 	if (!list)
 		return ;
@@ -58,7 +58,7 @@ void	token_list_destroy(token_list_t *list)
 
 void	token_list_print(token_list_t *list)
 {
-	token_node_t	*current;
+	lol	*current;
 
 	if (!list)
 		return ;
@@ -342,10 +342,10 @@ char	*read_quoted_string(lexer_t *lexer, char quote_char)
 // 	return (tokens);
 // }
 
-// void	print_tokens(token_node_t *head)
+// void	print_tokens(lol *head)
 // {
 // 	int i = 0;
-// 	token_node_t	*curr = head;
+// 	lol	*curr = head;
 // 	while (curr)
 // 	{
 // 		if (curr->arguments)
@@ -358,7 +358,7 @@ char	*read_quoted_string(lexer_t *lexer, char quote_char)
 void	process_command(const char *command)
 {
 	token_list_t	*tokens;
-	token_node_t	*current;
+	// lol				*current;
 
 	printf("Input: %s\n", command);
 	tokens = tokenize(command);
@@ -372,7 +372,7 @@ void	process_command(const char *command)
 	tokens = grammar_check(tokens);
 	if (!tokens)
 		return ;
-	current = tokens->head;
+	// current = tokens->head;
 	// token_list_print(tokens);
 	// while (current)
 	// {

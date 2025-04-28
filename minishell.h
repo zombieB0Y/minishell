@@ -72,15 +72,20 @@ typedef struct
 /* Token infile outfile structure */
 typedef struct files
 {
-	int					in;
-	int					out;
 	char				*file;
+	token_type_t		type;
+	struct files		*next;
 }						files_t;
 
 /* Token list structure */
-typedef struct token_node
+typedef struct lol_t
 {
 	token_t				*token;
+	struct lol_t		*next;
+}						lol;
+
+typedef struct token_node
+{
 	char				**arguments;
 	files_t				*files;
 	struct token_node	*next;
@@ -88,8 +93,8 @@ typedef struct token_node
 
 typedef struct
 {
-	token_node_t		*head;
-	token_node_t		*tail;
+	lol		*head;
+	lol		*tail;
 	size_t				size;
 }						token_list_t;
 
@@ -151,8 +156,8 @@ void					*get_quoted_input(lexer_t *lexer, size_t *len);
 int						end_capture_quotes(lexer_t *lexer, char *input);
 // token_t					*read_subshell(lexer_t *lexer);
 token_list_t			*tokenize(const char *input);
-void					remove_token_node(token_node_t **head,
-							token_node_t *target);
+void					remove_token_node(lol **head,
+							lol *target);
 
 // Error functions
 void					*return_herdoc_error(void);

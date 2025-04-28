@@ -41,7 +41,7 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 	if (!tokens)
 		return (NULL);
 	// size = tokens->size;
-	token_node_t	*head;
+	lol*head;
 	head = tokens->head;
 	while (head)
 	{
