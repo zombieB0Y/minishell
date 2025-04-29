@@ -206,7 +206,27 @@ int ft_export(char **arguments, t_env *g_env, int num)
     {
         while (arguments[i])
         {
-            add_to_env(&g_env, arguments[i]);
+            if (ft_strchr(arguments[i], '='))
+            {
+                if ((ft_strcmp(arguments[i], "=") != 0
+					&& ft_strcmp(arguments[i], "") != 0
+            		&& !ft_strchr(arguments[i], '.')
+					&& !ft_strchr(arguments[i], '-')
+					&& !ft_strchr(arguments[i], '+')
+					&& !ft_strchr(arguments[i], '*')
+					&& !ft_strchr(arguments[i], '-')
+					&& !ft_strchr(arguments[i], '/')
+					&& arguments[i][0] != '=')
+                    && ft_isdigit(arguments[i][0]) != 1)
+                    add_to_env(&g_env, arguments[i]);
+                else
+                {
+                    write (2, "export: `", 9);
+                    write (2, arguments[i], ft_strlen(arguments[i]));
+                    write (2, "': not a valid identifier\n", 26);
+					exit(1);
+                }
+            }
             i++;
         }
     }
