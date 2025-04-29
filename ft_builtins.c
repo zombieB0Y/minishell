@@ -1,6 +1,6 @@
 # include "minishell.h"
 
-int ft_env(t_env *g_env, int num)
+int ft_env(t_env *g_env, int num, int *status)
 {
     if (g_env)
     {
@@ -10,9 +10,10 @@ int ft_env(t_env *g_env, int num)
             g_env = g_env->next;
         }
     }
+	*status = 0;
     if (num == 0)
-        return (0);
-    exit(0);
+        return (*status);
+    exit(*status);
 }
 
 void free_node(t_env *g_env)
@@ -23,7 +24,7 @@ void free_node(t_env *g_env)
     free(g_env);
 }
 
-int ft_unset(t_env *g_env, token_node_t *tok, int num)
+int ft_unset(t_env *g_env, token_node_t *tok, int num, int *status)
 {
     t_env *cur = NULL;
     t_env *prv = NULL;
@@ -63,31 +64,25 @@ int ft_unset(t_env *g_env, token_node_t *tok, int num)
                 cur = cur->next;
         }
     }
+	*status = 0;
     if (num == 0)
-        return (0);
-    exit(0);
+        return (*status);
+    exit(*status);
 }
 
-int ft_pwd(t_env *env, int num)
+int ft_pwd(int num, int *status)
 {
-    t_env *curr;
+	char *pwd;
 
-    curr = env;
-    if (env)
-    {
-        while (curr)
-        {
-            if (ft_strcmp(curr->key, "PWD") == 0)
-                printf("%s\n", curr->value);
-            curr = curr->next;
-        }
-    }
+	pwd = getcwd(NULL, 0);
+    printf("%s\n", pwd);
+	*status = 0;
     if (num == 0)
-        return (0);
-    exit(0);
+        return (*status);
+    exit(*status);
 }
 
-int ft_echo(char **arguments, int num)
+int ft_echo(char **arguments, int num, int *status)
 {
     int (i) = 1;
     int (flag) = 0;
@@ -109,11 +104,13 @@ int ft_echo(char **arguments, int num)
             printf(" ");
     }
     if (flag == 0)
+	{
         printf("\n");
+	}
+	*status = 0;
     if (num == 0)
-        return (0);
-    else
-        exit(0);
+        return (*status);
+    exit(*status);
 }
 
 void export_print(t_env *g_env)
@@ -194,9 +191,10 @@ void add_to_env(t_env **env, char *arguments)
     curr->next = node;
 }
 
-int ft_export(char **arguments, t_env *g_env, int num)
+int ft_export(char **arguments, t_env *g_env, int num, int *status)
 {
     int (i) = 1;
+	*status = 0;
     if (!arguments[i])
     {
         export_print(g_env);
@@ -208,6 +206,8 @@ int ft_export(char **arguments, t_env *g_env, int num)
         {
             if (ft_strchr(arguments[i], '='))
             {
+				// if (ft_strchr(arguments[i] , "+="))
+				// 	ft_append();
                 if ((ft_strcmp(arguments[i], "=") != 0
 					&& ft_strcmp(arguments[i], "") != 0
             		&& !ft_strchr(arguments[i], '.')
@@ -223,23 +223,33 @@ int ft_export(char **arguments, t_env *g_env, int num)
                     write (2, "export: `", 9);
                     write (2, arguments[i], ft_strlen(arguments[i]));
                     write (2, "': not a valid identifier\n", 26);
-					if (num == 0)
-        				return (0);
-					exit(1);
+					*status = 1;
                 }
             }
             i++;
         }
     }
-    if (num == 0)
-        return (0);
-    exit(0);
+	if (num == 0)
+        return (*status);
+	exit(*status);
 }
 
-int ft_exit(char **arguments, int status, int num)
+int ft_exit(char **arguments, int *status, int num)
 {
-	printf("%d\n", status);
+	int (i) = 1;
+	if (!arguments[i])
+		exit(*status);
+	else if (arguments[i + 1])
+	{
+		write (2, "exit: too many arguments\n", 25);
+		*status = 1;
+	}
+	else
+	{
+		*status = ft_atoi(arguments[i]);
+		exit(*status);
+	}
 	if (num == 0)
-		return (0);
-	exit(0);
+		return (*status);
+	exit(*status);
 }

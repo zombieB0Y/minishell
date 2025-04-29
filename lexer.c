@@ -355,7 +355,7 @@ char	*read_quoted_string(lexer_t *lexer, char quote_char)
 // 	}
 // }
 
-int	process_command(const char *command, char **env, t_env *g_env, int status)
+int	process_command(const char *command, char **env, t_env *g_env, int *status)
 {
 	(void) env;
 	token_list_t	*tokens;

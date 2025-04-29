@@ -9,14 +9,13 @@ int	check_args(int ac, char **av)
 	return (1);
 }
 
-int status = 0;
-
 int	main(int ac, char **av, char **env)
 {
 	char *line;
 	(void)ac;
 	(void)av;
 	t_env *g_env = NULL;
+	int status = 0;
 
 	if (*env)
 		g_env = create_env(env);
@@ -38,9 +37,10 @@ int	main(int ac, char **av, char **env)
 		}
 		gc_register(line);
 		add_history(line);
-		status = start(line, env, g_env, status);
+		status = start(line, env, g_env, &status);
 		gc_collect();
 	}
+	printf("exit\n");
 	free_env(g_env);
 	rl_clear_history();
 }
