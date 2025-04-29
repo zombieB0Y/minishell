@@ -48,6 +48,13 @@ int equal_sign(char *env)
         i++;
     return (i);
 }
+int plus_sign(char *env)
+{
+    int (i) = 0;
+    while (env[i] != '=')
+        i++;
+    return (i);
+}
 
 t_env *create_node(char **env, int i)
 {

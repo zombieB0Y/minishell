@@ -76,6 +76,7 @@ int ft_pwd(int num, int *status)
 
 	pwd = getcwd(NULL, 0);
     printf("%s\n", pwd);
+	free(pwd);
 	*status = 0;
     if (num == 0)
         return (*status);
@@ -159,17 +160,24 @@ void flag_to_zero(t_env *g_env)
     }
 }
 
-void add_to_env(t_env **env, char *arguments)
+void add_to_env(t_env **env, char *arguments, int flag)
 {
     t_env (*node) = NULL;
     t_env (*curr) = *env;
     char *in_env;
-    int (y) = equal_sign(arguments);
-
-    in_env = ft_substr(arguments, 0, y);
+    int (y) = 0;
+	if (flag == 0)
+	{
+		y = equal_sign(arguments);
+		in_env = ft_substr(arguments, 0, y);
+	}
+	else
+	{
+		y = plus_sign(arguments);
+		in_env = ft_substr(arguments, 0, y - 1);
+	}
     if (ft_strcmp(curr->key, in_env) == 0)
     {
-        printf("%s\n", ft_substr(arguments, y + 1, ft_strlen(arguments)));
         free(curr->value);
         curr->value = ft_substr_n(arguments, y + 1, ft_strlen(arguments));
         return ;
@@ -178,17 +186,43 @@ void add_to_env(t_env **env, char *arguments)
     {
         if (ft_strcmp(curr->next->key, in_env) == 0)
         {
+			free(curr->next->value);
             curr->next->value = ft_substr_n(arguments, y + 1, ft_strlen(arguments));
             return ;
         }
         curr = curr->next;
     }
     node = malloc(sizeof(t_env));
-    node->key = ft_substr_n(arguments, 0, y);
+    node->key = ft_strdup_n(in_env);
     node->value = ft_substr_n(arguments, y + 1, ft_strlen(arguments));
     node->next = NULL;
     node->flag = 0;
     curr->next = node;
+}
+
+void ft_append(char *arguments, t_env **g_env)
+{
+	char *key;
+	char *value;
+	t_env *curr;
+	int i;
+
+	i = plus_sign(arguments);
+	key = ft_substr(arguments, 0, i - 1);
+	curr = *g_env;
+	while (curr)
+	{
+		if (ft_strcmp(curr->key, key) == 0)
+		{
+			value = ft_substr(arguments, i + 1, ft_strlen(arguments));
+			key = ft_strdup(curr->value);
+			free(curr->value);
+			curr->value = ft_strjoin_n(key, value);
+			return ;
+		}
+		curr = curr->next;
+	}
+	add_to_env(g_env, arguments, 1);
 }
 
 int ft_export(char **arguments, t_env *g_env, int num, int *status)
@@ -206,9 +240,9 @@ int ft_export(char **arguments, t_env *g_env, int num, int *status)
         {
             if (ft_strchr(arguments[i], '='))
             {
-				// if (ft_strchr(arguments[i] , "+="))
-				// 	ft_append();
-                if ((ft_strcmp(arguments[i], "=") != 0
+				if (ft_strnstr(arguments[i] , "+=", ft_strlen(arguments[i])))
+					ft_append(arguments[i], &g_env);
+                else if ((ft_strcmp(arguments[i], "=") != 0
 					&& ft_strcmp(arguments[i], "") != 0
             		&& !ft_strchr(arguments[i], '.')
 					&& !ft_strchr(arguments[i], '-')
@@ -217,7 +251,7 @@ int ft_export(char **arguments, t_env *g_env, int num, int *status)
 					&& !ft_strchr(arguments[i], '/')
 					&& arguments[i][0] != '=')
                     && ft_isdigit(arguments[i][0]) != 1)
-                    add_to_env(&g_env, arguments[i]);
+                    add_to_env(&g_env, arguments[i], 0);
                 else
                 {
                     write (2, "export: `", 9);

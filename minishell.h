@@ -224,5 +224,7 @@ int						ft_export(char **arguments, t_env *g_env, int num, int *status);
 int						ft_lstsize_n(t_env *lst);
 int						equal_sign(char *env);
 int						ft_exit(char **arguments, int *status, int num);
+char					*ft_strjoin_n(char const *s1, char const *s2);
+int						plus_sign(char *env);
 
 #endif
