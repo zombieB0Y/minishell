@@ -9,12 +9,13 @@ int	check_args(int ac, char **av)
 	return (1);
 }
 
+int status = 0;
+
 int	main(int ac, char **av, char **env)
 {
 	char *line;
 	(void)ac;
 	(void)av;
-	(void)env;
 	t_env *g_env = NULL;
 
 	if (*env)
@@ -37,7 +38,7 @@ int	main(int ac, char **av, char **env)
 		}
 		gc_register(line);
 		add_history(line);
-		start(line, env, g_env);
+		status = start(line, env, g_env, status);
 		gc_collect();
 	}
 	free_env(g_env);

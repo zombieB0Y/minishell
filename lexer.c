@@ -355,7 +355,7 @@ char	*read_quoted_string(lexer_t *lexer, char quote_char)
 // 	}
 // }
 
-void	process_command(const char *command, char **env, t_env *g_env)
+int	process_command(const char *command, char **env, t_env *g_env, int status)
 {
 	(void) env;
 	token_list_t	*tokens;
@@ -364,15 +364,15 @@ void	process_command(const char *command, char **env, t_env *g_env)
 	// printf("Input: %s\n", command);
 	tokens = tokenize(command);
 	if (!tokens)
-		return ;
+		return 0;
 	// print_tokens(tokens->head);
 	tokens = capture_heredoc(tokens);
 	if (!tokens)
-		return ;
+		return 0;
 	// tokens = expand(tokens, g_env);
 	tokens = grammar_check(tokens);
 	if (!tokens)
-	return ;
+	return 0;
 	current = tokens->head;
 	// token_list_print(tokens);
 	// while (current)
@@ -389,5 +389,5 @@ void	process_command(const char *command, char **env, t_env *g_env)
 	// 	}
 	// 	current = current->next;
 	// }
-	ft_execute(tokens, g_env);
+	return (ft_execute(tokens, g_env, status));
 }

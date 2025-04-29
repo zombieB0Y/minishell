@@ -212,7 +212,6 @@ int ft_export(char **arguments, t_env *g_env, int num)
 					&& ft_strcmp(arguments[i], "") != 0
             		&& !ft_strchr(arguments[i], '.')
 					&& !ft_strchr(arguments[i], '-')
-					&& !ft_strchr(arguments[i], '+')
 					&& !ft_strchr(arguments[i], '*')
 					&& !ft_strchr(arguments[i], '-')
 					&& !ft_strchr(arguments[i], '/')
@@ -224,6 +223,8 @@ int ft_export(char **arguments, t_env *g_env, int num)
                     write (2, "export: `", 9);
                     write (2, arguments[i], ft_strlen(arguments[i]));
                     write (2, "': not a valid identifier\n", 26);
+					if (num == 0)
+        				return (0);
 					exit(1);
                 }
             }
@@ -233,4 +234,12 @@ int ft_export(char **arguments, t_env *g_env, int num)
     if (num == 0)
         return (0);
     exit(0);
+}
+
+int ft_exit(char **arguments, int status, int num)
+{
+	printf("%d\n", status);
+	if (num == 0)
+		return (0);
+	exit(0);
 }

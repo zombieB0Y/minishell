@@ -110,7 +110,7 @@ char *ft_getenv(char *key, t_env *g_env)
     return (value);
 }
 
-void ft_exc(token_node_t *tok, t_env *g_env, int num)
+void ft_exc(token_node_t *tok, t_env *g_env, int num, int status)
 {
     char	*tmp;
 	char	*full_path;
@@ -128,6 +128,8 @@ void ft_exc(token_node_t *tok, t_env *g_env, int num)
         ft_echo(tok->arguments, num);
     else if (ft_strcmp(tok->arguments[0], "export") == 0)
         ft_export(tok->arguments, g_env, num);
+    else if (ft_strcmp(tok->arguments[0], "exit") == 0)
+        ft_exit(tok->arguments, status , num);
 
     p = ft_getenv("PATH", g_env);
     if (!p)
@@ -176,7 +178,7 @@ void ft_exc(token_node_t *tok, t_env *g_env, int num)
     }
 }
 
-int ft_pip(int pip_num, token_list_t *tok, t_env *g_env) {
+int ft_pip(int pip_num, token_list_t *tok, t_env *g_env, int status) {
     int pipes[2][2];
     pid_t pids[pip_num + 1];
     int (i) = 0;
@@ -193,6 +195,8 @@ int ft_pip(int pip_num, token_list_t *tok, t_env *g_env) {
             return (ft_echo(tok->head->arguments, pip_num));
         else if (ft_strcmp(tok->head->arguments[0], "export") == 0)
             return (ft_export(tok->head->arguments, g_env, pip_num));
+        else if (ft_strcmp(tok->head->arguments[0], "exit") == 0)
+            return (ft_exit(tok->head->arguments, status, pip_num));
     }
     while (i <= pip_num) {
         int curr_pipe = i % 2;
@@ -223,7 +227,7 @@ int ft_pip(int pip_num, token_list_t *tok, t_env *g_env) {
                 close(pipes[curr_pipe][0]);
                 close(pipes[curr_pipe][1]);
             }
-            ft_exc(tok->head, g_env, pip_num);
+            ft_exc(tok->head, g_env, pip_num, status);
         }
         if (i > 0) {
             close(pipes[prev_pipe][0]);
@@ -233,16 +237,14 @@ int ft_pip(int pip_num, token_list_t *tok, t_env *g_env) {
         tok->head = tok->head->next;
     }
     for (int i = 0; i <= pip_num; i++) {
-        waitpid(pids[i], NULL, 0);
+        waitpid(pids[i], &status, 0);
     }
-    
-    return 0;
+    return (status >> 8);
 }
 
-int ft_execute(token_list_t *tok, t_env *g_env)
+int ft_execute(token_list_t *tok, t_env *g_env, int status)
 {
     int (num_pip) = number_of_pip(tok);
-    ft_pip(num_pip, tok, g_env);
-    return 0;
+    return (ft_pip(num_pip, tok, g_env, status));
 }
 

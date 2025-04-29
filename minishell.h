@@ -191,8 +191,8 @@ size_t					count_2d_array(char **arr);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------
-void					start(char *line, char **env, t_env *g_env);
-void					process_command(const char *command, char **env, t_env *g_env);
+int						start(char *line, char **env, t_env *g_env, int status);
+int						process_command(const char *command, char **env, t_env *g_env, int status);
 //--------functions------------
 int						check(char *p);
 int						is_whitespace(int c);
@@ -209,7 +209,7 @@ char					*substr_dup(const char *start, size_t len);
 token_list_t			*capture_heredoc(token_list_t *tokens);
 
 //----------execution--------
-int						ft_execute(token_list_t *tok, t_env *g_env);
+int						ft_execute(token_list_t *tok, t_env *g_env, int status);
 char					**ft_split_n(char const *s, char c);
 t_env					*create_env(char **env);
 int						ft_env(t_env *g_env, int num);
@@ -223,5 +223,6 @@ int						ft_echo(char **arguments, int num);
 int						ft_export(char **arguments, t_env *g_env, int num);
 int						ft_lstsize_n(t_env *lst);
 int						equal_sign(char *env);
+int						ft_exit(char **arguments, int status, int num);
 
 #endif
