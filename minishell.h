@@ -226,5 +226,7 @@ int						equal_sign(char *env);
 int						ft_exit(char **arguments, int *status, int num);
 char					*ft_strjoin_n(char const *s1, char const *s2);
 int						plus_sign(char *env);
+char					*ft_getenv(char *key, t_env *g_env);
+int						ft_cd(char *arguments, t_env **g_env, int *status, int num);
 
 #endif

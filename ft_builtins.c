@@ -128,23 +128,23 @@ void export_print(t_env *g_env)
         total_count++;
         curr = curr->next;
     }
-
     while (printed_count < total_count - 1)
     {
-        to_print = NULL;
+		to_print = NULL;
         temp = g_env;
         while (temp)
         {
-            if (temp->flag == 0)
+			if (temp->flag == 0)
             {
-                if (!to_print || ft_strcmp(temp->key, to_print->key) < 0)
-                    to_print = temp;
-            }
-            temp = temp->next;
-        }
-        if (to_print && ft_strcmp(to_print->key, "_") != 0)
-        {
-            printf("declare -x %s=\"%s\"\n", to_print->key, to_print->value);
+				if (!to_print || ft_strcmp(temp->key, to_print->key) < 0)
+				to_print = temp;
+			}
+			temp = temp->next;
+		}
+		if (to_print)
+		{
+			if (ft_strcmp(to_print->key, "_") != 0)
+            	printf("declare -x %s=\"%s\"\n", to_print->key, to_print->value);
             to_print->flag = 1;
             printed_count++;
         }
@@ -287,3 +287,16 @@ int ft_exit(char **arguments, int *status, int num)
 		return (*status);
 	exit(*status);
 }
+
+// int ft_cd(char *arguments, t_env **g_env, int *status, int num)
+// {
+// 	int (i) = 1;
+// 	if (arguments[i])
+// 	{
+// 		*status = 1;
+// 		write (2, "cd: too many arguments\n", 23);
+// 	}
+// 	if (num == 0)
+// 		return (*status)
+// 	exit (*status);
+// }
