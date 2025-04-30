@@ -89,6 +89,25 @@ t_env *create_env(char **env)
     return (head);
 }
 
+// t_env *default_env()
+// {
+//     t_env *node;
+//     t_env *head;
+//     int i = 0;
+//     int level = 0;
+
+//     node = malloc(sizeof(t_env));
+//     node->key = ft_strdup_n("PWD");
+//     node->value = getcwd(NULL, 0);
+//     node->next = malloc(sizeof(t_env));
+//     node->next->key = ft_strdup_n("SHLVL");
+//     node->next->value = ft_strdup_n(ft_atoi(level + 1));
+//     node->next->next = malloc(sizeof(t_env));
+//     node->next->next->key = ft_strdup_n("_")
+//     node->next->next->value = ft_strdup_n("/usr/bin/env");
+//     return (head);
+// }
+
 int number_of_pip(token_list_t *tok)
 {
     token_node_t *current = tok->head;

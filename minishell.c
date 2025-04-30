@@ -19,6 +19,8 @@ int	main(int ac, char **av, char **env)
 
 	if (*env)
 		g_env = create_env(env);
+	// else
+	// 	g_env = default_env();
 	if (!check_args(ac, av))
 		return (1);
 	print_welcome();

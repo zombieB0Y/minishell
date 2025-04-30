@@ -138,7 +138,7 @@ void export_print(t_env *g_env)
             {
 				if (!to_print || ft_strcmp(temp->key, to_print->key) < 0)
 				to_print = temp;
-			}
+            } 
 			temp = temp->next;
 		}
 		if (to_print)
@@ -195,8 +195,8 @@ void add_to_env(t_env **env, char *arguments, int flag)
     node = malloc(sizeof(t_env));
     node->key = ft_strdup_n(in_env);
     node->value = ft_substr_n(arguments, y + 1, ft_strlen(arguments));
-    node->next = NULL;
     node->flag = 0;
+    node->next = NULL;
     curr->next = node;
 }
 
