@@ -54,9 +54,9 @@ void	reset_quotes(lexer_t *lexer, char quote_char)
 void	*get_quoted_input(lexer_t *lexer, size_t *len)
 {
 	char	*input;
-	size_t	i;
+	// size_t	i;
 
-	i = *len;
+	// i = *len;
 	while (1)
 	{
 		input = readline("> ");

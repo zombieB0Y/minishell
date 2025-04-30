@@ -108,13 +108,13 @@ t_env *create_env(char **env)
 //     return (head);
 // }
 
-int number_of_pip(token_list_t *tok)
+int number_of_pip(anas_list *tok)
 {
     token_node_t *current = tok->head;
     int p = 0;
     while (current)
     {
-        if (current->arguments)
+        if (current->arguments[0])
             p++;
         current = current->next;
     }
@@ -143,6 +143,7 @@ void ft_exc(token_node_t *tok, t_env *g_env, int num, int *status)
 	int		i;
     char *p;
     char **envchar = env_to_char(g_env);
+    int fd;
 
     if (ft_strcmp(tok->arguments[0], "env") == 0)
         ft_env(g_env, num, status);
@@ -177,21 +178,36 @@ void ft_exc(token_node_t *tok, t_env *g_env, int num, int *status)
 	{
 		tmp = ft_strjoin(path[i], "/");
 		full_path = ft_strjoin(tmp, tok->arguments[0]);
-		free(tmp);
 		if (access(full_path, X_OK) == 0)
 		{
-            if (tok->files->in != -2)
+            while (tok->files)
             {
-                if (tok->files->in == -1)
+                if (tok->files->type == TOKEN_REDIRECT_OUT)
                 {
-                    write(2, "No such file or directory\n", 26);
-                    exit(1);
+                    fd = open(tok->files->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    dup2(fd, 1);
                 }
-                else
-                    dup2(tok->files->in, 0);
+                else if (tok->files->type == TOKEN_REDIRECT_IN)
+                {
+                    fd = open(tok->files->file, O_RDONLY);
+                    if (fd == -1)
+                    {
+                        write(2, tok->files->file, ft_strlen(tok->files->file));
+                        write(2, ": ", 2);
+                        write(2, strerror(errno), ft_strlen(strerror(errno)));
+                        write(2, "\n", 1);
+                        *status = 1;
+                        exit(*status);
+                    }
+                    dup2(fd, 0);
+                }
+                else if (tok->files->type == TOKEN_APPEND)
+                {
+                    fd = open(tok->files->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+                    dup2(fd, 1);
+                }
+                tok->files = tok->files->next;
             }
-            if (tok->files->out != -2)
-                    dup2(tok->files->out, 1);
 			execve(full_path, tok->arguments, envchar);
 			exit(1);
 		}
@@ -204,7 +220,7 @@ void ft_exc(token_node_t *tok, t_env *g_env, int num, int *status)
     }
 }
 
-int ft_pip(int pip_num, token_list_t *tok, t_env *g_env, int *status) {
+int ft_pip(int pip_num, anas_list *tok, t_env *g_env, int *status) {
     int pipes[2][2];
     pid_t pids[pip_num + 1];
     int (i) = 0;
@@ -268,7 +284,7 @@ int ft_pip(int pip_num, token_list_t *tok, t_env *g_env, int *status) {
     return (*status >> 8);
 }
 
-int ft_execute(token_list_t *tok, t_env *g_env, int *status)
+int ft_execute(anas_list *tok, t_env *g_env, int *status)
 {
     int (num_pip) = number_of_pip(tok);
     return (ft_pip(num_pip, tok, g_env, status));

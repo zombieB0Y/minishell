@@ -20,28 +20,6 @@
 # define RED "\033[31m"
 # define RESET "\033[0m"
 
-/* ast wa9ila xd */
-// typedef enum
-// {
-// 	AST_COMMAND,
-// 	AST_PIPE,
-// 	AST_AND,
-// 	AST_OR,
-// 	AST_SEQUENCE,
-// 	AST_REDIRECTION,
-// 	AST_SUBSHELL
-// }						ASTNodeType;
-
-// typedef struct ASTNode
-// {
-// 	ASTNodeType			type;
-// 	char **argv; // Only used for AST_COMMAND
-// 	struct ASTNode		*left;
-// 	struct ASTNode		*right;
-// 	char *redir_file; // Used if AST_REDIRECTION
-// 	int redir_type;   // 0: <, 1: >, 2: >>
-// }						ASTNode;
-
 /* Token type definitions */
 typedef enum
 {
@@ -58,17 +36,15 @@ typedef enum e_open_flags
 {
 	OPEN_CREATE_NEW = O_CREAT | O_TRUNC | O_WRONLY,
 	OPEN_APPEND_NEW = O_CREAT | O_APPEND | O_WRONLY,
-	OPEN_CREAT_ONLY  = O_CREAT | O_RDONLY
+	OPEN_CREAT_ONLY  = O_CREAT | O_WRONLY
 }						t_open_flags;
-
-/* struct envirmont */
 
 typedef struct env
 {
-	char *key;
-	char *value;
-	int flag;
-	struct env *next;
+        char *key;
+        char *value;
+        int flag;
+        struct env *next;
 } t_env;
 
 /* Token structure */
@@ -82,38 +58,36 @@ typedef struct
 /* Token infile outfile structure */
 typedef struct files
 {
-	int					in;
-	int					out;
 	char				*file;
+	token_type_t		type;
+	struct files		*next;
 }						files_t;
 
 /* Token list structure */
-typedef struct token_node
+typedef struct lol_t
 {
 	token_t				*token;
+	struct lol_t		*next;
+}						lol;
+
+typedef struct token_node
+{
 	char				**arguments;
+	size_t				arg_c;
 	files_t				*files;
 	struct token_node	*next;
 }						token_node_t;
 
-// typedef struct files
-// {
-// 	char				*file;
-// 	token_type_t		type;
-// 	struct files		*next;
-// }						files_t;
-
-// typedef struct token_node
-// {
-// 	char				**arguments;
-// 	files_t				*files;
-// 	struct token_node	*next;
-// }						token_node_t;
+typedef	struct node
+{
+	token_node_t	*head;
+	token_node_t	*tail;
+}				anas_list;
 
 typedef struct
 {
-	token_node_t		*head;
-	token_node_t		*tail;
+	lol		*head;
+	lol		*tail;
 	size_t				size;
 }						token_list_t;
 
@@ -153,14 +127,13 @@ bool					lexer_is_escaped(lexer_t *lexer);
 token_t					*token_create(token_type_t type, char *value);
 token_t					*next_token(lexer_t *lexer, size_t len, size_t start);
 // void					token_destroy(token_t *token);
-// printing fuc
 const char				*token_type_to_string(token_type_t type);
-void					token_list_print(token_list_t *list);
-void					print_open_flag(t_open_flags flag);
+
 // Token list operations
 token_list_t			*token_list_create(void);
 void					token_list_destroy(token_list_t *list);
 void					token_list_add(token_list_t *list, token_t *token);
+void					token_list_print(token_list_t *list);
 
 // Character classification
 bool					is_operator_char(char ch);
@@ -176,23 +149,25 @@ void					*get_quoted_input(lexer_t *lexer, size_t *len);
 int						end_capture_quotes(lexer_t *lexer, char *input);
 // token_t					*read_subshell(lexer_t *lexer);
 token_list_t			*tokenize(const char *input);
-void					remove_token_node(token_node_t **head,
-							token_node_t *target);
+void					remove_token_node(lol **head,
+							lol *target);
 
 // Error functions
 void					*return_herdoc_error(void);
 void					*return_quoted_error(void);
 
 // Expand fucntions
-token_list_t			*expand(token_list_t *tokens, t_env *g_env);
+token_list_t			*expand(token_list_t *tokens);
 // Grammar fucntions
-token_list_t			*grammar_check(token_list_t *tokens);
+anas_list				*grammar_check(token_list_t *tokens);
 size_t					count_2d_array(char **arr);
+void					list_add(anas_list *list, token_node_t *token);
+void					print_anas_list(anas_list *list);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------
-int						start(char *line, char **env, t_env *g_env, int *status);
-int						process_command(const char *command, char **env, t_env *g_env, int *status);
+int						start(char *line, t_env *g_env, int *status);
+int						process_command(const char *command, t_env *g_env, int *status);
 //--------functions------------
 int						check(char *p);
 int						is_whitespace(int c);
@@ -207,9 +182,8 @@ void					gc_register(void *ptr);
 char					*substr_dup(const char *start, size_t len);
 char					*substr_dup(const char *start, size_t len);
 token_list_t			*capture_heredoc(token_list_t *tokens);
-
 //----------execution--------
-int						ft_execute(token_list_t *tok, t_env *g_env, int *status);
+int						ft_execute(anas_list *tok, t_env *g_env, int *status);
 char					**ft_split_n(char const *s, char c);
 t_env					*create_env(char **env);
 int						ft_env(t_env *g_env, int num, int *status);
@@ -218,7 +192,7 @@ char					*ft_substr_n(char const *s, unsigned int start, size_t len);
 char					*ft_strdup_n(const char *s1);
 void					free_env(t_env *g_env);
 void					ft_free(char **ptr);
-int 					ft_pwd(int num, int *status);
+int						ft_pwd(int num, int *status);
 int						ft_echo(char **arguments, int num, int *status);
 int						ft_export(char **arguments, t_env *g_env, int num, int *status);
 int						ft_lstsize_n(t_env *lst);
@@ -228,5 +202,4 @@ char					*ft_strjoin_n(char const *s1, char const *s2);
 int						plus_sign(char *env);
 char					*ft_getenv(char *key, t_env *g_env);
 int						ft_cd(char *arguments, t_env **g_env, int *status, int num);
-
 #endif

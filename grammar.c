@@ -56,7 +56,7 @@ files_t *add_file(files_t *files, char *filename, token_type_t type)
     if (!new_file)
         return files;
     
-    new_file->file = strdup(filename);
+    new_file->file = ft_strdup(filename);
     new_file->type = type;
     new_file->next = NULL;
     
@@ -102,6 +102,7 @@ anas_list *grammar_check(token_list_t *tokens)
     lol *head;
     token_node_t *token;
     anas_list *list;
+    int i = 0;
 
     if (!tokens)
         return (NULL);
@@ -162,6 +163,7 @@ anas_list *grammar_check(token_list_t *tokens)
             head = head->next;
             if (head && head->token->type == TOKEN_WORD)
             {
+                i = 1;
                 token->files = add_file(token->files, head->token->value, redirect_type);
                 head = head->next;
             }
@@ -173,7 +175,7 @@ anas_list *grammar_check(token_list_t *tokens)
         else
             head = head->next;
     }
-    if (token->arg_c > 0)
+    if (token->arg_c > 0 || i)
         list_add(list, token);
     return list;
 }
@@ -183,7 +185,7 @@ void print_anas_list(anas_list *list)
     if (!list || !list->head)
     {
         printf("Empty command list\n");
-        return;
+        // return;
     }
     
     token_node_t *current = list->head;

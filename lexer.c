@@ -40,8 +40,8 @@ const char	*token_type_to_string(token_type_t type)
 
 void	token_list_destroy(token_list_t *list)
 {
-	token_node_t	*current;
-	token_node_t	*next;
+	lol	*current;
+	lol	*next;
 
 	if (!list)
 		return ;
@@ -58,7 +58,7 @@ void	token_list_destroy(token_list_t *list)
 
 void	token_list_print(token_list_t *list)
 {
-	token_node_t	*current;
+	lol	*current;
 
 	if (!list)
 		return ;
@@ -342,10 +342,10 @@ char	*read_quoted_string(lexer_t *lexer, char quote_char)
 // 	return (tokens);
 // }
 
-// void	print_tokens(token_node_t *head)
+// void	print_tokens(lol *head)
 // {
 // 	int i = 0;
-// 	token_node_t	*curr = head;
+// 	lol	*curr = head;
 // 	while (curr)
 // 	{
 // 		if (curr->arguments)
@@ -355,25 +355,26 @@ char	*read_quoted_string(lexer_t *lexer, char quote_char)
 // 	}
 // }
 
-int	process_command(const char *command, char **env, t_env *g_env, int *status)
+int	process_command(const char *command, t_env *g_env, int *status)
 {
-	(void) env;
 	token_list_t	*tokens;
-	token_node_t	*current;
+	anas_list		*list;
+	// token_node_t	*current;
 
 	// printf("Input: %s\n", command);
 	tokens = tokenize(command);
 	if (!tokens)
-		return 0;
+		return (0);
 	// print_tokens(tokens->head);
 	tokens = capture_heredoc(tokens);
 	if (!tokens)
-		return 0;
-	// tokens = expand(tokens, g_env);
-	tokens = grammar_check(tokens);
-	if (!tokens)
-	return 0;
-	current = tokens->head;
+		return (0);
+	// tokens = expand(tokens);
+	list = grammar_check(tokens);
+	if (!list)
+		return (0);
+	// print_anas_list(list);
+	// current = list->head;
 	// token_list_print(tokens);
 	// while (current)
 	// {
@@ -382,12 +383,13 @@ int	process_command(const char *command, char **env, t_env *g_env, int *status)
 	// 		for (int i = 0; current->arguments[i]; i++)
 	// 		{
 	// 			printf("arg[%d] = %s\n", i, current->arguments[i]);
-	// 			printf("fd[] = %d\n", current->files->in);
-	// 			printf("fd[] = %d\n", current->files->out);
+	// 			// printf("fd[] = %d\n", current->files->in);
+	// 			// printf("fd[] = %d\n", current->files->out);
 			
 	// 		}
 	// 	}
 	// 	current = current->next;
 	// }
-	return (ft_execute(tokens, g_env, status));
+	// printf("\n");
+	return (ft_execute(list, g_env, status));
 }

@@ -15,12 +15,9 @@ int	main(int ac, char **av, char **env)
 	(void)ac;
 	(void)av;
 	t_env *g_env = NULL;
-	int status = 0;
-
+    int status = 0;
 	if (*env)
-		g_env = create_env(env);
-	// else
-	// 	g_env = default_env();
+        g_env = create_env(env);
 	if (!check_args(ac, av))
 		return (1);
 	print_welcome();
@@ -29,6 +26,7 @@ int	main(int ac, char **av, char **env)
 		line = readline("\001" GREEN "\002" "MINISHELL >$ " "\001" RESET "\002");
 		if (!line)
 		{
+			// printf("Exit");
 			break;
 		}
 		if (*line == '\0')
@@ -39,7 +37,7 @@ int	main(int ac, char **av, char **env)
 		}
 		gc_register(line);
 		add_history(line);
-		status = start(line, env, g_env, &status);
+		status = start(line, g_env, &status);
 		gc_collect();
 	}
 	printf("exit\n");

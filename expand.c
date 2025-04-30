@@ -14,8 +14,8 @@
 
 // hayed l quotes yaaa had bnadem
 
-token_list_t    *expand(token_list_t *tokens, t_env *g_env)
+token_list_t    *expand(token_list_t *tokens)
 {
-    (void) g_env;
+    
     return (tokens);
 }
