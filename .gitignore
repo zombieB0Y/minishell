@@ -1,0 +1,27 @@
+# Ignore core dumps
+vgcore.*
+core
+
+# Ignore general system files
+.DS_Store
+Thumbs.db
+
+# Ignore editor/IDE files
+*.swp
+*.swo
+*.swn
+*.bak
+*.tmp
+.vscode/
+.idea/
+
+# Ignore build artifacts
+*.o
+*.out
+*.a
+*.so
+*.exe
+
+# Ignore logs and debugging dumps
+*.log
+*.stackdump
