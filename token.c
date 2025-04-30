@@ -41,19 +41,19 @@ token_t	*token_create(token_type_t type, char *value)
 
 void	token_list_add(token_list_t *list, token_t *token)
 {
-	token_node_t	*node;
+	lol	*node;
 
 	if (!list || !token)
 		return ;
-	node = (token_node_t *)gc_malloc(sizeof(token_node_t));
+	node = (lol *)gc_malloc(sizeof(lol));
 	if (!node)
 		return ;
 	node->token = token;
-	node->arguments = NULL;
-	node->files = gc_malloc(sizeof(files_t));
-	node->files->in = -2;
-	node->files->out = -2;
-	node->files->file = NULL;
+	// node->arguments = NULL;
+	// node->files = gc_malloc(sizeof(files_t));
+	// node->files->in = -2;
+	// node->files->out = -2;
+	// node->files->file = NULL;
 	node->next = NULL;
 	if (!list->head)
 	{
@@ -90,21 +90,21 @@ void	*return_herdoc_error(void)
 }
 
 /**
- * @brief Removes a node from a token_node_t linked list by its address.
+ * @brief Removes a node from a lol linked list by its address.
  *
  * This function searches for the node whose address matches `target` and
  * unlinks it from the list. The list head is updated if needed.
  *
- * @param head A pointer to the head pointer of the token_node_t list.
+ * @param head A pointer to the head pointer of the lol list.
  * @param target The exact node to remove from the list.
  */
-void remove_token_node(token_node_t **head, token_node_t *target)
+void remove_token_node(lol **head, lol *target)
 {
 	if (!head || !*head || !target)
 		return;
 
-	token_node_t *curr = *head;
-	token_node_t *prev = NULL;
+	lol *curr = *head;
+	lol *prev = NULL;
 
 	while (curr != NULL)
 	{

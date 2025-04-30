@@ -9,16 +9,16 @@ token_list_t	*tokenize(const char *input)
 	char	quote;
 	size_t	start = lexer->position;
 	size_t	len = 0;
-	size_t i;
+	// size_t i;
 
-	int	flag = 0;
-	i = 0;
+	// int	flag = 0;
+	// i = 0;
 	if (!input)
 		return (NULL);
 	tokens = token_list_create();
 	while (!lexer_is_at_end(lexer))
 	{
-		flag = 0;
+		// flag = 0;
 		if (is_whitespace(lexer->current_char))
 		{
 			lexer_advance(lexer);

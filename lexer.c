@@ -40,8 +40,8 @@ const char	*token_type_to_string(token_type_t type)
 
 void	token_list_destroy(token_list_t *list)
 {
-	token_node_t	*current;
-	token_node_t	*next;
+	lol	*current;
+	lol	*next;
 
 	if (!list)
 		return ;
@@ -58,7 +58,7 @@ void	token_list_destroy(token_list_t *list)
 
 void	token_list_print(token_list_t *list)
 {
-	token_node_t	*current;
+	lol	*current;
 
 	if (!list)
 		return ;
@@ -342,10 +342,10 @@ char	*read_quoted_string(lexer_t *lexer, char quote_char)
 // 	return (tokens);
 // }
 
-// void	print_tokens(token_node_t *head)
+// void	print_tokens(lol *head)
 // {
 // 	int i = 0;
-// 	token_node_t	*curr = head;
+// 	lol	*curr = head;
 // 	while (curr)
 // 	{
 // 		if (curr->arguments)
@@ -358,7 +358,8 @@ char	*read_quoted_string(lexer_t *lexer, char quote_char)
 void	process_command(const char *command)
 {
 	token_list_t	*tokens;
-	token_node_t	*current;
+	anas_list		*list;
+	// token_node_t	*current;
 
 	printf("Input: %s\n", command);
 	tokens = tokenize(command);
@@ -369,10 +370,11 @@ void	process_command(const char *command)
 	if (!tokens)
 		return ;
 	// tokens = expand(tokens);
-	tokens = grammar_check(tokens);
-	if (!tokens)
+	list = grammar_check(tokens);
+	if (!list)
 		return ;
-	current = tokens->head;
+	print_anas_list(list);
+	// current = list->head;
 	// token_list_print(tokens);
 	// while (current)
 	// {
@@ -381,12 +383,12 @@ void	process_command(const char *command)
 	// 		for (int i = 0; current->arguments[i]; i++)
 	// 		{
 	// 			printf("arg[%d] = %s\n", i, current->arguments[i]);
-	// 			printf("fd[] = %d\n", current->files->in);
-	// 			printf("fd[] = %d\n", current->files->out);
+	// 			// printf("fd[] = %d\n", current->files->in);
+	// 			// printf("fd[] = %d\n", current->files->out);
 			
 	// 		}
 	// 	}
 	// 	current = current->next;
 	// }
-	printf("\n");
+	// printf("\n");
 }
