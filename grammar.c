@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/04/30 15:40:18 by codespace        ###   ########.fr       */
+/*   Updated: 2025/04/30 16:20:04 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ files_t *add_file(files_t *files, char *filename, token_type_t type)
     if (!new_file)
         return files;
     
-    new_file->file = strdup(filename);
+    new_file->file = ft_strdup(filename);
     new_file->type = type;
     new_file->next = NULL;
     
@@ -183,7 +183,7 @@ void print_anas_list(anas_list *list)
     if (!list || !list->head)
     {
         printf("Empty command list\n");
-        return;
+        // return;
     }
     
     token_node_t *current = list->head;
