@@ -2,7 +2,7 @@
 
 int	is_whitespace(int c)
 {
-	return (c == ' ' || c == '\t' || c == '\n');
+	return (c == ' ' || c == '\t');
 }
 
 int	is_quoted(int c)

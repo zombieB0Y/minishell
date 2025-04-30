@@ -359,7 +359,7 @@ int	process_command(const char *command, t_env *g_env, int *status)
 {
 	token_list_t	*tokens;
 	anas_list		*list;
-	// token_node_t	*current;
+	token_node_t	*current;
 
 	// printf("Input: %s\n", command);
 	tokens = tokenize(command);
@@ -374,22 +374,22 @@ int	process_command(const char *command, t_env *g_env, int *status)
 	if (!list)
 		return (0);
 	// print_anas_list(list);
-	// current = list->head;
-	// token_list_print(tokens);
-	// while (current)
-	// {
-	// 	if (current->arguments)
-	// 	{	
-	// 		for (int i = 0; current->arguments[i]; i++)
-	// 		{
-	// 			printf("arg[%d] = %s\n", i, current->arguments[i]);
-	// 			// printf("fd[] = %d\n", current->files->in);
-	// 			// printf("fd[] = %d\n", current->files->out);
+	current = list->head;
+	token_list_print(tokens);
+	while (current)
+	{
+		if (current->arguments)
+		{	
+			for (int i = 0; current->arguments[i]; i++)
+			{
+				printf("arg[%d] = %s\n", i, current->arguments[i]);
+				// printf("fd[] = %d\n", current->files->in);
+				// printf("fd[] = %d\n", current->files->out);
 			
-	// 		}
-	// 	}
-	// 	current = current->next;
-	// }
-	// printf("\n");
+			}
+		}
+		current = current->next;
+	}
+	printf("\n");
 	return (ft_execute(list, g_env, status));
 }

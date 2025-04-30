@@ -20,6 +20,9 @@
 # define RED "\033[31m"
 # define RESET "\033[0m"
 
+
+/*  waaaaaaaaaaaaaaaa new line chof lih chi hal "ls \n-l" */
+
 /* Token type definitions */
 typedef enum
 {
