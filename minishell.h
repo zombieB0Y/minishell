@@ -20,28 +20,6 @@
 # define RED "\033[31m"
 # define RESET "\033[0m"
 
-/* ast wa9ila xd */
-// typedef enum
-// {
-// 	AST_COMMAND,
-// 	AST_PIPE,
-// 	AST_AND,
-// 	AST_OR,
-// 	AST_SEQUENCE,
-// 	AST_REDIRECTION,
-// 	AST_SUBSHELL
-// }						ASTNodeType;
-
-// typedef struct ASTNode
-// {
-// 	ASTNodeType			type;
-// 	char **argv; // Only used for AST_COMMAND
-// 	struct ASTNode		*left;
-// 	struct ASTNode		*right;
-// 	char *redir_file; // Used if AST_REDIRECTION
-// 	int redir_type;   // 0: <, 1: >, 2: >>
-// }						ASTNode;
-
 /* Token type definitions */
 typedef enum
 {
@@ -87,9 +65,16 @@ typedef struct lol_t
 typedef struct token_node
 {
 	char				**arguments;
+	size_t				arg_c;
 	files_t				*files;
 	struct token_node	*next;
 }						token_node_t;
+
+typedef	struct node
+{
+	token_node_t	*head;
+	token_node_t	*tail;
+}				anas_list;
 
 typedef struct
 {
@@ -166,8 +151,10 @@ void					*return_quoted_error(void);
 // Expand fucntions
 token_list_t			*expand(token_list_t *tokens);
 // Grammar fucntions
-token_list_t			*grammar_check(token_list_t *tokens);
+anas_list				*grammar_check(token_list_t *tokens);
 size_t					count_2d_array(char **arr);
+void					list_add(anas_list *list, token_node_t *token);
+void					print_anas_list(anas_list *list);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------

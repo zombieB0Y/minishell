@@ -358,7 +358,8 @@ char	*read_quoted_string(lexer_t *lexer, char quote_char)
 void	process_command(const char *command)
 {
 	token_list_t	*tokens;
-	// lol				*current;
+	anas_list		*list;
+	// token_node_t	*current;
 
 	printf("Input: %s\n", command);
 	tokens = tokenize(command);
@@ -369,10 +370,11 @@ void	process_command(const char *command)
 	if (!tokens)
 		return ;
 	// tokens = expand(tokens);
-	tokens = grammar_check(tokens);
-	if (!tokens)
+	list = grammar_check(tokens);
+	if (!list)
 		return ;
-	// current = tokens->head;
+	print_anas_list(list);
+	// current = list->head;
 	// token_list_print(tokens);
 	// while (current)
 	// {
@@ -381,12 +383,12 @@ void	process_command(const char *command)
 	// 		for (int i = 0; current->arguments[i]; i++)
 	// 		{
 	// 			printf("arg[%d] = %s\n", i, current->arguments[i]);
-	// 			printf("fd[] = %d\n", current->files->in);
-	// 			printf("fd[] = %d\n", current->files->out);
+	// 			// printf("fd[] = %d\n", current->files->in);
+	// 			// printf("fd[] = %d\n", current->files->out);
 			
 	// 		}
 	// 	}
 	// 	current = current->next;
 	// }
-	printf("\n");
+	// printf("\n");
 }
