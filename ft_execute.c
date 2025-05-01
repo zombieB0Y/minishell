@@ -269,7 +269,7 @@ int ft_pip(int pip_num, anas_list *tok, t_env *g_env, int *status) {
     int (i) = 0;
 
     if (pip_num == 0)
-        return (execute_builtins(tok->head, g_env, status, pip_num));
+        execute_builtins(tok->head, g_env, status, pip_num);
     while (i <= pip_num) {
         int curr_pipe = i % 2;
         int prev_pipe = (i + 1) % 2;
