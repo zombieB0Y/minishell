@@ -128,7 +128,7 @@ void export_print(t_env *g_env)
         total_count++;
         curr = curr->next;
     }
-    while (printed_count < total_count - 1)
+    while (printed_count < total_count)
     {
 		to_print = NULL;
         temp = g_env;
@@ -288,15 +288,52 @@ int ft_exit(char **arguments, int *status, int num)
 	exit(*status);
 }
 
-// int ft_cd(char *arguments, t_env **g_env, int *status, int num)
-// {
-// 	int (i) = 1;
-// 	if (arguments[i])
-// 	{
-// 		*status = 1;
-// 		write (2, "cd: too many arguments\n", 23);
-// 	}
-// 	if (num == 0)
-// 		return (*status)
-// 	exit (*status);
-// }
+void edit_pwd_oldpwd(t_env **g_env, char *pwd)
+{
+    t_env *curr = *g_env;
+    char *temp;
+    while (curr)
+    {
+        if (ft_strcmp (curr->key, "PWD") == 0)
+        {
+            free(curr->value);
+            temp = getcwd(NULL, 0);
+            curr->value = ft_strdup_n(temp);
+            free(temp);
+        }
+        else if (ft_strcmp (curr->key, "OLDPWD") == 0)
+        {
+            free(curr->value);
+            curr->value = ft_strdup_n(pwd);
+        }
+        curr = curr->next;
+    }
+}
+
+int ft_cd(char **arguments, t_env *g_env, int *status, int num)
+{
+	int (i) = 2;
+    (void) g_env;
+    char *pwd;
+	if (arguments[i])
+	{
+		*status = 1;
+		write (2, "cd: too many arguments\n", 23);
+	}
+    else
+    {
+        pwd = ft_getenv("PWD", g_env);
+        if (chdir(arguments[1]) == -1)
+        {
+            write(2, arguments[1], ft_strlen(arguments[1]));
+            write(2, ": ", 2);
+            write(2, strerror(errno), ft_strlen(strerror(errno)));
+            write(2, "\n", 1);
+            *status = 1;
+        }
+        edit_pwd_oldpwd(&g_env, pwd);
+    }
+	if (num == 0)
+		return (*status);
+	exit(*status);
+}

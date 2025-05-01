@@ -215,6 +215,8 @@ int execute_builtins(token_node_t *tok, t_env *g_env, int *status, int pip_num)
         return (ft_export(tok->arguments, g_env, pip_num, status));
     else if (ft_strcmp(tok->arguments[0], "exit") == 0)
         return (ft_exit(tok->arguments, status, pip_num));
+    else if (ft_strcmp(tok->arguments[0], "cd") == 0)
+        return (ft_cd(tok->arguments, g_env, status, pip_num));
     return (2);
 }
 
