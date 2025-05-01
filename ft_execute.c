@@ -215,7 +215,7 @@ int execute_builtins(token_node_t *tok, t_env *g_env, int *status, int pip_num)
         return (ft_export(tok->arguments, g_env, pip_num, status));
     else if (ft_strcmp(tok->arguments[0], "exit") == 0)
         return (ft_exit(tok->arguments, status, pip_num));
-    return (0);
+    return (2);
 }
 
 void ft_exc(token_node_t *tok, t_env *g_env, int num, int *status)
@@ -271,9 +271,14 @@ int ft_pip(int pip_num, anas_list *tok, t_env *g_env, int *status) {
     int pipes[2][2];
     pid_t pids[pip_num + 1];
     int (i) = 0;
+    int (r) = 0;
 
     if (pip_num == 0)
-        execute_builtins(tok->head, g_env, status, pip_num);
+    {
+        r = execute_builtins(tok->head, g_env, status, pip_num);
+        if (r != 2)
+            return (r);
+    }
     while (i <= pip_num) {
         int curr_pipe = i % 2;
         int prev_pipe = (i + 1) % 2;
@@ -315,14 +320,29 @@ int ft_pip(int pip_num, anas_list *tok, t_env *g_env, int *status) {
     for (int i = 0; i <= pip_num; i++) {
         waitpid(pids[i], status, 0);
     }
-    return (*status >> 8);
+    r = *status >> 8;
+    return (r);
 }
 
 int ft_execute(anas_list *tok, t_env *g_env, int *status)
 {
     int (num_pip) = number_of_pip(tok);
+    int stdout_copy = dup(1);
+    int stdin_copy = dup(0);
     if (num_pip >= 0)
-        return (ft_pip(num_pip, tok, g_env, status));
-    return (ft_redirects(status, tok->head), *status); 
+    {
+        *status = ft_pip(num_pip, tok, g_env, status);
+        dup2(stdout_copy, 1);
+        dup2(stdin_copy, 0);
+        close(stdout_copy);
+        close(stdin_copy);
+        return (*status);
+    }
+    ft_redirects(status, tok->head);
+    dup2(stdout_copy, 1);
+    dup2(stdin_copy, 0);
+    close(stdout_copy);
+    close(stdin_copy);
+    return (*status); 
 }
 

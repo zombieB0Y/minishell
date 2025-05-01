@@ -373,7 +373,7 @@ int	process_command(const char *command, t_env *g_env, int *status)
 	list = grammar_check(tokens);
 	if (!list)
 		return (0);
-	print_anas_list(list);
+	// print_anas_list(list);
 	current = list->head;
 	// token_list_print(tokens);
 	// while (current)
