@@ -187,14 +187,18 @@ void ft_redirect_append(int *status , files_t *files)
     dup2(fd, 1);
 }
 
-void ft_redirects(int *status, files_t *files)
+void ft_redirects(int *status, token_node_t *tok)
 {
-    if (files->type == TOKEN_REDIRECT_OUT)
-        ft_redirect_out(status, files);
-    else if (files->type == TOKEN_REDIRECT_IN)
-        ft_redirect_in(status, files);
-    else if (files->type == TOKEN_APPEND)
-        ft_redirect_append(status, files);
+    while (tok->files)
+    {
+        if (tok->files->type == TOKEN_REDIRECT_OUT)
+            ft_redirect_out(status, tok->files);
+        else if (tok->files->type == TOKEN_REDIRECT_IN)
+            ft_redirect_in(status, tok->files);
+        else if (tok->files->type == TOKEN_APPEND)
+            ft_redirect_append(status, tok->files);
+        tok->files = tok->files->next;
+    }
 }
 
 int execute_builtins(token_node_t *tok, t_env *g_env, int *status, int pip_num)
@@ -246,11 +250,11 @@ void ft_exc(token_node_t *tok, t_env *g_env, int num, int *status)
 		full_path = ft_strjoin(tmp, tok->arguments[0]);
 		if (access(full_path, X_OK) == 0)
 		{
-            while (tok->files)
-            {
-                ft_redirects(status, tok->files);
-                tok->files = tok->files->next;
-            }
+            // while (tok->files)
+            // {
+                ft_redirects(status, tok);
+                // tok->files = tok->files->next;
+            // }
 			execve(full_path, tok->arguments, envchar);
 			exit(1);
 		}
@@ -317,6 +321,8 @@ int ft_pip(int pip_num, anas_list *tok, t_env *g_env, int *status) {
 int ft_execute(anas_list *tok, t_env *g_env, int *status)
 {
     int (num_pip) = number_of_pip(tok);
-    return (ft_pip(num_pip, tok, g_env, status));
+    if (num_pip >= 0)
+        return (ft_pip(num_pip, tok, g_env, status));
+    return (ft_redirects(status, tok->head), *status); 
 }
 
