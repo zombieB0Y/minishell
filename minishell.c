@@ -26,7 +26,7 @@ int	main(int ac, char **av, char **env)
 		line = readline("\001" GREEN "\002" "MINISHELL >$ " "\001" RESET "\002");
 		if (!line)
 		{
-			// printf("Exit");
+			printf("Exit");
 			break;
 		}
 		if (*line == '\0')
@@ -40,7 +40,7 @@ int	main(int ac, char **av, char **env)
 		status = start(line, g_env, &status);
 		gc_collect();
 	}
-	printf("exit\n");
+	// printf("exit\n");
 	free_env(g_env);
 	rl_clear_history();
 }

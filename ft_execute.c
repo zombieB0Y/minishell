@@ -136,6 +136,84 @@ char *ft_getenv(char *key, t_env *g_env)
     return (value);
 }
 
+void ft_redirect_out(int *status , files_t *files)
+{
+    int fd;
+
+    fd = open(files->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd == -1)
+    {
+        write(2, files->file, ft_strlen(files->file));
+        write(2, ": ", 2);
+        write(2, strerror(errno), ft_strlen(strerror(errno)));
+        write(2, "\n", 1);
+        *status = 1;
+        exit(*status);
+    }
+    dup2(fd, 1);
+}
+
+void ft_redirect_in(int *status , files_t *files)
+{
+    int fd;
+
+    fd = open(files->file, O_RDONLY);
+    if (fd == -1)
+    {
+        write(2, files->file, ft_strlen(files->file));
+        write(2, ": ", 2);
+        write(2, strerror(errno), ft_strlen(strerror(errno)));
+        write(2, "\n", 1);
+        *status = 1;
+        exit(*status);
+    }
+    dup2(fd, 0);
+}
+
+void ft_redirect_append(int *status , files_t *files)
+{
+    int fd;
+
+    fd = open(files->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+    if (fd == -1)
+    {
+        write(2, files->file, ft_strlen(files->file));
+        write(2, ": ", 2);
+        write(2, strerror(errno), ft_strlen(strerror(errno)));
+        write(2, "\n", 1);
+        *status = 1;
+        exit(*status);
+    }
+    dup2(fd, 1);
+}
+
+void ft_redirects(int *status, files_t *files)
+{
+    if (files->type == TOKEN_REDIRECT_OUT)
+        ft_redirect_out(status, files);
+    else if (files->type == TOKEN_REDIRECT_IN)
+        ft_redirect_in(status, files);
+    else if (files->type == TOKEN_APPEND)
+        ft_redirect_append(status, files);
+}
+
+int execute_builtins(token_node_t *tok, t_env *g_env, int *status, int pip_num)
+{
+    if (ft_strcmp(tok->arguments[0], "env") == 0)
+        return (ft_env(g_env, pip_num, status));
+    else if (ft_strcmp(tok->arguments[0], "unset") == 0)
+        return (ft_unset(g_env, tok, pip_num, status));
+    else if (ft_strcmp(tok->arguments[0], "pwd") == 0)
+        return (ft_pwd(pip_num, status));
+    else if (ft_strcmp(tok->arguments[0], "echo") == 0)
+        return (ft_echo(tok->arguments, pip_num, status));
+    else if (ft_strcmp(tok->arguments[0], "export") == 0)
+        return (ft_export(tok->arguments, g_env, pip_num, status));
+    else if (ft_strcmp(tok->arguments[0], "exit") == 0)
+        return (ft_exit(tok->arguments, status, pip_num));
+    return (0);
+}
+
 void ft_exc(token_node_t *tok, t_env *g_env, int num, int *status)
 {
     char	*tmp;
@@ -143,20 +221,8 @@ void ft_exc(token_node_t *tok, t_env *g_env, int num, int *status)
 	int		i;
     char *p;
     char **envchar = env_to_char(g_env);
-    int fd;
 
-    if (ft_strcmp(tok->arguments[0], "env") == 0)
-        ft_env(g_env, num, status);
-    else if (ft_strcmp(tok->arguments[0], "unset") == 0)
-        ft_unset(g_env, tok, num, status);
-    else if (ft_strcmp(tok->arguments[0], "pwd") == 0)
-        ft_pwd(num, status);
-    else if (ft_strcmp(tok->arguments[0], "echo") == 0)
-        ft_echo(tok->arguments, num, status);
-    else if (ft_strcmp(tok->arguments[0], "export") == 0)
-        ft_export(tok->arguments, g_env, num, status);
-    else if (ft_strcmp(tok->arguments[0], "exit") == 0)
-        ft_exit(tok->arguments, status , num);
+    execute_builtins(tok, g_env, status, num);
 
     p = ft_getenv("PATH", g_env);
     if (!p)
@@ -182,30 +248,7 @@ void ft_exc(token_node_t *tok, t_env *g_env, int num, int *status)
 		{
             while (tok->files)
             {
-                if (tok->files->type == TOKEN_REDIRECT_OUT)
-                {
-                    fd = open(tok->files->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-                    dup2(fd, 1);
-                }
-                else if (tok->files->type == TOKEN_REDIRECT_IN)
-                {
-                    fd = open(tok->files->file, O_RDONLY);
-                    if (fd == -1)
-                    {
-                        write(2, tok->files->file, ft_strlen(tok->files->file));
-                        write(2, ": ", 2);
-                        write(2, strerror(errno), ft_strlen(strerror(errno)));
-                        write(2, "\n", 1);
-                        *status = 1;
-                        exit(*status);
-                    }
-                    dup2(fd, 0);
-                }
-                else if (tok->files->type == TOKEN_APPEND)
-                {
-                    fd = open(tok->files->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-                    dup2(fd, 1);
-                }
+                ft_redirects(status, tok->files);
                 tok->files = tok->files->next;
             }
 			execve(full_path, tok->arguments, envchar);
@@ -226,20 +269,7 @@ int ft_pip(int pip_num, anas_list *tok, t_env *g_env, int *status) {
     int (i) = 0;
 
     if (pip_num == 0)
-    {
-        if (ft_strcmp(tok->head->arguments[0], "env") == 0)
-            return (ft_env(g_env, pip_num, status));
-        else if (ft_strcmp(tok->head->arguments[0], "unset") == 0)
-            return (ft_unset(g_env, tok->head, pip_num, status));
-        else if (ft_strcmp(tok->head->arguments[0], "pwd") == 0)
-            return (ft_pwd(pip_num, status));
-        else if (ft_strcmp(tok->head->arguments[0], "echo") == 0)
-            return (ft_echo(tok->head->arguments, pip_num, status));
-        else if (ft_strcmp(tok->head->arguments[0], "export") == 0)
-            return (ft_export(tok->head->arguments, g_env, pip_num, status));
-        else if (ft_strcmp(tok->head->arguments[0], "exit") == 0)
-            return (ft_exit(tok->head->arguments, status, pip_num));
-    }
+        return (execute_builtins(tok->head, g_env, status, pip_num));
     while (i <= pip_num) {
         int curr_pipe = i % 2;
         int prev_pipe = (i + 1) % 2;
