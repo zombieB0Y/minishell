@@ -208,7 +208,7 @@ int execute_builtins(token_node_t *tok, t_env *g_env, int *status, int pip_num)
     else if (ft_strcmp(tok->arguments[0], "unset") == 0)
         return (ft_unset(g_env, tok, pip_num, status));
     else if (ft_strcmp(tok->arguments[0], "pwd") == 0)
-        return (ft_pwd(pip_num, status));
+        return (ft_pwd(g_env, pip_num, status));
     else if (ft_strcmp(tok->arguments[0], "echo") == 0)
         return (ft_echo(tok->arguments, pip_num, status));
     else if (ft_strcmp(tok->arguments[0], "export") == 0)

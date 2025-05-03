@@ -15,6 +15,7 @@
 # include <sys/stat.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include <signal.h>
 
 # define GREEN "\033[32m"
 # define RED "\033[31m"
@@ -195,7 +196,7 @@ char					*ft_substr_n(char const *s, unsigned int start, size_t len);
 char					*ft_strdup_n(const char *s1);
 void					free_env(t_env *g_env);
 void					ft_free(char **ptr);
-int						ft_pwd(int num, int *status);
+int						ft_pwd(t_env *g_env, int num, int *status);
 int						ft_echo(char **arguments, int num, int *status);
 int						ft_export(char **arguments, t_env *g_env, int num, int *status);
 int						ft_lstsize_n(t_env *lst);

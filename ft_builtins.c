@@ -70,12 +70,19 @@ int ft_unset(t_env *g_env, token_node_t *tok, int num, int *status)
     exit(*status);
 }
 
-int ft_pwd(int num, int *status)
+int ft_pwd(t_env *g_env, int num, int *status)
 {
 	char *pwd;
 
 	pwd = getcwd(NULL, 0);
-    printf("%s\n", pwd);
+    if (!pwd)
+    {
+        printf("%s\n", ft_getenv("PWD", g_env));
+    }
+    else
+    {
+        printf("%s\n", pwd);
+    }
 	free(pwd);
 	*status = 0;
     if (num == 0)
@@ -268,16 +275,40 @@ int ft_export(char **arguments, t_env *g_env, int num, int *status)
 	exit(*status);
 }
 
+int ft_num_inside(char *arg)
+{
+    int (i) = 0;
+    while (arg[i])
+    {
+        if (ft_isdigit(arg[i]) == 0)
+            return (1);
+        i++;
+    }
+    return (0);
+}
+
 int ft_exit(char **arguments, int *status, int num)
 {
 	int (i) = 1;
 	if (!arguments[i])
+    {
+        write (1, "exit\n", 5);
 		exit(*status);
+    }
 	else if (arguments[i + 1])
 	{
 		write (2, "exit: too many arguments\n", 25);
 		*status = 1;
 	}
+    else if (ft_num_inside(arguments[1]) == 1)
+    {
+        write (1, "exit\n", 5);
+        write(2, "exit: ", 6);
+        write (2, arguments[1], ft_strlen(arguments[1]));
+        write(2, ": numeric argument required\n", 28);
+        *status = 2;
+        exit(*status); 
+    }
 	else
 	{
 		*status = ft_atoi(arguments[i]);
@@ -285,10 +316,11 @@ int ft_exit(char **arguments, int *status, int num)
 	}
 	if (num == 0)
 		return (*status);
+    write (1, "exit\n", 5);
 	exit(*status);
 }
 
-void edit_pwd_oldpwd(t_env **g_env, char *pwd)
+void edit_pwd_oldpwd(t_env **g_env, char *pwd, char *arg)
 {
     t_env *curr = *g_env;
     char *temp;
@@ -298,7 +330,15 @@ void edit_pwd_oldpwd(t_env **g_env, char *pwd)
         {
             free(curr->value);
             temp = getcwd(NULL, 0);
-            curr->value = ft_strdup_n(temp);
+            if (!temp)
+            {
+                temp = ft_strjoin_n("/", arg);
+                curr->value = ft_strjoin_n(pwd, temp);
+            }
+            else
+            {
+                curr->value = ft_strdup_n(temp);
+            }
             free(temp);
         }
         else if (ft_strcmp (curr->key, "OLDPWD") == 0)
@@ -312,17 +352,55 @@ void edit_pwd_oldpwd(t_env **g_env, char *pwd)
 
 int ft_cd(char **arguments, t_env *g_env, int *status, int num)
 {
-	int (i) = 2;
-    (void) g_env;
     char *pwd;
-	if (arguments[i])
+    char *old;
+
+    *status = 0;
+    pwd = ft_getenv("PWD", g_env);
+    // printf("%s\n", arguments[2]);
+	if (arguments[2])
 	{
 		*status = 1;
 		write (2, "cd: too many arguments\n", 23);
 	}
+    else if (!arguments[1])
+    {
+        old = ft_getenv("HOME", g_env);
+        if (old == NULL)
+            old = NULL;
+        if (chdir(old) == -1)
+        {
+            write (2, "cd: HOME not set\n", 17);
+            *status = 1;
+        }
+        else
+            edit_pwd_oldpwd(&g_env, pwd, arguments[1]);
+    }
+    else if (ft_strcmp(arguments[1], ".") == 0)
+    {
+        old = getcwd(NULL, 0);
+        if (!old)
+            edit_pwd_oldpwd(&g_env, pwd, arguments[1]);
+        free(old);
+    }
+    else if (ft_strcmp(arguments[1], "-") == 0)
+    {
+        old = ft_getenv("OLDPWD", g_env);
+        if (old == NULL)
+            old = "this/is/not/valid";
+        if (chdir(old) == -1)
+        {
+            write(2, arguments[1], ft_strlen(arguments[1]));
+            write(2, ": ", 2);
+            write(2, strerror(errno), ft_strlen(strerror(errno)));
+            write(2, "\n", 1);
+            *status = 1;
+        }
+        else
+            edit_pwd_oldpwd(&g_env, pwd, arguments[1]);
+    }
     else
     {
-        pwd = ft_getenv("PWD", g_env);
         if (chdir(arguments[1]) == -1)
         {
             write(2, arguments[1], ft_strlen(arguments[1]));
@@ -331,7 +409,8 @@ int ft_cd(char **arguments, t_env *g_env, int *status, int num)
             write(2, "\n", 1);
             *status = 1;
         }
-        edit_pwd_oldpwd(&g_env, pwd);
+        else
+            edit_pwd_oldpwd(&g_env, pwd, arguments[1]);
     }
 	if (num == 0)
 		return (*status);

@@ -9,13 +9,26 @@ int	check_args(int ac, char **av)
 	return (1);
 }
 
+void handler(int sig)
+{
+	(void)sig;
+	write (1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
 int	main(int ac, char **av, char **env)
 {
 	char *line;
 	(void)ac;
 	(void)av;
 	t_env *g_env = NULL;
+	struct sigaction sa;
 	int status = 0;
+
+	sa.sa_handler = handler;
+	sigaction(SIGINT, &sa, NULL);
 	if (*env)
         g_env = create_env(env);
 	if (!check_args(ac, av))
@@ -26,7 +39,7 @@ int	main(int ac, char **av, char **env)
 		line = readline("\001" GREEN "\002" "MINISHELL >$ " "\001" RESET "\002");
 		if (!line)
 		{
-			printf("Exit\n");
+			printf("exit\n");
 			break;
 		}
 		if (*line == '\0')
@@ -41,7 +54,6 @@ int	main(int ac, char **av, char **env)
 		// printf("%d\n", status);
 		gc_collect();
 	}
-	// printf("exit\n");
 	free_env(g_env);
 	rl_clear_history();
 	return (status);
