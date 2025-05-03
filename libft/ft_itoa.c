@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_itoi.c                                          :+:      :+:    :+:   */
+/*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 11:07:45 by abenba            #+#    #+#             */
-/*   Updated: 2024/10/27 11:15:16 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/03 17:44:52 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static char	*ft_sign(int i, int n)
 	char	*num;
 
 	y = 0;
-	num = (char *)malloc(i + 2);
+	num = (char *)gc_malloc(i + 2);
 	if (!num)
 		return (NULL);
 	num[0] = '-';
@@ -38,7 +38,7 @@ static char	*ft_pnum(int i, int n)
 	int		y;
 	char	*num;
 
-	num = (char *)malloc(i + 1);
+	num = (char *)gc_malloc(i + 1);
 	if (!num)
 		return (NULL);
 	num[i] = '\0';
@@ -56,7 +56,7 @@ static char	*ft_iszero(void)
 {
 	char	*num;
 
-	num = (char *)malloc(2);
+	num = (char *)gc_malloc(2);
 	if (!num)
 		return (NULL);
 	num[0] = '0';

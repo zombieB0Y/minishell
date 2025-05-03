@@ -3,7 +3,7 @@
 const char	*token_type_to_string(token_type_t type)
 {
 	static const char	*type_names[] = {"WORD", "PIPE", "REDIRECT_IN",
-			"REDIRECT_OUT", "APPEND", "HEREDOC", "EOF"};
+			"REDIRECT_OUT", "APPEND", "HEREDOC", "EOF", "HEREDOC_trunc"};
 
 	return (type_names[type]);
 }
@@ -44,6 +44,11 @@ token_t	*read_operator(lexer_t *lexer)
 			+ 1] == '-'*/)
 		{
 			lexer_advance(lexer);
+			if (lexer->current_char == '-')
+			{
+				lexer_advance(lexer);
+				return (token_create(TOKEN_HEREDOC_trunc, ft_strdup("<<-")));
+			}
 			return (token_create(TOKEN_HEREDOC, ft_strdup("<<")));
 		}
 		return (token_create(TOKEN_REDIRECT_IN, ft_strdup("<")));

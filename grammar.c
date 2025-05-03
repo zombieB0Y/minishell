@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/04/30 15:40:18 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/03 18:40:34 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,19 +157,24 @@ anas_list *grammar_check(token_list_t *tokens)
         }
         else if (head->token->type == TOKEN_REDIRECT_IN || 
                  head->token->type == TOKEN_REDIRECT_OUT || 
-                 head->token->type == TOKEN_APPEND)
+                 head->token->type == TOKEN_APPEND
+                 || head->token->type == TOKEN_HEREDOC
+                 || head->token->type == TOKEN_HEREDOC_trunc)
         {
             token_type_t redirect_type = head->token->type;
-            head = head->next;
-            if (head && head->token->type == TOKEN_WORD)
-            {
-                i = 1;
-                token->files = add_file(token->files, head->token->value, redirect_type);
-                head = head->next;
-            }
+            if (redirect_type == TOKEN_HEREDOC || redirect_type == TOKEN_HEREDOC_trunc)
+                token->files = add_file(token->files, head->token->value, TOKEN_HEREDOC);
             else
             {
-                return return_redirection_error();  // Missing filename after redirection
+                head = head->next;
+                if (head->token->type == TOKEN_WORD)
+                {
+                    i = 1;
+                    token->files = add_file(token->files, head->token->value, redirect_type);
+                    head = head->next;
+                }
+                else
+                    return return_redirection_error();  // Missing filename after redirection
             }
         }
         else
