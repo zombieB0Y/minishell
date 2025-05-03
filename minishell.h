@@ -33,6 +33,7 @@ typedef enum
 	TOKEN_REDIRECT_OUT, // >
 	TOKEN_APPEND,       // >>
 	TOKEN_HEREDOC,      // <<
+	TOKEN_HEREDOC_trunc, // <<- (heredoc with trim)
 	TOKEN_EOF           // End of input
 }						token_type_t;
 
@@ -114,6 +115,8 @@ typedef struct GCNode
 	void				*ptr;
 	struct GCNode		*next;
 }						GCNode;
+
+extern GCNode *gc_head;
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10

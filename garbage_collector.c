@@ -5,7 +5,6 @@
 #include <string.h>
 
 // Head of the global linked list for allocations
-static GCNode *gc_head = NULL;
 
 /*
  * gc_register:

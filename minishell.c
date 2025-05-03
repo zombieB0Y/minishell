@@ -1,5 +1,8 @@
 #include "minishell.h"
 
+GCNode *gc_head;
+
+
 int	check_args(int ac, char **av)
 {
 	if (ac > 1)
@@ -9,14 +12,14 @@ int	check_args(int ac, char **av)
 	return (1);
 }
 
-void handler(int sig)
-{
-	(void)sig;
-	write (1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-}
+// void handler(int sig)
+// {
+// 	(void)sig;
+// 	write (1, "\n", 1);
+// 	rl_on_new_line();
+// 	rl_replace_line("", 0);
+// 	rl_redisplay();
+// }
 
 int	main(int ac, char **av, char **env)
 {
@@ -24,11 +27,11 @@ int	main(int ac, char **av, char **env)
 	(void)ac;
 	(void)av;
 	t_env *g_env = NULL;
-	struct sigaction sa;
+	// struct sigaction sa;
 	int status = 0;
 
-	sa.sa_handler = handler;
-	sigaction(SIGINT, &sa, NULL);
+	// sa.sa_handler = handler;
+	// sigaction(SIGINT, &sa, NULL);
 	if (*env)
         g_env = create_env(env);
 	if (!check_args(ac, av))

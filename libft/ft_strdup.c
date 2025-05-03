@@ -17,6 +17,8 @@ char	*ft_strdup(const char *s1)
 	char	*copy;
 	size_t	i;
 
+	if (!s1)
+		return (NULL);
 	i = ft_strlen(s1);
 	copy = (char *)ft_calloc(i + 1, sizeof(char));
 	if (!copy)
