@@ -87,9 +87,9 @@ int ft_echo(char **arguments, int num, int *status)
 {
     int (i) = 1;
     int (flag) = 0;
-    char *str;
+    // char *str;
 
-    str = NULL;
+    // str = NULL;
     if (!arguments[i])
         printf("\n");
     if (ft_strcmp(arguments[i], "-n") == 0)

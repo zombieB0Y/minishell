@@ -88,40 +88,15 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 	// token_list_print(tokens);
 	return tokens;
 }
-	// while (1)
-	// {
-	// 	line = readline("heredoc> ");
-	// 	linelen = ft_strlen(line);
-	// 	if (linelen > 0 && line[linelen - 1] == '\n')
-	// 		line[(linelen--) - 1] = '\0';
-	// 	if (ft_strcmp(line, delimiter) == 0)
-	// 		break ;
-	// 	new_size = result_len + linelen + 2;
-	// 	temp = ft_realloc(result, result_len, new_size);
-	// 	if (!temp)
-	// 	{
-	// 		free(line);
-	// 		return (NULL);
-	// 	}
-	// 	result = temp;
-	// 	ft_memcpy(result + result_len, line, linelen);
-	// 	result_len += linelen;
-	// 	result[result_len] = '\n';
-	// 	result_len++;
-	// 	result[result_len] = '\0';
-	// }
-	// free(line);
-	// return (result);
-// }
 
-int	check(char *p)
-{
-	// --- test sdfasfas\s
-	if (*p && !is_whitespace(*p) && *p != '|' && *p != '>' && *p != '<')
-	{
-		// if (*p == '\\' && *(p + 1) && (*(p + 1) == '\'' || *(p + 1) == '"'))
-		// 	ft_memmove(p, p + 1, ft_strlen(p));
-		return (0);
-	}
-	return (1);
-}
+// int	check(char *p)
+// {
+// 	// --- test sdfasfas\s
+// 	if (*p && !is_whitespace(*p) && *p != '|' && *p != '>' && *p != '<')
+// 	{
+// 		// if (*p == '\\' && *(p + 1) && (*(p + 1) == '\'' || *(p + 1) == '"'))
+// 		// 	ft_memmove(p, p + 1, ft_strlen(p));
+// 		return (0);
+// 	}
+// 	return (1);
+// }
