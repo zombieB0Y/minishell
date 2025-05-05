@@ -77,7 +77,7 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 	if (!tokens)
 		return (NULL);
 	head = tokens->head;
-	while (ft_strcmp(token_type_to_string(head->token->type), "EOF") != 0)
+	while (head->token->value)
 	{
 		// printf("hani hna \n");
 

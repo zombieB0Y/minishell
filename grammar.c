@@ -124,7 +124,7 @@ anas_list *grammar_check(token_list_t *tokens)
     // token_list_print(tokens);
     // printf("--------------\n");
 
-    while (ft_strcmp(token_type_to_string(head->token->type), "EOF") != 0)
+    while (head->token->value)
     {
         if (head->token->type == TOKEN_PIPE)
         {

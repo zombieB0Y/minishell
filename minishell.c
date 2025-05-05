@@ -12,14 +12,53 @@ int	check_args(int ac, char **av)
 	return (1);
 }
 
-// void handler(int sig)
-// {
-// 	(void)sig;
-// 	write (1, "\n", 1);
-// 	rl_on_new_line();
-// 	rl_replace_line("", 0);
-// 	rl_redisplay();
-// }
+t_status *func(void)
+{
+	static t_status status;
+	return (&status);
+}
+
+void handler(int sig)
+{
+	(void)sig;
+	func()->status = 130;
+	write (2, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
+void handler_chiled(int sig)
+{
+	(void)sig;
+	write (2, "\n", 1);
+}
+
+void handler_quit(int sig)
+{
+	(void)sig;
+	write (2, "Quit (core dumped)\n", 20);
+}
+
+void sig_child()
+{
+	signal(SIGINT, handler_chiled);
+}
+
+void sig_setup()
+{
+	signal(SIGINT, handler);
+}
+
+void sig_quit_parent()
+{
+	signal(SIGQUIT, SIG_IGN);
+}
+
+void sig_quit_child()
+{
+	signal(SIGQUIT, handler_quit);
+}
 
 int	main(int ac, char **av, char **env)
 {
@@ -27,11 +66,7 @@ int	main(int ac, char **av, char **env)
 	(void)ac;
 	(void)av;
 	t_env *g_env = NULL;
-	// struct sigaction sa;
-	int status = 0;
 
-	// sa.sa_handler = handler;
-	// sigaction(SIGINT, &sa, NULL);
 	if (*env)
         g_env = create_env(env);
 	if (!check_args(ac, av))
@@ -39,6 +74,8 @@ int	main(int ac, char **av, char **env)
 	print_welcome();
 	while (1)
 	{
+		sig_setup();
+		sig_quit_parent();
 		line = readline("\001" GREEN "\002" "MINISHELL >$ " "\001" RESET "\002");
 		if (!line)
 		{
@@ -53,11 +90,10 @@ int	main(int ac, char **av, char **env)
 		}
 		gc_register(line);
 		add_history(line);
-		start(line, g_env, &status);
-		// printf("%d\n", status);
+		start(line, g_env);
 		gc_collect();
 	}
 	free_env(g_env);
 	rl_clear_history();
-	return (status);
+	return (func()->status);
 }

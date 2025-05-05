@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int	process_command(const char *command, t_env *g_env, int *status)
+int	process_command(const char *command, t_env *g_env)
 {
 	token_list_t	*tokens;
 	anas_list		*list;
@@ -11,14 +11,14 @@ int	process_command(const char *command, t_env *g_env, int *status)
 	if (!tokens)
 		return (0);
 	tokens = capture_heredoc(tokens);
-	token_list_print(tokens);
+	// token_list_print(tokens);
 	if (!tokens)
 		return (0);
 	// tokens = expand(tokens);
 	list = grammar_check(tokens);
 	if (!list)
 		return (0);
-	print_anas_list(list);
+	// print_anas_list(list);
 	// current = list->head;
 	// token_list_print(tokens);
 	// while (current)
@@ -36,7 +36,7 @@ int	process_command(const char *command, t_env *g_env, int *status)
 	// 	current = current->next;
 	// }
 	// printf("\n");
-	return (ft_execute(list, g_env, status));
+	return (ft_execute(list, g_env));
 }
 
 const char	*token_type_to_string(token_type_t type)
