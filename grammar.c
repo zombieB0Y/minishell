@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/03 18:40:34 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/04 17:51:49 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,10 @@ anas_list *grammar_check(token_list_t *tokens)
         {
             token_type_t redirect_type = head->token->type;
             if (redirect_type == TOKEN_HEREDOC || redirect_type == TOKEN_HEREDOC_trunc)
-                token->files = add_file(token->files, head->token->value, TOKEN_HEREDOC);
+            {
+                token->files = add_file(token->files, head->token->value, redirect_type);
+                head = head->next;
+            }
             else
             {
                 head = head->next;

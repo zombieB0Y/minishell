@@ -49,11 +49,6 @@ void	token_list_add(token_list_t *list, token_t *token)
 	if (!node)
 		return ;
 	node->token = token;
-	// node->arguments = NULL;
-	// node->files = gc_malloc(sizeof(files_t));
-	// node->files->in = -2;
-	// node->files->out = -2;
-	// node->files->file = NULL;
 	node->next = NULL;
 	if (!list->head)
 	{

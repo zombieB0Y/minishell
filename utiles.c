@@ -119,6 +119,9 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 		}
 		if (found)
 			head->token->value = write_heredoc(head->token->value, count);
+		printf("filename = %s\n", head->token->value);
+		printf("%d\n", found);
+
 		head = head->next;
 	}
 	// token_list_print(tokens);
