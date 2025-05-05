@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 11:07:45 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/03 17:44:52 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/05 20:45:05 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ static char	*ft_pnum(int i, int n)
 {
 	int		y;
 	char	*num;
+	y = 0;
 
 	num = (char *)gc_malloc(i + 1);
 	if (!num)
@@ -44,8 +45,8 @@ static char	*ft_pnum(int i, int n)
 	num[i] = '\0';
 	while (n)
 	{
-		y = n % 10;
-		n = n / 10;
+		y = n % 10; // 1
+		n = n / 10; // 0
 		num[i - 1] = y + '0';
 		i--;
 	}

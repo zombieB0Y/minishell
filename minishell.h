@@ -78,6 +78,7 @@ typedef struct token_node
 {
 	char				**arguments;
 	size_t				arg_c;
+	size_t				file_c;
 	files_t				*files;
 	struct token_node	*next;
 }						token_node_t;

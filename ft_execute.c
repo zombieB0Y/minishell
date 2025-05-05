@@ -189,15 +189,18 @@ void ft_redirect_append(int *status , files_t *files)
 
 void ft_redirects(int *status, token_node_t *tok)
 {
-    while (tok->files)
+    if (tok)
     {
-        if (tok->files->type == TOKEN_REDIRECT_OUT)
-            ft_redirect_out(status, tok->files);
-        else if (tok->files->type == TOKEN_REDIRECT_IN || tok->files->type == TOKEN_HEREDOC || tok->files->type == TOKEN_HEREDOC_trunc)
-            ft_redirect_in(status, tok->files);
-        else if (tok->files->type == TOKEN_APPEND)
-            ft_redirect_append(status, tok->files);
-        tok->files = tok->files->next;
+        while (tok->files)
+        {
+            if (tok->files->type == TOKEN_REDIRECT_OUT)
+                ft_redirect_out(status, tok->files);
+            else if (tok->files->type == TOKEN_REDIRECT_IN || tok->files->type == TOKEN_HEREDOC || tok->files->type == TOKEN_HEREDOC_trunc)
+                ft_redirect_in(status, tok->files);
+            else if (tok->files->type == TOKEN_APPEND)
+                ft_redirect_append(status, tok->files);
+            tok->files = tok->files->next;
+        }
     }
 }
 

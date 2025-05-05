@@ -26,6 +26,7 @@ token_t	*token_create(token_type_t type, char *value)
 		return (NULL);
 	// I can check expantion here, flag if quoted or any special case
 	token->type = type;
+	// printf("---%s---\n", token_type_to_string(type));
 	if (type == TOKEN_APPEND || type == TOKEN_REDIRECT_OUT)
 	{
 		if (type == TOKEN_APPEND)

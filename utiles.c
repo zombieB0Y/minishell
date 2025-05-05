@@ -49,6 +49,7 @@ char	*write_heredoc(char *str, size_t count)
 	int		fd;
 	
 	filename = NULL;
+	printf("---%s\n", str);
 	filename = ft_strjoin("/tmp/heredoc_", ft_itoa(count));
 	if (!filename)
 		return (NULL);
@@ -68,7 +69,7 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 	char	*delimiter;
 	lol		*head;
 	bool found;
-	size_t	count = 0;
+	int	count = 0;
 
 
 	line = NULL;
@@ -79,7 +80,9 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 	head = tokens->head;
 	while (head)
 	{
+		temp = NULL;
 		found = false;
+		result_len = 0;
 		if (head->token->type == TOKEN_HEREDOC || head->token->type == TOKEN_HEREDOC_trunc)
 		{
 			count++;
@@ -99,7 +102,7 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 				if (ft_strcmp(line, delimiter) == 0)
 					break ;
 				new_size = result_len + linelen + 2;
-				temp = ft_realloc(head->token->value, result_len, new_size);
+				temp = gc_malloc((new_size)); // ft_realloc(temp, result_len, new_size);
 				if (!temp)
 					return (NULL);
 				head->token->value = temp;
@@ -111,16 +114,15 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 				head->token->value[result_len] = '\n';
 				result_len++;
 				head->token->value[result_len] = '\0';
+				printf("----------%s\n", head->token->value);
 			}
-			if (result_len)
-				head->token->value[result_len - 1] = '\0';
-			else
+			if (!result_len)
 				return (NULL);
 		}
 		if (found)
 			head->token->value = write_heredoc(head->token->value, count);
-		printf("filename = %s\n", head->token->value);
-		printf("%d\n", found);
+		// printf("filename = %s\n", head->token->value);
+		// printf("%d\n", found);
 
 		head = head->next;
 	}

@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/04 17:51:49 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/05 21:33:55 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,10 @@ token_node_t *init_anas_list()
     
     node->arguments = (char **)gc_malloc(sizeof(char *) * 1);
     if (!node->arguments)
-    {
-        gc_free(node);
         return NULL;
-    }
-    
     node->arguments[0] = NULL;
     node->arg_c = 0;
+	node->file_c = 0;
     node->files = NULL;
     node->next = NULL;
     
@@ -165,6 +162,7 @@ anas_list *grammar_check(token_list_t *tokens)
             if (redirect_type == TOKEN_HEREDOC || redirect_type == TOKEN_HEREDOC_trunc)
             {
                 token->files = add_file(token->files, head->token->value, redirect_type);
+				token->file_c++;
                 head = head->next;
             }
             else
@@ -193,7 +191,7 @@ void print_anas_list(anas_list *list)
     if (!list || !list->head)
     {
         printf("Empty command list\n");
-        // return;
+        return;
     }
     
     token_node_t *current = list->head;
