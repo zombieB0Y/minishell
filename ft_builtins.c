@@ -125,6 +125,9 @@ int	ft_echo(char **arguments, int num)
 			write (2, "\n", 1);
 			func()->status = 1;
 		}
+		if (num == 0)
+			return (func()->status);
+		exit(func()->status);
 	}
 	else if (ft_strcmp(arguments[i], "-n") == 0)
 	{
@@ -330,8 +333,6 @@ int	ft_num_inside(char *arg)
 			return (1);
 		i++;
 	}
-	if (is_valid_llong(arg) == 0)
-		return (1);
 	return (0);
 }
 
@@ -344,11 +345,6 @@ int	ft_exit(char **arguments, int num)
 			write(2, "exit\n", 5);
 		exit(func()->status);
 	}
-	else if (arguments[i + 1])
-	{
-		write(2, "exit: too many arguments\n", 25);
-		func()->status = 1;
-	}
 	else if (ft_num_inside(arguments[1]) == 1)
 	{
 		write(2, "exit\n", 5);
@@ -356,6 +352,13 @@ int	ft_exit(char **arguments, int num)
 		write(2, arguments[1], ft_strlen(arguments[1]));
 		write(2, ": numeric argument required\n", 28);
 		func()->status = 2;
+		exit(func()->status);
+	}
+	else if (arguments[i + 1])
+	{
+		write(2, "exit\n", 5);
+		write(2, "exit: too many arguments\n", 25);
+		func()->status = 1;
 		exit(func()->status);
 	}
 	else

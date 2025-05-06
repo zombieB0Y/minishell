@@ -136,7 +136,7 @@ char *ft_getenv(char *key, t_env *g_env)
     return (value);
 }
 
-void ft_redirect_out(files_t *files)
+int ft_redirect_out(files_t *files, int flag)
 {
     int fd;
 
@@ -148,12 +148,15 @@ void ft_redirect_out(files_t *files)
         write(2, strerror(errno), ft_strlen(strerror(errno)));
         write(2, "\n", 1);
         func()->status = 1;
-        exit(func()->status);
+        if (flag == 0)
+            exit(func()->status);
+        return (2);
     }
     dup2(fd, 1);
+    return (0);
 }
 
-void ft_redirect_in(files_t *files)
+int ft_redirect_in(files_t *files, int flag)
 {
     int fd;
 
@@ -165,12 +168,15 @@ void ft_redirect_in(files_t *files)
         write(2, strerror(errno), ft_strlen(strerror(errno)));
         write(2, "\n", 1);
         func()->status = 1;
-        exit(func()->status);
+        if (flag == 0)
+            exit(func()->status);
+        return (2);
     }
     dup2(fd, 0);
+    return (0);
 }
 
-void ft_redirect_append(files_t *files)
+int ft_redirect_append(files_t *files, int flag)
 {
     int fd;
 
@@ -182,31 +188,37 @@ void ft_redirect_append(files_t *files)
         write(2, strerror(errno), ft_strlen(strerror(errno)));
         write(2, "\n", 1);
         func()->status = 1;
-        exit(func()->status);
+        if (flag == 0)
+            exit(func()->status);
+        return (2);
     }
     dup2(fd, 1);
+    return (0);
 }
 
-void ft_redirects(token_node_t *tok)
+int ft_redirects(token_node_t *tok, int flag)
 {
+    int r;
+
+    r = 0;
     if (tok)
     {
         while (tok->files)
         {
             if (tok->files->type == TOKEN_REDIRECT_OUT)
-                ft_redirect_out(tok->files);
+                r = (ft_redirect_out(tok->files, flag));
             else if (tok->files->type == TOKEN_REDIRECT_IN || tok->files->type == TOKEN_HEREDOC || tok->files->type == TOKEN_HEREDOC_trunc)
-                ft_redirect_in(tok->files);
+                r = (ft_redirect_in(tok->files, flag));
             else if (tok->files->type == TOKEN_APPEND)
-                ft_redirect_append(tok->files);
+                r = (ft_redirect_append(tok->files, flag));
             tok->files = tok->files->next;
         }
     }
+    return (r);
 }
 
 int execute_builtins(token_node_t *tok, t_env *g_env, int pip_num)
 {
-    ft_redirects(tok);
     if (ft_strcmp(tok->arguments[0], "env") == 0)
         return (ft_env(g_env, pip_num));
     else if (ft_strcmp(tok->arguments[0], "unset") == 0)
@@ -258,7 +270,7 @@ void ft_exc(token_node_t *tok, t_env *g_env, int num)
 		{
             // while (tok->files)
             // {
-                ft_redirects(tok);
+                ft_redirects(tok, 0);
                 // tok->files = tok->files->next;
             // }
 			execve(full_path, tok->arguments, envchar);
@@ -281,7 +293,9 @@ int ft_pip(int pip_num, anas_list *tok, t_env *g_env) {
 
     if (pip_num == 0)
     {
-        // ??
+        r = ft_redirects(tok->head, 1);
+        if (r == 2)
+            return (func()->status);
         r = execute_builtins(tok->head, g_env, pip_num);
         if (r != 2)
             return (r);
@@ -297,9 +311,9 @@ int ft_pip(int pip_num, anas_list *tok, t_env *g_env) {
                 exit(EXIT_FAILURE);
             }
         }
+        pids[i] = fork();
         sig_child();
         sig_quit_child();
-        pids[i] = fork();
         if (pids[i] == -1) {
             perror("fork");
             exit(EXIT_FAILURE);
@@ -359,7 +373,7 @@ int ft_execute(anas_list *tok, t_env *g_env)
         close(stdin_copy);
         return (func()->status);
     }
-    ft_redirects(tok->head);
+    ft_redirects(tok->head, 1);
     dup2(stdout_copy, 1);
     dup2(stdin_copy, 0);
     close(stdout_copy);

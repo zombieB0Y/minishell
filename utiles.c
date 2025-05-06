@@ -75,7 +75,7 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 	if (!tokens)
 		return (NULL);
 	head = tokens->head;
-	while (head->token->value)
+	while (head)
 	{
 		if (head->token->type == TOKEN_HEREDOC || head->token->type == TOKEN_HEREDOC_trunc)
 		{
@@ -108,13 +108,15 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 				close(pipefd[1]);
 				exit(0);
 			}
-			else
+			waitpid(pid, &status, 0);
+			if (pid != 0)
 			{
 				heredoc_content = NULL;
 				total_len = 0;
 				close(pipefd[1]);
 				while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer))) > 0)
 				{
+					// printf("here\n");
 					char *new_content = gc_malloc(total_len + bytes_read + 1);
 					if (!new_content)
 						return (NULL);
@@ -126,12 +128,13 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 					heredoc_content = new_content;
 				}
 				close(pipefd[0]);
-				waitpid(pid, &status, 0);
 				if (heredoc_content)
 				{
 					count++;
 					head->token->value = write_heredoc(heredoc_content, count);
 				}
+				else
+					remove_token_node(&tokens->head, head);
 			}
 		}
 		head = head->next;
