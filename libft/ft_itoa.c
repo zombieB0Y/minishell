@@ -18,7 +18,7 @@ static char	*ft_sign(int i, int n)
 	char	*num;
 
 	y = 0;
-	num = (char *)malloc(i + 2);
+	num = (char *)gc_malloc(i + 2);
 	if (!num)
 		return (NULL);
 	num[0] = '-';
@@ -38,7 +38,7 @@ static char	*ft_pnum(int i, int n)
 	int		y;
 	char	*num;
 
-	num = (char *)malloc(i + 1);
+	num = (char *)gc_malloc(i + 1);
 	if (!num)
 		return (NULL);
 	num[i] = '\0';
@@ -56,7 +56,7 @@ static char	*ft_iszero(void)
 {
 	char	*num;
 
-	num = (char *)malloc(2);
+	num = (char *)gc_malloc(2);
 	if (!num)
 		return (NULL);
 	num[0] = '0';

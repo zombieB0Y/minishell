@@ -15,10 +15,16 @@
 # include <sys/stat.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include <signal.h>
+#include <termios.h>
+#include <sys/ioctl.h>
 
 # define GREEN "\033[32m"
 # define RED "\033[31m"
 # define RESET "\033[0m"
+
+
+/*  waaaaaaaaaaaaaaaa new line chof lih chi hal "ls \n-l" */
 
 /* Token type definitions */
 typedef enum
@@ -29,6 +35,7 @@ typedef enum
 	TOKEN_REDIRECT_OUT, // >
 	TOKEN_APPEND,       // >>
 	TOKEN_HEREDOC,      // <<
+	TOKEN_HEREDOC_trunc, // <<- (heredoc with trim)
 	TOKEN_EOF           // End of input
 }						token_type_t;
 
@@ -38,6 +45,14 @@ typedef enum e_open_flags
 	OPEN_APPEND_NEW = O_CREAT | O_APPEND | O_WRONLY,
 	OPEN_CREAT_ONLY  = O_CREAT | O_WRONLY
 }						t_open_flags;
+
+typedef struct env
+{
+        char *key;
+        char *value;
+        int flag;
+        struct env *next;
+} t_env;
 
 /* Token structure */
 typedef struct
@@ -101,11 +116,28 @@ typedef struct GCNode
 {
 	void				*ptr;
 	struct GCNode		*next;
-}						GCNode;
+}
+						GCNode;
+typedef struct expo_list
+{
+	char *key;
+	char *value;
+	int flag;
+	struct expo_list *next;
+} t_expo;
+
+typedef struct st
+{
+	int status;
+	t_expo *node;
+} t_status;
+
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
 # endif
+
+extern GCNode *gc_head;
 
 // Lexer operations
 lexer_t					*lexer_create(const char *input);
@@ -158,8 +190,8 @@ void					print_anas_list(anas_list *list);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------
-void					start(char *line);
-void					process_command(const char *command);
+int						start(char *line, t_env *g_env);
+int						process_command(const char *command, t_env *g_env);
 //--------functions------------
 int						check(char *p);
 int						is_whitespace(int c);
@@ -174,4 +206,30 @@ void					gc_register(void *ptr);
 char					*substr_dup(const char *start, size_t len);
 char					*substr_dup(const char *start, size_t len);
 token_list_t			*capture_heredoc(token_list_t *tokens);
+//----------execution--------
+int						ft_execute(anas_list *tok, t_env *g_env);
+char					**ft_split_n(char const *s, char c);
+t_env					*create_env(char **env);
+int						ft_env(t_env *g_env, int num);
+int						ft_unset(t_env *g_env, token_node_t *tok, int num);
+char					*ft_substr_n(char const *s, unsigned int start, size_t len);
+char					*ft_strdup_n(const char *s1);
+void					free_env(t_env *g_env);
+void					ft_free(char **ptr);
+int						ft_pwd(t_env *g_env, int num);
+int						ft_echo(char **arguments, int num);
+int						ft_export(char **arguments, t_env *g_env, int num);
+int						ft_lstsize_n(t_env *lst);
+int						equal_sign(char *env);
+int						ft_exit(char **arguments, int num);
+char					*ft_strjoin_n(char const *s1, char const *s2);
+int						plus_sign(char *env);
+char					*ft_getenv(char *key, t_env *g_env);
+int						ft_cd(char **arguments, t_env *g_env, int num);
+void					handler_chiled(int sig);
+void					sig_child();
+void 					sig_setup();
+void						sig_quit_child();
+t_status				*func(void);
+// void					handler(int sig);
 #endif
