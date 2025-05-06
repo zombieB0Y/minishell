@@ -11,7 +11,7 @@ int	process_command(const char *command, t_env *g_env, int *status)
 	if (!tokens)
 		return (0);
 	// print_tokens(tokens->head);
-	tokens = capture_heredoc(tokens);
+	tokens = capture_heredoc(tokens, status);
 	if (!tokens)
 		return (0);
 	// tokens = expand(tokens);

@@ -165,7 +165,6 @@ void					*return_quoted_error(void);
 token_list_t			*expand(token_list_t *tokens);
 // Grammar fucntions
 anas_list				*grammar_check(token_list_t *tokens);
-size_t					count_2d_array(char **arr);
 void					list_add(anas_list *list, token_node_t *token);
 void					print_anas_list(anas_list *list);
 //-------print welcome--------
@@ -186,7 +185,7 @@ void					gc_register(void *ptr);
 //-------------Token Type: WORD, Value: s'---
 char					*substr_dup(const char *start, size_t len);
 char					*substr_dup(const char *start, size_t len);
-token_list_t			*capture_heredoc(token_list_t *tokens);
+token_list_t			*capture_heredoc(token_list_t *tokens, int *status);
 //----------execution--------
 int						ft_execute(anas_list *tok, t_env *g_env, int *status);
 char					**ft_split_n(char const *s, char c);

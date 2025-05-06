@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/05 21:33:55 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/06 16:43:10 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ anas_list *grammar_check(token_list_t *tokens)
     lol *head;
     token_node_t *token;
     anas_list *list;
-    int i = 0;
+    // int i = 0;
 
     if (!tokens)
         return (NULL);
@@ -170,8 +170,9 @@ anas_list *grammar_check(token_list_t *tokens)
                 head = head->next;
                 if (head->token->type == TOKEN_WORD)
                 {
-                    i = 1;
+                    // i = 1;
                     token->files = add_file(token->files, head->token->value, redirect_type);
+                    token->file_c++;
                     head = head->next;
                 }
                 else
@@ -181,7 +182,7 @@ anas_list *grammar_check(token_list_t *tokens)
         else
             head = head->next;
     }
-    if (token->arg_c > 0 || i)
+    if (token->arg_c > 0 || token->file_c > 0) // test << a
         list_add(list, token);
     return list;
 }
@@ -224,6 +225,7 @@ void print_anas_list(anas_list *list)
                     case TOKEN_REDIRECT_OUT: type_str = "REDIRECT_OUT (>)"; break;
                     case TOKEN_APPEND:       type_str = "APPEND (>>)"; break;
                     case TOKEN_HEREDOC:      type_str = "HEREDOC (<<)"; break;
+                    case TOKEN_HEREDOC_trunc: type_str = "HEREDOC_trunc (<<-)"; break;
                     default:                 type_str = "UNKNOWN"; break;
                 }
                 printf("    %s: %s\n", type_str, file->file);
