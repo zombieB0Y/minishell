@@ -92,11 +92,8 @@ int	ft_pwd(t_env *g_env, int num)
 
 int	ft_echo(char **arguments, int num)
 {
-	char	*str;
-
 	int(i) = 1;
 	int(flag) = 0;
-	str = NULL;
 	if (!arguments[i])
 		printf("\n");
 	if (ft_strcmp(arguments[i], "-n") == 0)

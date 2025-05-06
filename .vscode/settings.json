@@ -1,8 +1,9 @@
 {
-    "files.autoSave": "onFocusChange",
-    "files.associations": {
-        "minishell.h": "c",
-        "readline.h": "c",
-        "cstdlib": "c"
-    }
+  "files.autoSave": "onFocusChange",
+  "files.associations": {
+    "minishell.h": "c",
+    "readline.h": "c",
+    "cstdlib": "c"
+  },
+  "C_Cpp_Runner.msvcBatchPath": ""
 }
