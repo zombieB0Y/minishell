@@ -12,6 +12,54 @@ int	check_args(int ac, char **av)
 	return (1);
 }
 
+t_status *func(void)
+{
+	static t_status status;
+	return (&status);
+}
+
+void handler(int sig)
+{
+	(void)sig;
+	func()->status = 130;
+	write (2, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
+void handler_chiled(int sig)
+{
+	(void)sig;
+	write (2, "\n", 1);
+}
+
+void handler_quit(int sig)
+{
+	(void)sig;
+	write (2, "Quit (core dumped)\n", 20);
+}
+
+void sig_child()
+{
+	signal(SIGINT, handler_chiled);
+}
+
+void sig_setup()
+{
+	signal(SIGINT, handler);
+}
+
+void sig_quit_parent()
+{
+	signal(SIGQUIT, SIG_IGN);
+}
+
+void sig_quit_child()
+{
+	signal(SIGQUIT, handler_quit);
+}
+
 int	main(int ac, char **av, char **env)
 {
 	char *line;
@@ -44,11 +92,8 @@ int	main(int ac, char **av, char **env)
 		add_history(line);
 		start(line, g_env);
 		gc_collect();
-		start(line);
-		gc_collect();
 	}
 	free_env(g_env);
 	rl_clear_history();
 	return (func()->status);
 }
-

@@ -81,6 +81,7 @@ typedef struct token_node
 {
 	char				**arguments;
 	size_t				arg_c;
+	size_t				file_c;
 	files_t				*files;
 	struct token_node	*next;
 }						token_node_t;
@@ -141,9 +142,9 @@ extern GCNode *gc_head;
 
 // Lexer operations
 lexer_t					*lexer_create(const char *input);
-void					lexer_destroy(lexer_t *lexer);
+// void					lexer_destroy(lexer_t *lexer);
 void					lexer_advance(lexer_t *lexer);
-char					lexer_peek(lexer_t *lexer, size_t offset);
+// char					lexer_peek(lexer_t *lexer, size_t offset);
 bool					lexer_is_at_end(lexer_t *lexer);
 bool					lexer_is_escaped(lexer_t *lexer);
 
@@ -165,9 +166,9 @@ bool					is_quotes_char(char ch);
 char					get_quotes(lexer_t *lexer);
 
 // Token generation
-token_t					*read_word(lexer_t *lexer);
+// token_t					*read_word(lexer_t *lexer);
 token_t					*read_operator(lexer_t *lexer);
-char					*read_quoted_string(lexer_t *lexer, char quote_char);
+// char					*read_quoted_string(lexer_t *lexer, char quote_char);
 void					reset_quotes(lexer_t *lexer, char quote_char);
 void					*get_quoted_input(lexer_t *lexer, size_t *len);
 int						end_capture_quotes(lexer_t *lexer, char *input);
@@ -193,7 +194,7 @@ void					print_welcome(void);
 int						start(char *line, t_env *g_env);
 int						process_command(const char *command, t_env *g_env);
 //--------functions------------
-int						check(char *p);
+// int						check(char *p);
 int						is_whitespace(int c);
 // int						is_quoted(int c);
 //---------alloc fucntions------------

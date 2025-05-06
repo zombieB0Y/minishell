@@ -26,6 +26,7 @@ token_t	*token_create(token_type_t type, char *value)
 		return (NULL);
 	// I can check expantion here, flag if quoted or any special case
 	token->type = type;
+	// printf("---%s---\n", token_type_to_string(type));
 	if (type == TOKEN_APPEND || type == TOKEN_REDIRECT_OUT)
 	{
 		if (type == TOKEN_APPEND)
@@ -49,11 +50,6 @@ void	token_list_add(token_list_t *list, token_t *token)
 	if (!node)
 		return ;
 	node->token = token;
-	// node->arguments = NULL;
-	// node->files = gc_malloc(sizeof(files_t));
-	// node->files->in = -2;
-	// node->files->out = -2;
-	// node->files->file = NULL;
 	node->next = NULL;
 	if (!list->head)
 	{
