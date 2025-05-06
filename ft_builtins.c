@@ -2,17 +2,25 @@
 
 int	ft_env(t_env *g_env, int num)
 {
+	func()->status = 0;
 	if (g_env)
 	{
 		while (g_env)
 		{
-			printf("%s=%s\n", g_env->key, g_env->value);
+			if (printf("%s=%s\n", g_env->key, g_env->value) == -1)
+			{
+				write(2, "env: ", 5);
+				write(2, strerror(errno), ft_strlen(strerror(errno)));
+				write (2, "\n", 1);
+				func()->status = 125;
+				break ;
+			}
 			g_env = g_env->next;
 		}
 	}
 	if (num == 0)
-		return (0);
-	exit(0);
+		return (func()->status);
+	exit(func()->status);
 }
 
 void	free_node(t_env *g_env)
@@ -76,26 +84,48 @@ int	ft_pwd(t_env *g_env, int num)
 	char	*pwd;
 
 	pwd = getcwd(NULL, 0);
+	func()->status = 0;
 	if (!pwd)
 	{
-		printf("%s\n", ft_getenv("PWD", g_env));
+		if (printf("%s\n", ft_getenv("PWD", g_env)) == -1)
+		{
+			write(2, "pwd: ", 5);
+			write(2, strerror(errno), ft_strlen(strerror(errno)));
+			write (2, "\n", 1);
+			func()->status = 1;
+		}
 	}
 	else
 	{
-		printf("%s\n", pwd);
+		if (printf("%s\n", pwd) == -1)
+		{
+			write(2, "pwd: ", 5);
+			write(2, strerror(errno), ft_strlen(strerror(errno)));
+			write (2, "\n", 1);
+			func()->status = 1;
+		}
 	}
 	free(pwd);
 	if (num == 0)
-		return (0);
-	exit(0);
+		return (func()->status);
+	exit((func()->status));
 }
 
 int	ft_echo(char **arguments, int num)
 {
 	int(i) = 1;
 	int(flag) = 0;
+	func()->status = 0;
 	if (!arguments[i])
-		printf("\n");
+	{
+		if (printf("\n") == -1)
+		{
+			write(2, "echo: ", 6);
+			write(2, strerror(errno), ft_strlen(strerror(errno)));
+			write (2, "\n", 1);
+			func()->status = 1;
+		}
+	}
 	if (ft_strcmp(arguments[i], "-n") == 0)
 	{
 		flag = 1;
@@ -103,18 +133,31 @@ int	ft_echo(char **arguments, int num)
 	}
 	while (arguments[i])
 	{
-		printf("%s", arguments[i]);
+		if (printf("%s", arguments[i]) == -1)
+		{
+			write(2, "echo: ", 6);
+			write(2, strerror(errno), ft_strlen(strerror(errno)));
+			write (2, "\n", 1);
+			func()->status = 1;
+			break ;
+		}
 		i++;
 		if (arguments[i])
 			printf(" ");
 	}
 	if (flag == 0)
 	{
-		printf("\n");
+		if (printf("\n") == -1)
+		{
+			write(2, "echo: ", 6);
+			write(2, strerror(errno), ft_strlen(strerror(errno)));
+			write (2, "\n", 1);
+			func()->status = 1;
+		};
 	}
 	if (num == 0)
-		return (0);
-	exit(0);
+		return (func()->status);
+	exit(func()->status);
 }
 
 void	export_print(t_env *g_env)
@@ -279,12 +322,16 @@ int	ft_export(char **arguments, t_env *g_env, int num)
 int	ft_num_inside(char *arg)
 {
 	int(i) = 0;
+	if (arg[i] == '-')
+		i++;
 	while (arg[i])
 	{
 		if (ft_isdigit(arg[i]) == 0)
 			return (1);
 		i++;
 	}
+	if (is_valid_llong(arg) == 0)
+		return (1);
 	return (0);
 }
 
@@ -293,10 +340,8 @@ int	ft_exit(char **arguments, int num)
 	int(i) = 1;
 	if (!arguments[i])
 	{
-		if (isatty(STDIN_FILENO))
-		{
-			write(1, "exit\n", 5);
-		}
+		if (num == 0)
+			write(2, "exit\n", 5);
 		exit(func()->status);
 	}
 	else if (arguments[i + 1])
@@ -306,7 +351,7 @@ int	ft_exit(char **arguments, int num)
 	}
 	else if (ft_num_inside(arguments[1]) == 1)
 	{
-		write(1, "exit\n", 5);
+		write(2, "exit\n", 5);
 		write(2, "exit: ", 6);
 		write(2, arguments[1], ft_strlen(arguments[1]));
 		write(2, ": numeric argument required\n", 28);
@@ -316,14 +361,9 @@ int	ft_exit(char **arguments, int num)
 	else
 	{
 		func()->status = ft_atoi(arguments[i]);
-		exit(func()->status);
 	}
 	if (num == 0)
-		return (func()->status);
-	if (isatty(STDIN_FILENO))
-	{
-		write(1, "exit\n", 5);
-	}
+		write(2, "exit\n", 5);
 	exit(func()->status);
 }
 

@@ -16,8 +16,7 @@
 # include <sys/wait.h>
 # include <unistd.h>
 # include <signal.h>
-#include <termios.h>
-#include <sys/ioctl.h>
+# include <limits.h>
 
 # define GREEN "\033[32m"
 # define RED "\033[31m"
@@ -232,5 +231,6 @@ void					sig_child();
 void 					sig_setup();
 void						sig_quit_child();
 t_status				*func(void);
+int						is_valid_llong(const char *str);
 // void					handler(int sig);
 #endif

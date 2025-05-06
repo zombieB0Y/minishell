@@ -48,6 +48,8 @@ void sig_child()
 void sig_setup()
 {
 	signal(SIGINT, handler);
+	signal(SIGTERM, SIG_IGN);
+	signal(SIGTSTP, SIG_IGN);
 }
 
 void sig_quit_parent()

@@ -203,6 +203,7 @@ void ft_redirects(token_node_t *tok)
 
 int execute_builtins(token_node_t *tok, t_env *g_env, int pip_num)
 {
+    ft_redirects(tok);
     if (ft_strcmp(tok->arguments[0], "env") == 0)
         return (ft_env(g_env, pip_num));
     else if (ft_strcmp(tok->arguments[0], "unset") == 0)
