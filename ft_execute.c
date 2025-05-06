@@ -189,6 +189,8 @@ void ft_redirect_append(files_t *files)
 
 void ft_redirects(token_node_t *tok)
 {
+    if (!tok->files)
+        return ;
     while (tok->files)
     {
         if (tok->files->type == TOKEN_REDIRECT_OUT)
