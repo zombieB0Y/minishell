@@ -3,7 +3,9 @@
   "files.associations": {
     "minishell.h": "c",
     "readline.h": "c",
-    "cstdlib": "c"
+    "string_view": "c",
+    "type_traits": "c",
+    "algorithm": "c"
   },
   "C_Cpp_Runner.msvcBatchPath": ""
 }
