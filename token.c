@@ -138,15 +138,6 @@ void remove_token_node(lol **head, lol *target)
 // 	return (tokenize(token));	
 // }
 
-size_t	count_2d_array(char **arr)
-{
-	size_t i = 0;
-	if (!arr)
-		return i;
-	while (arr && arr[i])
-		i++;
-	return i;
-}
 
 // t_list	**join_2D(t_list **s1, t_list **s2)
 // {

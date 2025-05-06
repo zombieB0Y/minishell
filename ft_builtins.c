@@ -126,7 +126,7 @@ int	ft_echo(char **arguments, int num)
 			func()->status = 1;
 		}
 	}
-	if (ft_strcmp(arguments[i], "-n") == 0)
+	else if (ft_strcmp(arguments[i], "-n") == 0)
 	{
 		flag = 1;
 		i++;

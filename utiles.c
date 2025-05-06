@@ -47,7 +47,8 @@ char	*write_heredoc(char *str, size_t count)
 {
 	char	*filename;
 	int		fd;
-
+	
+	filename = NULL;
 	filename = ft_strjoin("/tmp/heredoc_", ft_itoa(count));
 	if (!filename)
 		return (NULL);
@@ -59,73 +60,85 @@ char	*write_heredoc(char *str, size_t count)
 
 token_list_t	*capture_heredoc(token_list_t *tokens)
 {
+	char	buffer[1];
+	int (status) = 0;
 	char	*line;
-	size_t	linelen;
-	size_t	result_len;
-	size_t	new_size = 0;
-	char	*temp;
+	size_t	bytes_read;
 	char	*delimiter;
 	lol		*head;
-	bool found;
-	int	count = 0;
+	char	*heredoc_content;
+	size_t	total_len;
+	pid_t	pid;
+	int		pipefd[2];
+	int		count = 0;
 
-
-	line = NULL;
-
-	result_len = 0;
 	if (!tokens)
 		return (NULL);
 	head = tokens->head;
 	while (head->token->value)
 	{
-		temp = NULL;
-		found = false;
-		result_len = 0;
 		if (head->token->type == TOKEN_HEREDOC || head->token->type == TOKEN_HEREDOC_trunc)
 		{
-			count++;
-			found = true;
 			if (head->next->token->type != TOKEN_WORD)
 				return (return_herdoc_error());
 			delimiter = head->next->token->value;
-			head->token->value = NULL;
 			remove_token_node(&tokens->head, head->next);
 			tokens->size--;
-			while (1)
-			{
-				line = NULL;
-				line = readline("heredoc> ");
-				gc_register(line);
-				linelen = ft_strlen(line);
-				if (ft_strcmp(line, delimiter) == 0)
-					break ;
-				new_size = result_len + linelen + 2;
-				temp = gc_malloc((new_size)); // ft_realloc(temp, result_len, new_size);
-				if (!temp)
-					return (NULL);
-				head->token->value = temp;
-				if (head->token->type == TOKEN_HEREDOC_trunc)
-					line = shitft(line);
-				linelen = ft_strlen(line);
-				ft_memcpy(head->token->value + result_len, line, linelen);
-				result_len += linelen;
-				head->token->value[result_len] = '\n';
-				result_len++;
-				head->token->value[result_len] = '\0';
-			}
-			if (!result_len)
+			if (pipe(pipefd) == -1)
 				return (NULL);
+			pid = fork();
+			if (pid == -1)
+				return (NULL);
+			if (pid == 0)
+			{
+				close(pipefd[0]);
+				while (1)
+				{
+					line = readline("heredoc> ");
+					gc_register(line);
+					if (!line)
+						break;
+					if (ft_strcmp(line, delimiter) == 0)
+						break;
+					if (head->token->type == TOKEN_HEREDOC_trunc)
+						line = shitft(line);
+					write(pipefd[1], line, ft_strlen(line));
+					write(pipefd[1], "\n", 1);
+				}
+				close(pipefd[1]);
+				exit(0);
+			}
+			else
+			{
+				heredoc_content = NULL;
+				total_len = 0;
+				close(pipefd[1]);
+				while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer))) > 0)
+				{
+					char *new_content = gc_malloc(total_len + bytes_read + 1);
+					if (!new_content)
+						return (NULL);
+					if (heredoc_content)
+						ft_memcpy(new_content, heredoc_content, total_len);
+					ft_memcpy(new_content + total_len, buffer, bytes_read);
+					total_len += bytes_read;
+					new_content[total_len] = '\0';
+					heredoc_content = new_content;
+				}
+				close(pipefd[0]);
+				waitpid(pid, &status, 0);
+				if (heredoc_content)
+				{
+					count++;
+					head->token->value = write_heredoc(heredoc_content, count);
+				}
+			}
 		}
-		if (found)
-			head->token->value = write_heredoc(head->token->value, count);
-		// printf("filename = %s\n", head->token->value);
-		// printf("%d\n", found);
-
 		head = head->next;
 	}
-	// token_list_print(tokens);
 	return tokens;
 }
+
 
 // int	check(char *p)
 // {

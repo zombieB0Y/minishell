@@ -184,7 +184,6 @@ void					*return_quoted_error(void);
 token_list_t			*expand(token_list_t *tokens);
 // Grammar fucntions
 anas_list				*grammar_check(token_list_t *tokens);
-size_t					count_2d_array(char **arr);
 void					list_add(anas_list *list, token_node_t *token);
 void					print_anas_list(anas_list *list);
 //-------print welcome--------
