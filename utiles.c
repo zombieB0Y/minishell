@@ -107,7 +107,8 @@ token_list_t	*capture_heredoc(token_list_t *tokens, int *status)
 				close(pipefd[1]);
 				exit(0);
 			}
-			else
+			waitpid(pid, status, 0);
+			if (pid != 0)
 			{
 				heredoc_content = NULL;
 				total_len = 0;
@@ -125,7 +126,6 @@ token_list_t	*capture_heredoc(token_list_t *tokens, int *status)
 					heredoc_content = new_content;
 				}
 				close(pipefd[0]);
-				waitpid(pid, status, 0);
 				if (heredoc_content)
 				{
 					count++;

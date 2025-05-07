@@ -15,6 +15,9 @@
 # include <sys/stat.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include <signal.h>
+#include <termios.h>
+#include <sys/ioctl.h>
 
 # define GREEN "\033[32m"
 # define RED "\033[31m"
@@ -162,7 +165,7 @@ void					*return_herdoc_error(void);
 void					*return_quoted_error(void);
 
 // Expand fucntions
-token_list_t			*expand(token_list_t *tokens);
+token_list_t			*expand(token_list_t *tokens, t_env *env);
 // Grammar fucntions
 anas_list				*grammar_check(token_list_t *tokens);
 void					list_add(anas_list *list, token_node_t *token);

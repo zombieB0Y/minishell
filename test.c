@@ -42,7 +42,8 @@ token_list_t	*tokenize(const char *input)
 					if (lexer->current_char == quote)
 						lexer->quotes_count++;
 				}
-				lexer_advance(lexer);
+				lexer_advance(lexer); // 
+				
 			}
 			if ((lexer->quotes_count % 2) != 0)
 				return (return_quoted_error());

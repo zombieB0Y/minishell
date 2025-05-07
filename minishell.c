@@ -26,7 +26,7 @@ int	main(int ac, char **av, char **env)
 		line = readline("\001" GREEN "\002" "MINISHELL >$ " "\001" RESET "\002");
 		if (!line)
 		{
-			printf("Exit\n");
+			printf("exit\n");
 			break;
 		}
 		if (*line == '\0')
