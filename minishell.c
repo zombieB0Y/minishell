@@ -70,7 +70,7 @@ int	main(int ac, char **av, char **env)
 	t_env *g_env = NULL;
 
 	if (*env)
-        g_env = create_env(env);
+        func()->g_env = create_env(env);
 	if (!check_args(ac, av))
 		return (1);
 	print_welcome();
@@ -92,7 +92,7 @@ int	main(int ac, char **av, char **env)
 		}
 		gc_register(line);
 		add_history(line);
-		start(line, g_env);
+		start(line);
 		gc_collect();
 	}
 	free_env(g_env);

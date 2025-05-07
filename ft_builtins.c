@@ -1,13 +1,16 @@
 #include "minishell.h"
 
-int	ft_env(t_env *g_env, int num)
+int	ft_env(int num)
 {
 	func()->status = 0;
-	if (g_env)
+	t_env *curr;
+
+	curr = func()->g_env;
+	if (curr)
 	{
-		while (g_env)
+		while (curr)
 		{
-			if (printf("%s=%s\n", g_env->key, g_env->value) == -1)
+			if (printf("%s=%s\n", curr->key, curr->value) == -1)
 			{
 				write(2, "env: ", 5);
 				write(2, strerror(errno), ft_strlen(strerror(errno)));
@@ -15,7 +18,7 @@ int	ft_env(t_env *g_env, int num)
 				func()->status = 125;
 				break ;
 			}
-			g_env = g_env->next;
+			curr = curr->next;
 		}
 	}
 	if (num == 0)
@@ -31,7 +34,7 @@ void	free_node(t_env *g_env)
 	free(g_env);
 }
 
-int	ft_unset(t_env *g_env, token_node_t *tok, int num)
+int	ft_unset(token_node_t *tok, int num)
 {
 	t_env	*cur;
 	t_env	*prv;
@@ -45,8 +48,8 @@ int	ft_unset(t_env *g_env, token_node_t *tok, int num)
 	flag = 0;
 	if (!tok)
 		return (0);
-	cur = g_env;
-	if (g_env)
+	cur = func()->g_env;
+	if (cur)
 	{
 		while (cur)
 		{
@@ -68,7 +71,7 @@ int	ft_unset(t_env *g_env, token_node_t *tok, int num)
 			if (flag == 1)
 			{
 				flag = 0;
-				cur = g_env;
+				cur = func()->g_env;
 			}
 			else
 				cur = cur->next;
@@ -79,15 +82,15 @@ int	ft_unset(t_env *g_env, token_node_t *tok, int num)
 	exit(0);
 }
 
-int	ft_pwd(t_env *g_env, int num)
+int	ft_pwd(int num)
 {
 	char	*pwd;
 
 	pwd = getcwd(NULL, 0);
 	func()->status = 0;
-	if (!pwd)
+	if (pwd == NULL)
 	{
-		if (printf("%s\n", ft_getenv("PWD", g_env)) == -1)
+		if (printf("%s\n", ft_getenv("PWD")) == -1)
 		{
 			write(2, "pwd: ", 5);
 			write(2, strerror(errno), ft_strlen(strerror(errno)));
@@ -212,12 +215,12 @@ void	flag_to_zero(t_env *g_env)
 	}
 }
 
-void	add_to_env(t_env **env, char *arguments, int flag)
+void	add_to_env(char *arguments, int flag)
 {
 	char	*in_env;
 
 	t_env(*node) = NULL;
-	t_env(*curr) = *env;
+	t_env(*curr) = func()->g_env;
 	int(y) = 0;
 	if (flag == 0)
 	{
@@ -254,7 +257,7 @@ void	add_to_env(t_env **env, char *arguments, int flag)
 	curr->next = node;
 }
 
-void	ft_append(char *arguments, t_env **g_env)
+void	ft_append(char *arguments)
 {
 	char	*key;
 	char	*value;
@@ -263,7 +266,7 @@ void	ft_append(char *arguments, t_env **g_env)
 
 	i = plus_sign(arguments);
 	key = ft_substr(arguments, 0, i - 1);
-	curr = *g_env;
+	curr = func()->g_env;
 	while (curr)
 	{
 		if (ft_strcmp(curr->key, key) == 0)
@@ -276,17 +279,17 @@ void	ft_append(char *arguments, t_env **g_env)
 		}
 		curr = curr->next;
 	}
-	add_to_env(g_env, arguments, 1);
+	add_to_env(arguments, 1);
 }
 
-int	ft_export(char **arguments, t_env *g_env, int num)
+int	ft_export(char **arguments, int num)
 {
 	int(i) = 1;
 	func()->status = 0;
 	if (!arguments[i])
 	{
-		export_print(g_env);
-		flag_to_zero(g_env);
+		export_print(func()->g_env);
+		flag_to_zero(func()->g_env);
 	}
 	else
 	{
@@ -295,7 +298,7 @@ int	ft_export(char **arguments, t_env *g_env, int num)
 			if (ft_strchr(arguments[i], '='))
 			{
 				if (ft_strnstr(arguments[i], "+=", ft_strlen(arguments[i])))
-					ft_append(arguments[i], &g_env);
+					ft_append(arguments[i]);
 				else if ((ft_strcmp(arguments[i], "=") != 0
 						&& ft_strcmp(arguments[i], "") != 0
 						&& !ft_strchr(arguments[i], '.')
@@ -305,7 +308,7 @@ int	ft_export(char **arguments, t_env *g_env, int num)
 						&& !ft_strchr(arguments[i], '/')
 						&& arguments[i][0] != '=')
 					&& ft_isdigit(arguments[i][0]) != 1)
-					add_to_env(&g_env, arguments[i], 0);
+					add_to_env(arguments[i], 0);
 				else
 				{
 					write(2, "export: `", 9);
@@ -370,44 +373,65 @@ int	ft_exit(char **arguments, int num)
 	exit(func()->status);
 }
 
-void	edit_pwd_oldpwd(t_env **g_env, char *pwd, char *arg)
+void add_pwd()
+{
+	t_env *node;
+	char *temp;
+	t_env *curr;
+
+	temp = getcwd(NULL, 0);
+	curr = func()->g_env;
+	node = malloc(sizeof(t_env));
+	node->key = ft_strdup_n("PWD");
+	node->value = ft_strdup_n(temp);
+	node->flag = 0;
+	while (curr->next)
+	{
+		curr = curr->next;
+	}
+	curr->next = node;
+	free(temp);
+}
+
+void	edit_pwd_oldpwd(char *pwd, char *arg)
 {
 	t_env	*curr;
 	char	*temp;
+	(void)arg;
+	int (flagp) = 0;
+	int (flago) = 0;
 
-	curr = *g_env;
+	curr = func()->g_env;
 	while (curr)
 	{
 		if (ft_strcmp(curr->key, "PWD") == 0)
 		{
+			flagp = 1;
 			free(curr->value);
 			temp = getcwd(NULL, 0);
-			if (!temp)
-			{
-				temp = ft_strjoin_n("/", arg);
-				curr->value = ft_strjoin_n(pwd, temp);
-			}
-			else
+			if (temp)
 			{
 				curr->value = ft_strdup_n(temp);
 			}
 			free(temp);
 		}
-		else if (ft_strcmp(curr->key, "OLDPWD") == 0)
-		{
-			free(curr->value);
-			curr->value = ft_strdup_n(pwd);
-		}
+		// else if (ft_strcmp(curr->key, "OLDPWD") == 0)
+		// {
+		// 	free(curr->value);
+		// 	curr->value = ft_strdup_n(pwd);
+		// }
 		curr = curr->next;
 	}
+	if (flagp == 0)
+		add_pwd();
 }
 
-int	ft_cd(char **arguments, t_env *g_env, int num)
+int	ft_cd(char **arguments, int num)
 {
 	char *pwd;
 	char *old;
 
-	pwd = ft_getenv("PWD", g_env);
+	pwd = ft_getenv("PWD");
 	// printf("%s\n", arguments[2]);
 	if (arguments[2])
 	{
@@ -416,7 +440,7 @@ int	ft_cd(char **arguments, t_env *g_env, int num)
 	}
 	else if (!arguments[1])
 	{
-		old = ft_getenv("HOME", g_env);
+		old = ft_getenv("HOME");
 		if (old == NULL)
 			old = NULL;
 		if (chdir(old) == -1)
@@ -425,18 +449,18 @@ int	ft_cd(char **arguments, t_env *g_env, int num)
 			func()->status = 1;
 		}
 		else
-			edit_pwd_oldpwd(&g_env, pwd, arguments[1]);
+			edit_pwd_oldpwd(pwd, arguments[1]);
 	}
 	else if (ft_strcmp(arguments[1], ".") == 0)
 	{
 		old = getcwd(NULL, 0);
 		if (!old)
-			edit_pwd_oldpwd(&g_env, pwd, arguments[1]);
+			edit_pwd_oldpwd(pwd, arguments[1]);
 		free(old);
 	}
 	else if (ft_strcmp(arguments[1], "-") == 0)
 	{
-		old = ft_getenv("OLDPWD", g_env);
+		old = ft_getenv("OLDPWD");
 		if (old == NULL)
 			old = "this/is/not/valid";
 		if (chdir(old) == -1)
@@ -448,7 +472,7 @@ int	ft_cd(char **arguments, t_env *g_env, int num)
 			func()->status = 1;
 		}
 		else
-			edit_pwd_oldpwd(&g_env, pwd, arguments[1]);
+			edit_pwd_oldpwd(pwd, arguments[1]);
 	}
 	else
 	{
@@ -461,7 +485,7 @@ int	ft_cd(char **arguments, t_env *g_env, int num)
 			func()->status = 1;
 		}
 		else
-			edit_pwd_oldpwd(&g_env, pwd, arguments[1]);
+			edit_pwd_oldpwd(pwd, arguments[1]);
 	}
 	if (num == 0)
 		return (func()->status);

@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int	process_command(const char *command, t_env *g_env)
+int	process_command(const char *command)
 {
 	token_list_t	*tokens;
 	anas_list		*list;
@@ -36,7 +36,7 @@ int	process_command(const char *command, t_env *g_env)
 	// 	current = current->next;
 	// }
 	// printf("\n");
-	return (ft_execute(list, g_env));
+	return (ft_execute(list));
 }
 const char	*token_type_to_string(token_type_t type)
 {

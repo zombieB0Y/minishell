@@ -11,7 +11,7 @@
 
 
 
-int	start(char *line, t_env *g_env)
+int	start(char *line)
 {
-	return (process_command(line, g_env));
+	return (process_command(line));
 }

@@ -129,7 +129,7 @@ typedef struct expo_list
 typedef struct st
 {
 	int status;
-	t_expo *node;
+	t_env *g_env;
 } t_status;
 
 
@@ -189,8 +189,8 @@ void					print_anas_list(anas_list *list);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------
-int						start(char *line, t_env *g_env);
-int						process_command(const char *command, t_env *g_env);
+int						start(char *line);
+int						process_command(const char *command);
 //--------functions------------
 // int						check(char *p);
 int						is_whitespace(int c);
@@ -206,25 +206,25 @@ char					*substr_dup(const char *start, size_t len);
 char					*substr_dup(const char *start, size_t len);
 token_list_t			*capture_heredoc(token_list_t *tokens);
 //----------execution--------
-int						ft_execute(anas_list *tok, t_env *g_env);
+int						ft_execute(anas_list *tok);
 char					**ft_split_n(char const *s, char c);
 t_env					*create_env(char **env);
-int						ft_env(t_env *g_env, int num);
-int						ft_unset(t_env *g_env, token_node_t *tok, int num);
+int						ft_env(int num);
+int						ft_unset(token_node_t *tok, int num);
 char					*ft_substr_n(char const *s, unsigned int start, size_t len);
 char					*ft_strdup_n(const char *s1);
 void					free_env(t_env *g_env);
 void					ft_free(char **ptr);
-int						ft_pwd(t_env *g_env, int num);
+int						ft_pwd(int num);
 int						ft_echo(char **arguments, int num);
-int						ft_export(char **arguments, t_env *g_env, int num);
+int						ft_export(char **arguments, int num);
 int						ft_lstsize_n(t_env *lst);
 int						equal_sign(char *env);
 int						ft_exit(char **arguments, int num);
 char					*ft_strjoin_n(char const *s1, char const *s2);
 int						plus_sign(char *env);
-char					*ft_getenv(char *key, t_env *g_env);
-int						ft_cd(char **arguments, t_env *g_env, int num);
+char					*ft_getenv(char *key);
+int						ft_cd(char **arguments, int num);
 void					handler_chiled(int sig);
 void					sig_child();
 void 					sig_setup();
