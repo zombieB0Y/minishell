@@ -67,7 +67,6 @@ int	main(int ac, char **av, char **env)
 	char *line;
 	(void)ac;
 	(void)av;
-	t_env *g_env = NULL;
 
 	if (*env)
         func()->g_env = create_env(env);
@@ -95,7 +94,7 @@ int	main(int ac, char **av, char **env)
 		start(line);
 		gc_collect();
 	}
-	free_env(g_env);
+	free_env(func()->g_env);
 	rl_clear_history();
 	return (func()->status);
 }

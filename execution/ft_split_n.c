@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 char    *ft_word(char const *s, char c, size_t *i)
 {

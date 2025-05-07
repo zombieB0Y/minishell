@@ -290,6 +290,24 @@ void	ft_append(char *arguments)
 	add_to_env(arguments, 1);
 }
 
+int ft_alpha_num(char *arg)
+{
+	int i;
+
+	i = 1;
+	if (ft_strnstr(arg, "++=", ft_strlen(arg)))
+	{
+		return (0);
+	}
+	while (arg[i] && arg[i] != '=')
+	{
+		if (!ft_isdigit(arg[i]) && !ft_isalpha(arg[i]) && arg[i] != '+')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 int	ft_export(char **arguments, int num)
 {
 	int(i) = 1;
@@ -307,16 +325,8 @@ int	ft_export(char **arguments, int num)
 		{
 			if (ft_strchr(arguments[i], '='))
 			{
-				if ((ft_strcmp(arguments[i], "=") != 0
-				&& ft_strcmp(arguments[i], "") != 0
-				&& ft_strcmp(arguments[i], "+=") != 0
-				&& !ft_strchr(arguments[i], '.')
-				&& !ft_strchr(arguments[i], '-')
-				&& !ft_strchr(arguments[i], '*')
-				&& !ft_strchr(arguments[i], '-')
-				&& !ft_strchr(arguments[i], '/')
-				&& arguments[i][0] != '=')
-				&& ft_isdigit(arguments[i][0]) != 1)
+				if ((ft_isalpha(arguments[i][0]) || arguments[i][0] == '_')
+				&& (arguments[i][1] == '=' || ft_alpha_num(arguments[i])))
 				{
 					if (ft_strnstr(arguments[i], "+=", ft_strlen(arguments[i])))
 						ft_append(arguments[i]);
@@ -372,6 +382,20 @@ int	ft_num_inside(char *arg)
 	return (0);
 }
 
+int is_all_didgits(char *arg)
+{
+	int i;
+
+	i = 0;
+	while (arg[i])
+	{
+		if (!ft_isdigit(arg[i]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 int	ft_exit(char **arguments, int num)
 {
 	int(i) = 1;
@@ -380,6 +404,14 @@ int	ft_exit(char **arguments, int num)
 		if (num == 0)
 			write(2, "exit\n", 5);
 		exit(func()->status);
+	}
+	else if (arguments[i + 1])
+	{
+		write(2, "exit\n", 5);
+		write(2, "exit: too many arguments\n", 25);
+		func()->status = 1;
+		if (!is_all_didgits(arguments[i]))
+			exit(func()->status);
 	}
 	else if (ft_num_inside(arguments[1]) == 1)
 	{
@@ -390,20 +422,14 @@ int	ft_exit(char **arguments, int num)
 		func()->status = 2;
 		exit(func()->status);
 	}
-	else if (arguments[i + 1])
-	{
-		write(2, "exit\n", 5);
-		write(2, "exit: too many arguments\n", 25);
-		func()->status = 1;
-		exit(func()->status);
-	}
 	else
 	{
 		func()->status = ft_atoi(arguments[i]);
+		if (num == 0)
+			write(2, "exit\n", 5);
+		exit(func()->status);
 	}
-	if (num == 0)
-		write(2, "exit\n", 5);
-	exit(func()->status);
+	return (func()->status);
 }
 
 void add_pwd()

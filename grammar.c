@@ -191,7 +191,6 @@ anas_list *grammar_check(token_list_t *tokens)
 
 void print_anas_list(anas_list *list)
 {
-    printf("%s--%p--%p\n", list->head->arguments[0], list->head->arguments[1], list->head->arguments[2]);
     if (!list || !list->head)
     {
         printf("Empty command list\n");

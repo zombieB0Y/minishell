@@ -1,274 +1,76 @@
 #include "../minishell.h"
 
-int ft_isprint(int c)
-{
-    return (c >= 32 && c <= 126);
-}
-
-int	ft_lstsize_n(t_env *lst)
-{
-	int	count;
-
-	count = 0;
-	if (lst)
-	{
-		while (lst)
-		{
-			lst = lst->next;
-			count++;
-		}
-	}
-	return (count);
-}
-
-char **env_to_char()
-{
-    int (list_size) = ft_lstsize_n(func()->g_env);
-    char (**env) = NULL;
-    int (i) = 0;
-    t_env *curr;
-
-    curr = func()->g_env;
-    if (list_size != 0)
-    {
-        env = (char **)gc_malloc((list_size + 1) * sizeof(char *));
-        while (curr)
-        {
-            env[i] = ft_strjoin(curr->key, "=");
-            env[i] = ft_strjoin(env[i], curr->value);
-            i++;
-            curr = curr->next;
-        }
-        env[i] = NULL;
-    }
-    return (env);
-}
-
-int sign(char *env)
-{
-    int (i) = 0;
-    while (env[i] != '=')
-        i++;
-    return (i);
-}
-// int plus_sign(char *env)
+// int check_child_sig(int r)
 // {
-//     int (i) = 0;
-//     while (env[i] != '=')
-//         i++;
-//     return (i);
+//     if (WTERMSIG(r) == SIGINT)
+//     {
+//         func()->status = 130;
+//         return (130);
+//     }
+//     else if (WTERMSIG(r) == SIGQUIT)
+//     {
+//        func()->status = 131;
+//         return (131);
+//     }
+//     return (128 + WTERMSIG(r));
 // }
 
-t_env *create_node(char **env, int i)
-{
-    int (y) = sign(env[i]);
-    t_env *node = NULL;
-    node = malloc(sizeof(t_env));
-    node->key = ft_substr_n(env[i], 0, y);
-    node->value = ft_substr_n(env[i], y + 1, ft_strlen(env[i]));
-    node->flag = 0;
-    return (node);
-}
+// int builtins_parent(anas_list *tok, int pip_num)
+// {
+//     int r;
+//     int d;
+//     int stdout_copy = dup(1);
+//     int stdin_copy = dup(0);
 
-t_env *create_env(char **env)
-{
-    t_env *node;
-    t_env *head;
-    int i = 0;
-    if (!env)
-    {
-        return (NULL);
-    }
-    head = create_node(env, i);
-    node = head;
-    i++;
-    while (env[i])
-    {
-        node->next = create_node(env, i);
-        node = node->next;
-        i++;
-    }
-    node->next = NULL;
-    return (head);
-}
-
-int number_of_pip(anas_list *tok)
-{
-    token_node_t *current = tok->head;
-    int p = 0;
-    while (current)
-    {
-        if (current->arguments[0])
-            p++;
-        current = current->next;
-    }
-    return (p - 1);
-}
-
-char *ft_getenv(char *key)
-{
-    char *value = NULL;
-    t_env *curr;
-
-    curr = func()->g_env;
-    while (curr)
-    {
-        if (ft_strcmp(curr->key, key) == 0)
-        {
-            value = ft_strdup(curr->value);
-            return (value);
-        }
-        curr = curr->next;
-    }
-    return (value);
-}
-
-int ft_redirect_out(files_t *files, int flag)
-{
-    int fd;
-
-    func()->status = 0;
-    fd = open(files->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    if (fd == -1)
-    {
-        write(2, files->file, ft_strlen(files->file));
-        write(2, ": ", 2);
-        write(2, strerror(errno), ft_strlen(strerror(errno)));
-        write(2, "\n", 1);
-        func()->status = 1;
-        if (flag == 0)
-            exit(func()->status);
-        return (2);
-    }
-    dup2(fd, 1);
-    return (0);
-}
-
-int ft_redirect_in(files_t *files, int flag)
-{
-    int fd;
-
-    func()->status = 0;
-    fd = open(files->file, O_RDONLY);
-    if (fd == -1)
-    {
-        write(2, files->file, ft_strlen(files->file));
-        write(2, ": ", 2);
-        write(2, strerror(errno), ft_strlen(strerror(errno)));
-        write(2, "\n", 1);
-        func()->status = 1;
-        if (flag == 0)
-            exit(func()->status);
-        return (2);
-    }
-    dup2(fd, 0);
-    return (0);
-}
-
-int ft_redirect_append(files_t *files, int flag)
-{
-    int fd;
-
-    func()->status = 0;
-    fd = open(files->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-    if (fd == -1)
-    {
-        write(2, files->file, ft_strlen(files->file));
-        write(2, ": ", 2);
-        write(2, strerror(errno), ft_strlen(strerror(errno)));
-        write(2, "\n", 1);
-        func()->status = 1;
-        if (flag == 0)
-            exit(func()->status);
-        return (2);
-    }
-    dup2(fd, 1);
-    return (0);
-}
-
-int ft_redirects(token_node_t *tok, int flag)
-{
-    int r;
-
-    r = 0;
-    if (tok)
-    {
-        while (tok->files)
-        {
-            if (tok->files->type == TOKEN_REDIRECT_OUT)
-                r = (ft_redirect_out(tok->files, flag));
-            else if (tok->files->type == TOKEN_REDIRECT_IN || tok->files->type == TOKEN_HEREDOC || tok->files->type == TOKEN_HEREDOC_trunc)
-                r = (ft_redirect_in(tok->files, flag));
-            else if (tok->files->type == TOKEN_APPEND)
-                r = (ft_redirect_append(tok->files, flag));
-            tok->files = tok->files->next;
-        }
-    }
-    return (r);
-}
-
-int execute_builtins(token_node_t *tok, int pip_num)
-{
-    if (ft_strcmp(tok->arguments[0], "env") == 0)
-        return (ft_env(pip_num));
-    else if (ft_strcmp(tok->arguments[0], "unset") == 0)
-        return (ft_unset(tok, pip_num));
-    else if (ft_strcmp(tok->arguments[0], "pwd") == 0)
-        return (ft_pwd(pip_num));
-    else if (ft_strcmp(tok->arguments[0], "echo") == 0)
-        return (ft_echo(tok->arguments, pip_num));
-    else if (ft_strcmp(tok->arguments[0], "export") == 0)
-        return (ft_export(tok->arguments, pip_num));
-    else if (ft_strcmp(tok->arguments[0], "exit") == 0)
-        return (ft_exit(tok->arguments, pip_num));
-    else if (ft_strcmp(tok->arguments[0], "cd") == 0)
-        return (ft_cd(tok, pip_num));
-    return (3);
-}
-
-void ft_exc(token_node_t *tok, int num)
+//     r = 3;
+//     d = ft_redirects(tok->head, 1);
+//     if (d == 2)
+//         return (func()->status);
+//     r = execute_builtins(tok->head, pip_num);
+//     if (r != 3)
+//     {
+//         dup2(stdout_copy, 1);
+//         dup2(stdin_copy, 0);
+//         close(stdout_copy);
+//         close(stdin_copy);
+//         return (r);
+//     }
+//     return (r);
+// }
+// void    ft_close_parent(int pipes[2][2], int i)
+// {
+//     if (i > 0)
+// 	{
+// 		close(pipes[(i + 1) % 2][0]);
+// 		close(pipes[(i + 1) % 2][1]);
+// 	}
+// }
+// void ft_copy_in_out(int stdout_copy, int stdin_copy)
+// {
+//     dup2(stdout_copy, 1);
+//     dup2(stdin_copy, 0);
+//     close(stdout_copy);
+//     close(stdin_copy);
+// }
+void ft_exc(token_node_t *tok, int num, char **envchar, int i)
 {
     char	*tmp;
 	char	*full_path;
-	int		i;
     char *p;
-    char **envchar = env_to_char();
 
     execute_builtins(tok, num);
-
     p = ft_getenv("PATH");
     if (access(tok->arguments[0], X_OK) == 0)
-    {
-        ft_redirects(tok, 0);
-        execve(tok->arguments[0], tok->arguments, envchar);
-        func()->status = 0;
-        exit(func()->status);
-    }
+        check_if_full_path(tok, envchar);
     if (!p)
-    {
-        write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
-        write (2, ": No such file or directory\n", 28);
-        func()->status = 127;
-        exit(func()->status);
-    }
+        no_path(tok);
     char **path = ft_split_n(p, ':');
-	i = 0;
 	tmp = NULL;
 	full_path = NULL;
 	while (path[i])
 	{
 		tmp = ft_strjoin(path[i], "/");
-		full_path = ft_strjoin(tmp, tok->arguments[0]);
-		if (access(full_path, X_OK) == 0)
-		{
-            // while (tok->files)
-            // {
-                ft_redirects(tok, 0);
-                // tok->files = tok->files->next;
-            // }
-			execve(full_path, tok->arguments, envchar);
-			exit(1);
-		}
+		execute_commend(tmp, full_path, tok, envchar);
 		i++;
 	}
 	if (!path[i])
@@ -278,104 +80,14 @@ void ft_exc(token_node_t *tok, int num)
     }
 }
 
-int check_child_sig(int r)
-{
-    if (WTERMSIG(r) == SIGINT)
-    {
-        func()->status = 130;
-        return (130);
-    }
-    else if (WTERMSIG(r) == SIGQUIT)
-    {
-       func()->status = 131;
-        return (131);
-    }
-    return (128 + WTERMSIG(r));
-}
 
-int builtins_parent(anas_list *tok, int pip_num)
-{
-    int r;
-    int d;
-    int stdout_copy = dup(1);
-    int stdin_copy = dup(0);
-
-    r = 3;
-    d = ft_redirects(tok->head, 1);
-    if (d == 2)
-        return (func()->status);
-    r = execute_builtins(tok->head, pip_num);
-    if (r != 3)
-    {
-        dup2(stdout_copy, 1);
-        dup2(stdin_copy, 0);
-        close(stdout_copy);
-        close(stdin_copy);
-        return (r);
-    }
-    return (r);
-}
-
-// int ft_pip(int pip_num, anas_list *tok, t_env *g_env)
-// {
-//     int pipes[2][2];
-//     pid_t pids[pip_num + 1];
-//     int (i) = 0;
-//     int (r) = 0;
-
-//     while (i <= pip_num)
-//     {
-//         if (i < pip_num)
-//         {
-//             if (pipe(pipes[i % 2]) == -1)
-//             {
-//                 perror("pipe");
-//                 exit(EXIT_FAILURE);
-//             }
-//         }
-//         pids[i] = fork();
-//         sig_child();
-//         sig_quit_child();
-//         if (pids[i] == -1)
-//         {
-//             perror("fork");
-//             exit(EXIT_FAILURE);
-//         }
-//         if (pids[i] == 0)
-//         {
-//             if (i > 0)
-//             {
-//                 dup2(pipes[(i + 1) % 2][0], 0);
-//                 close(pipes[(i + 1) % 2][0]);
-//                 close(pipes[(i + 1) % 2][1]);
-//             }
-//             if (i < pip_num)
-//             {
-//                 dup2(pipes[i % 2][1], 1);
-//                 close(pipes[i % 2][0]);
-//                 close(pipes[i % 2][1]);
-//             }
-//             ft_exc(tok->head, g_env, pip_num);
-//         }
-//         if (i > 0)
-//         {
-//             close(pipes[(i + 1) % 2][0]);
-//             close(pipes[(i + 1) % 2][1]);
-//         }
-//         i++;
-//         tok->head = tok->head->next;
-//     }
-//     for (int i = 0; i <= pip_num; i++)
-//     {
-//         waitpid(pids[i], &r, 0);
-//     }
-//     if (WIFSIGNALED(r))
-//         return (check_child_sig(r));
-//     func()->status = r >> 8;
-//     return (func()->status);
-// }
 void	ft_child_process(int i, int pip_num, int pipes[2][2], anas_list *tok)
 {
+    char **envchar;
+    int y;
+    
+    envchar = env_to_char();
+    y = 0;
 	if (i > 0)
 	{
 		dup2(pipes[(i + 1) % 2][0], 0);
@@ -388,8 +100,9 @@ void	ft_child_process(int i, int pip_num, int pipes[2][2], anas_list *tok)
 		close(pipes[i % 2][0]);
 		close(pipes[i % 2][1]);
 	}
-	ft_exc(tok->head, pip_num);
+	ft_exc(tok->head, pip_num, envchar, y);
 }
+
 
 void	ft_fork_and_pipe(int pip_num, anas_list *tok, pid_t *pids)
 {
@@ -405,8 +118,7 @@ void	ft_fork_and_pipe(int pip_num, anas_list *tok, pid_t *pids)
 			exit(EXIT_FAILURE);
 		}
 		pids[i] = fork();
-		sig_child();
-		sig_quit_child();
+		(sig_child(), sig_quit_child());
 		if (pids[i] == -1)
 		{
 			perror("fork");
@@ -414,11 +126,7 @@ void	ft_fork_and_pipe(int pip_num, anas_list *tok, pid_t *pids)
 		}
 		if (pids[i] == 0)
 			ft_child_process(i, pip_num, pipes, tok);
-		if (i > 0)
-		{
-			close(pipes[(i + 1) % 2][0]);
-			close(pipes[(i + 1) % 2][1]);
-		}
+		ft_close_parent(pipes, i);
 		i++;
 		tok->head = tok->head->next;
 	}
@@ -442,7 +150,6 @@ int	ft_pip(int pip_num, anas_list *tok)
 }
 
 
-
 int ft_execute(anas_list *tok)
 {
     int (num_pip) = number_of_pip(tok);
@@ -453,24 +160,18 @@ int ft_execute(anas_list *tok)
     r = 3;
     if (num_pip == 0)
     {
-        r = builtins_parent(tok, num_pip);
+        r = builtins_parent(tok, num_pip, &stdout_copy, &stdin_copy);
         if (r != 3)
             return (r);
     }
     if (num_pip >= 0)
     {
         ft_pip(num_pip, tok);
-        dup2(stdout_copy, 1);
-        dup2(stdin_copy, 0);
-        close(stdout_copy);
-        close(stdin_copy);
+        ft_copy_in_out(&stdout_copy, &stdin_copy);
         return (func()->status);
     }
     ft_redirects(tok->head, 1);
-    dup2(stdout_copy, 1);
-    dup2(stdin_copy, 0);
-    close(stdout_copy);
-    close(stdin_copy);
+    ft_copy_in_out(&stdout_copy, &stdin_copy);
     return (func()->status); 
 }
 

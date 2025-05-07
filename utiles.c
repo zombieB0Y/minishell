@@ -128,13 +128,8 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 					heredoc_content = new_content;
 				}
 				close(pipefd[0]);
-				if (heredoc_content)
-				{
-					count++;
-					head->token->value = write_heredoc(heredoc_content, count);
-				}
-				else
-					remove_token_node(&tokens->head, head);
+				count++;
+				head->token->value = write_heredoc(heredoc_content, count);
 			}
 		}
 		head = head->next;
