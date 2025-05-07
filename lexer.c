@@ -72,7 +72,7 @@ token_t	*read_operator(lexer_t *lexer)
 	if (lexer->current_char == '|')
 	{
 		lexer_advance(lexer);
-		return (token_create(TOKEN_PIPE, ft_strdup("|")));
+		return (token_create(TOKEN_PIPE, ft_strdup("|"), 0));
 	}
 	else if (lexer->current_char == '<')
 	{
@@ -83,11 +83,11 @@ token_t	*read_operator(lexer_t *lexer)
 			if (lexer->current_char == '-')
 			{
 				lexer_advance(lexer);
-				return (token_create(TOKEN_HEREDOC_trunc, ft_strdup("<<-")));
+				return (token_create(TOKEN_HEREDOC_trunc, ft_strdup("<<-"), 0));
 			}
-			return (token_create(TOKEN_HEREDOC, ft_strdup("<<")));
+			return (token_create(TOKEN_HEREDOC, ft_strdup("<<"), 0));
 		}
-		return (token_create(TOKEN_REDIRECT_IN, ft_strdup("<")));
+		return (token_create(TOKEN_REDIRECT_IN, ft_strdup("<"), 0));
 	}
 	else if (lexer->current_char == '>')
 	{
@@ -95,9 +95,9 @@ token_t	*read_operator(lexer_t *lexer)
 		if (lexer->current_char == '>')
 		{
 			lexer_advance(lexer);
-			return (token_create(TOKEN_APPEND, ft_strdup(">>")));
+			return (token_create(TOKEN_APPEND, ft_strdup(">>"), 0));
 		}
-		return (token_create(TOKEN_REDIRECT_OUT, ft_strdup(">")));
+		return (token_create(TOKEN_REDIRECT_OUT, ft_strdup(">"), 0));
 	}
 	else
 	{

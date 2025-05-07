@@ -58,7 +58,7 @@ typedef struct env
 typedef struct
 {
 	token_type_t		type;
-	t_open_flags		openf;
+	char				quote;
 	char				*value;
 }						token_t;
 
@@ -106,8 +106,6 @@ typedef struct
 	size_t input_len; // 3
 	size_t position;  // 0 1 2 3
 	char				current_char;
-	bool in_single_quote; // useless f new tokenizer
-	bool in_double_quote; // useless f new tokenizer
 	int					quotes_count;
 
 }						lexer_t;
@@ -132,7 +130,7 @@ bool					lexer_is_at_end(lexer_t *lexer);
 bool					lexer_is_escaped(lexer_t *lexer);
 
 // Token operations
-token_t					*token_create(token_type_t type, char *value);
+token_t					*token_create(token_type_t type, char *value, char quote);
 token_t					*next_token(lexer_t *lexer, size_t len, size_t start);
 // void					token_destroy(token_t *token);
 const char				*token_type_to_string(token_type_t type);

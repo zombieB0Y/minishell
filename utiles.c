@@ -80,7 +80,7 @@ token_list_t	*capture_heredoc(token_list_t *tokens, int *status)
 		{
 			if (head->next->token->type != TOKEN_WORD)
 				return (return_herdoc_error());
-			delimiter = head->next->token->value;
+			delimiter = head->next->token->value; // removing quotes in the delimiter and flaging for no expand and expanding if there no quotes
 			remove_token_node(&tokens->head, head->next);
 			tokens->size--;
 			if (pipe(pipefd) == -1)
