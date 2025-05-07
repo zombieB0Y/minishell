@@ -237,21 +237,24 @@ void ft_exc(token_node_t *tok, int num)
     execute_builtins(tok, num);
 
     p = ft_getenv("PATH");
+    if (access(tok->arguments[0], X_OK) == 0)
+    {
+        ft_redirects(tok, 0);
+        execve(tok->arguments[0], tok->arguments, envchar);
+        func()->status = 0;
+        exit(func()->status);
+    }
     if (!p)
     {
         write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
         write (2, ": No such file or directory\n", 28);
-        exit(127);
+        func()->status = 127;
+        exit(func()->status);
     }
     char **path = ft_split_n(p, ':');
 	i = 0;
 	tmp = NULL;
 	full_path = NULL;
-    if (access(tok->arguments[0], X_OK) == 0)
-    {
-        execve(tok->arguments[0], tok->arguments, envchar);
-		free(full_path);
-    }
 	while (path[i])
 	{
 		tmp = ft_strjoin(path[i], "/");
