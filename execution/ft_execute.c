@@ -44,24 +44,24 @@ char **env_to_char()
     return (env);
 }
 
-int equal_sign(char *env)
+int sign(char *env)
 {
     int (i) = 0;
     while (env[i] != '=')
         i++;
     return (i);
 }
-int plus_sign(char *env)
-{
-    int (i) = 0;
-    while (env[i] != '=')
-        i++;
-    return (i);
-}
+// int plus_sign(char *env)
+// {
+//     int (i) = 0;
+//     while (env[i] != '=')
+//         i++;
+//     return (i);
+// }
 
 t_env *create_node(char **env, int i)
 {
-    int (y) = equal_sign(env[i]);
+    int (y) = sign(env[i]);
     t_env *node = NULL;
     node = malloc(sizeof(t_env));
     node->key = ft_substr_n(env[i], 0, y);
@@ -91,25 +91,6 @@ t_env *create_env(char **env)
     node->next = NULL;
     return (head);
 }
-
-// t_env *default_env()
-// {
-//     t_env *node;
-//     t_env *head;
-//     int i = 0;
-//     int level = 0;
-
-//     node = malloc(sizeof(t_env));
-//     node->key = ft_strdup_n("PWD");
-//     node->value = getcwd(NULL, 0);
-//     node->next = malloc(sizeof(t_env));
-//     node->next->key = ft_strdup_n("SHLVL");
-//     node->next->value = ft_strdup_n(ft_atoi(level + 1));
-//     node->next->next = malloc(sizeof(t_env));
-//     node->next->next->key = ft_strdup_n("_")
-//     node->next->next->value = ft_strdup_n("/usr/bin/env");
-//     return (head);
-// }
 
 int number_of_pip(anas_list *tok)
 {
@@ -241,7 +222,7 @@ int execute_builtins(token_node_t *tok, int pip_num)
     else if (ft_strcmp(tok->arguments[0], "exit") == 0)
         return (ft_exit(tok->arguments, pip_num));
     else if (ft_strcmp(tok->arguments[0], "cd") == 0)
-        return (ft_cd(tok->arguments, pip_num));
+        return (ft_cd(tok, pip_num));
     return (3);
 }
 
