@@ -35,10 +35,7 @@ char	*shitft(char *str)
 	new_str = NULL;
 	i = 0;
 	while(str[i] && is_tab(str[i]))
-	{
 		ft_memmove(str + i, str + i + 1, ft_strlen(str) - i);
-		i++;
-	}
 	new_str = ft_strdup(str);
 	return (new_str);
 }

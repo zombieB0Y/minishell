@@ -14,7 +14,7 @@ int	process_command(const char *command, t_env *g_env, int *status)
 	tokens = capture_heredoc(tokens, status);
 	if (!tokens)
 		return (0);
-	// tokens = expand(tokens);
+	//expand(tokens);
 	list = grammar_check(tokens);
 	if (!list)
 		return (0);

@@ -24,7 +24,30 @@
 # define RESET "\033[0m"
 
 
+/*
+	Brace Expansion
+	Tilde Expansion
+	Shell Parameter Expansion -- hada howa '$'
+	Command Substitution
+	Arithmetic Expansion
+	Process Substitution
+	Word Splitting
+	Filename Expansion
+	Quote Removal
+*/
+
 /*  waaaaaaaaaaaaaaaa new line chof lih chi hal "ls \n-l" */
+
+typedef struct exp_s
+{
+	char	*dollar_sign_pos;
+    char	*current_pos;
+    char	*result_buffer;
+    size_t	result_len;
+    size_t	result_capacity;
+    int		expansions_done;
+}		exp_t;
+
 
 /* Token type definitions */
 typedef enum
@@ -71,12 +94,12 @@ typedef struct files
 }						files_t;
 
 /* Token list structure */
+
 typedef struct lol_t
 {
 	token_t				*token;
 	struct lol_t		*next;
 }						lol;
-
 typedef struct token_node
 {
 	char				**arguments;
@@ -207,4 +230,5 @@ char					*ft_strjoin_n(char const *s1, char const *s2);
 int						plus_sign(char *env);
 char					*ft_getenv(char *key, t_env *g_env);
 int						ft_cd(char *arguments, t_env **g_env, int *status, int num);
+
 #endif
