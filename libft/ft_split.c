@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 14:43:54 by abenba            #+#    #+#             */
-/*   Updated: 2025/03/05 14:43:55 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/08 20:17:15 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
 
 int	ft_isspace(char c)
 {
-	return (c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f'
-		|| c == '\r' || c == '|' || c == '<'|| c == '>');
+	return (c == ' ' || c == '\t' || c == '\n');
 }
 
 // void	is_qou(char **ptr, char const *s, int i, size_t *y)

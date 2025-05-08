@@ -6,10 +6,11 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 18:56:55 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/08 13:28:42 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/08 20:30:47 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 
 char	*ft_strchr(const char *s, int c)
 {

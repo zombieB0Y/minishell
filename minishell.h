@@ -151,6 +151,7 @@ typedef struct st
 {
 	int status;
 	int background;
+	GCNode *gc_head;
 	t_env *g_env;
 } t_status;
 
@@ -159,7 +160,6 @@ typedef struct st
 #  define BUFFER_SIZE 10
 # endif
 
-extern GCNode *gc_head;
 
 // Lexer operations
 lexer_t					*lexer_create(const char *input);
@@ -167,17 +167,17 @@ lexer_t					*lexer_create(const char *input);
 void					lexer_advance(lexer_t *lexer);
 // char					lexer_peek(lexer_t *lexer, size_t offset);
 bool					lexer_is_at_end(lexer_t *lexer);
-bool					lexer_is_escaped(lexer_t *lexer);
+// bool					lexer_is_escaped(lexer_t *lexer);
 
 // Token operations
 token_t					*token_create(token_type_t type, char *value, char quote);
-token_t					*next_token(lexer_t *lexer, size_t len, size_t start);
+// token_t					*next_token(lexer_t *lexer, size_t len, size_t start);
 // void					token_destroy(token_t *token);
 const char				*token_type_to_string(token_type_t type);
 
 // Token list operations
 token_list_t			*token_list_create(void);
-void					token_list_destroy(token_list_t *list);
+// void					token_list_destroy(token_list_t *list);
 void					token_list_add(token_list_t *list, token_t *token);
 void					token_list_print(token_list_t *list);
 
@@ -190,9 +190,9 @@ char					get_quotes(lexer_t *lexer);
 // token_t					*read_word(lexer_t *lexer);
 token_t					*read_operator(lexer_t *lexer);
 // char					*read_quoted_string(lexer_t *lexer, char quote_char);
-void					reset_quotes(lexer_t *lexer, char quote_char);
-void					*get_quoted_input(lexer_t *lexer, size_t *len);
-int						end_capture_quotes(lexer_t *lexer, char *input);
+// void					reset_quotes(lexer_t *lexer, char quote_char);
+// void					*get_quoted_input(lexer_t *lexer, size_t *len);
+// int						end_capture_quotes(lexer_t *lexer, char *input);
 // token_t					*read_subshell(lexer_t *lexer);
 token_list_t			*tokenize(const char *input);
 void					remove_token_node(lol **head,
@@ -203,11 +203,14 @@ void					*return_herdoc_error(void);
 void					*return_quoted_error(void);
 
 // Expand fucntions
-token_list_t			*expand(token_list_t *tokens, t_env *env);
+token_list_t			*expand(token_list_t *tokens);
+char					*expand_string_variables(char *original_value);
+void					append_to_buffer(exp_t *exp, char *str_to_add, size_t add_len);
 // Grammar fucntions
 anas_list				*grammar_check(token_list_t *tokens);
 void					list_add(anas_list *list, token_node_t *token);
 void					print_anas_list(anas_list *list);
+void					remove_surrounding_quotes(token_list_t *list);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------
