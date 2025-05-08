@@ -205,7 +205,7 @@ void	export_print(t_env *g_env)
 				if (to_print->value)
 				{
 					if (printf("declare -x %s=\"%s\"\n", to_print->key,
-						to_print->value) == -1);
+						to_print->value) == -1)
 						{
 							write(2, "export: ", 7);
 							write(2, strerror(errno), ft_strlen(strerror(errno)));
