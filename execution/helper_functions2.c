@@ -10,7 +10,8 @@ int check_child_sig(int r)
     else if (WTERMSIG(r) == SIGQUIT)
     {
        func()->status = 131;
-        return (131);
+       write(2, "Quit (core dumped)\n", 20);
+       return (131);
     }
     return (128 + WTERMSIG(r));
 }
@@ -31,9 +32,6 @@ int builtins_parent(anas_list *tok, int pip_num, int *stdout_copy, int *stdin_co
         ft_copy_in_out(stdout_copy, stdin_copy);
         return (r);
     }
-    // ft_copy_in_out(stdout_copy, stdin_copy);
-    // close(*stdout_copy);
-    // close(*stdin_copy);
     return (r);
 }
 

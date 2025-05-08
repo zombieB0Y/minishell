@@ -129,6 +129,7 @@ typedef struct expo_list
 typedef struct st
 {
 	int status;
+	int background;
 	t_env *g_env;
 } t_status;
 
@@ -224,12 +225,12 @@ int						ft_exit(char **arguments, int num);
 char					*ft_strjoin_n(char const *s1, char const *s2);
 char					*ft_getenv(char *key);
 int						ft_cd(token_node_t *tok, int num);
-void					handler_chiled(int sig);
+// void					handler_chiled(int sig);
 void					sig_child();
 void 					sig_setup();
-void						sig_quit_child();
+// void						sig_quit_child();
 t_status				*func(void);
-int						is_valid_llong(const char *str);
+int						is_valid_llong(char *str);
 int						ft_redirects(token_node_t *tok, int flag);
 int						execute_builtins(token_node_t *tok, int pip_num);
 char					**env_to_char();

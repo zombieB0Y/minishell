@@ -60,8 +60,8 @@ void ft_exc(token_node_t *tok, int num, char **envchar, int i)
 
     execute_builtins(tok, num);
     p = ft_getenv("PATH");
-    if (access(tok->arguments[0], X_OK) == 0)
-        check_if_full_path(tok, envchar);
+	if (ft_strchr(tok->arguments[0], '/'))
+		check_if_full_path(tok, envchar);
     if (!p)
         no_path(tok);
     char **path = ft_split_n(p, ':');
@@ -118,14 +118,16 @@ void	ft_fork_and_pipe(int pip_num, anas_list *tok, pid_t *pids)
 			exit(EXIT_FAILURE);
 		}
 		pids[i] = fork();
-		(sig_child(), sig_quit_child());
 		if (pids[i] == -1)
 		{
 			perror("fork");
 			exit(EXIT_FAILURE);
 		}
 		if (pids[i] == 0)
+		{
+			sig_child();
 			ft_child_process(i, pip_num, pipes, tok);
+		}
 		ft_close_parent(pipes, i);
 		i++;
 		tok->head = tok->head->next;
@@ -145,6 +147,7 @@ int	ft_pip(int pip_num, anas_list *tok)
 		waitpid(pids[i++], &r, 0);
 	if (WIFSIGNALED(r))
 		return (check_child_sig(r));
+	func()->background = 0;
 	func()->status = r >> 8;
 	return (func()->status);
 }

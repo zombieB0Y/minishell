@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int is_valid_llong(const char *str)
+int is_valid_llong(char *str)
 {
     int i = 0;
     int sign = 1;

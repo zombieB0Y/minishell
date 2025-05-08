@@ -33,9 +33,34 @@ char *ft_getenv(char *key)
 
 void check_if_full_path(token_node_t *tok, char **envchar)
 {
+    struct stat st;
+
     ft_redirects(tok, 0);
-    execve(tok->arguments[0], tok->arguments, envchar);
     func()->status = 0;
+    if (stat(tok->arguments[0], &st) != 0)
+    {
+        func()->status = 127;
+        write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
+        write (2, ": No such file or directory\n", 29);
+    }
+    else if (S_ISDIR(st.st_mode))
+    {
+        func()->status = 126;
+        write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
+        write (2, ": Is a directory\n", 18);
+    }
+    else if (access(tok->arguments[0], X_OK) == 0 
+        && access(tok->arguments[0], R_OK) == 0)
+    {
+        func()->status = 0;
+        execve(tok->arguments[0], tok->arguments, envchar);
+    }
+    else
+    {
+        func()->status = 126;
+        write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
+        write (2, ": Permission 1denied\n", 21);
+    }
     exit(func()->status);
 }
 
@@ -54,6 +79,5 @@ void execute_commend(char *tmp, char *full_path, token_node_t *tok, char **envch
 	{
         ft_redirects(tok, 0);
 		execve(full_path, tok->arguments, envchar);
-		exit(1);
 	}
 }

@@ -22,45 +22,43 @@ void handler(int sig)
 {
 	(void)sig;
 	func()->status = 130;
-	write (2, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
+	if (func()->background == 0)
+	{
+		write (1, "\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+	else
+		func()->background = SIGINT;
 }
 
-void handler_chiled(int sig)
-{
-	(void)sig;
-	write (2, "\n", 1);
-}
+// void handler_chiled(int sig)
+// {
+// 	(void)sig;
+// 	write (1, "\n", 1);
+// }
 
-void handler_quit(int sig)
-{
-	(void)sig;
-	write (2, "Quit (core dumped)\n", 20);
-}
+// void handler_quit(int sig)
+// {
+// 	(void)sig;
+// 	write (2, "Quit (core dumped)\n", 20);
+// }
 
 void sig_child()
 {
-	signal(SIGINT, handler_chiled);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 }
 
 void sig_setup()
 {
 	signal(SIGINT, handler);
 	signal(SIGTERM, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	signal(SIGTSTP, SIG_IGN);
 }
 
-void sig_quit_parent()
-{
-	signal(SIGQUIT, SIG_IGN);
-}
-
-void sig_quit_child()
-{
-	signal(SIGQUIT, handler_quit);
-}
 
 int	main(int ac, char **av, char **env)
 {
@@ -73,11 +71,17 @@ int	main(int ac, char **av, char **env)
 	if (!check_args(ac, av))
 		return (1);
 	print_welcome();
+	sig_setup();
 	while (1)
 	{
-		sig_setup();
-		sig_quit_parent();
+		if (func()->background == SIGINT)
+		{
+			write(2, "\n", 1);
+			rl_replace_line("", 0);
+		}
+		func()->background = 0;
 		line = readline("\001" GREEN "\002" "MINISHELL >$ " "\001" RESET "\002");
+		func()->background = 1;
 		if (!line)
 		{
 			printf("exit\n");

@@ -203,10 +203,26 @@ void	export_print(t_env *g_env)
 			if (ft_strcmp(to_print->key, "_") != 0)
 			{
 				if (to_print->value)
-					printf("declare -x %s=\"%s\"\n", to_print->key,
-						to_print->value);
+				{
+					if (printf("declare -x %s=\"%s\"\n", to_print->key,
+						to_print->value) == -1);
+						{
+							write(2, "export: ", 7);
+							write(2, strerror(errno), ft_strlen(strerror(errno)));
+							write (2, "\n", 1);
+							func()->status = 1;
+						}
+				}
 				else
-					printf("declare -x %s\n", to_print->key);
+				{
+					if (printf("declare -x %s\n", to_print->key) == -1)
+					{
+						write(2, "export: ", 7);
+						write(2, strerror(errno), ft_strlen(strerror(errno)));
+						write (2, "\n", 1);
+						func()->status = 1;
+					}
+				}
 			}
 			to_print->flag = 1;
 			printed_count++;
@@ -379,6 +395,8 @@ int	ft_num_inside(char *arg)
 			return (1);
 		i++;
 	}
+	if (is_valid_llong(arg) == 0)
+		return (1);
 	return (0);
 }
 
