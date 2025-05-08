@@ -16,8 +16,7 @@
 # include <sys/wait.h>
 # include <unistd.h>
 # include <signal.h>
-#include <termios.h>
-#include <sys/ioctl.h>
+# include <limits.h>
 
 # define GREEN "\033[32m"
 # define RED "\033[31m"
@@ -138,11 +137,29 @@ typedef struct GCNode
 {
 	void				*ptr;
 	struct GCNode		*next;
-}						GCNode;
+}
+						GCNode;
+typedef struct expo_list
+{
+	char *key;
+	char *value;
+	int flag;
+	struct expo_list *next;
+} t_expo;
+
+typedef struct st
+{
+	int status;
+	int background;
+	t_env *g_env;
+} t_status;
+
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
 # endif
+
+extern GCNode *gc_head;
 
 // Lexer operations
 lexer_t					*lexer_create(const char *input);
@@ -194,8 +211,8 @@ void					print_anas_list(anas_list *list);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------
-int						start(char *line, t_env *g_env, int *status);
-int						process_command(const char *command, t_env *g_env, int *status);
+int						start(char *line);
+int						process_command(const char *command);
 //--------functions------------
 // int						check(char *p);
 int						is_whitespace(int c);
@@ -209,26 +226,41 @@ void					gc_register(void *ptr);
 //-------------Token Type: WORD, Value: s'---
 char					*substr_dup(const char *start, size_t len);
 char					*substr_dup(const char *start, size_t len);
-token_list_t			*capture_heredoc(token_list_t *tokens, int *status);
+token_list_t			*capture_heredoc(token_list_t *tokens);
 //----------execution--------
-int						ft_execute(anas_list *tok, t_env *g_env, int *status);
+int						ft_execute(anas_list *tok);
 char					**ft_split_n(char const *s, char c);
 t_env					*create_env(char **env);
-int						ft_env(t_env *g_env, int num, int *status);
-int						ft_unset(t_env *g_env, token_node_t *tok, int num, int *status);
+int						ft_env(int num);
+int						ft_unset(token_node_t *tok, int num);
 char					*ft_substr_n(char const *s, unsigned int start, size_t len);
 char					*ft_strdup_n(const char *s1);
 void					free_env(t_env *g_env);
 void					ft_free(char **ptr);
-int						ft_pwd(int num, int *status);
-int						ft_echo(char **arguments, int num, int *status);
-int						ft_export(char **arguments, t_env *g_env, int num, int *status);
+int						ft_pwd(int num);
+int						ft_echo(char **arguments, int num);
+int						ft_export(char **arguments, int num);
 int						ft_lstsize_n(t_env *lst);
-int						equal_sign(char *env);
-int						ft_exit(char **arguments, int *status, int num);
+int						sign(char *env);
+int						ft_exit(char **arguments, int num);
 char					*ft_strjoin_n(char const *s1, char const *s2);
-int						plus_sign(char *env);
-char					*ft_getenv(char *key, t_env *g_env);
-int						ft_cd(char *arguments, t_env **g_env, int *status, int num);
-
+char					*ft_getenv(char *key);
+int						ft_cd(token_node_t *tok, int num);
+// void					handler_chiled(int sig);
+void					sig_child();
+void 					sig_setup();
+// void						sig_quit_child();
+t_status				*func(void);
+int						is_valid_llong(char *str);
+int						ft_redirects(token_node_t *tok, int flag);
+int						execute_builtins(token_node_t *tok, int pip_num);
+char					**env_to_char();
+void					check_if_full_path(token_node_t *tok, char **envchar);
+void					no_path(token_node_t *tok);
+void					execute_commend(char *tmp, char *full_path, token_node_t *tok, char **envchar);
+int						number_of_pip(anas_list *tok);
+void					ft_close_parent(int pipes[2][2], int i);
+int						check_child_sig(int r);
+int						builtins_parent(anas_list *tok, int pip_num, int *stdout, int *stdin);
+void					ft_copy_in_out(int *stdout_copy, int *stdin_copy);
 #endif

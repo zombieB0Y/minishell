@@ -1,5 +1,8 @@
 #include "minishell.h"
 
+GCNode *gc_head;
+
+
 int	check_args(int ac, char **av)
 {
 	if (ac > 1)
@@ -9,21 +12,76 @@ int	check_args(int ac, char **av)
 	return (1);
 }
 
+t_status *func(void)
+{
+	static t_status status;
+	return (&status);
+}
+
+void handler(int sig)
+{
+	(void)sig;
+	func()->status = 130;
+	if (func()->background == 0)
+	{
+		write (1, "\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+	else
+		func()->background = SIGINT;
+}
+
+// void handler_chiled(int sig)
+// {
+// 	(void)sig;
+// 	write (1, "\n", 1);
+// }
+
+// void handler_quit(int sig)
+// {
+// 	(void)sig;
+// 	write (2, "Quit (core dumped)\n", 20);
+// }
+
+void sig_child()
+{
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+}
+
+void sig_setup()
+{
+	signal(SIGINT, handler);
+	signal(SIGTERM, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
+	signal(SIGTSTP, SIG_IGN);
+}
+
+
 int	main(int ac, char **av, char **env)
 {
 	char *line;
 	(void)ac;
 	(void)av;
-	t_env *g_env = NULL;
-    int status = 0;
+
 	if (*env)
-        g_env = create_env(env);
+        func()->g_env = create_env(env);
 	if (!check_args(ac, av))
 		return (1);
 	print_welcome();
+	sig_setup();
 	while (1)
 	{
+		if (func()->background == SIGINT)
+		{
+			write(2, "\n", 1);
+			rl_replace_line("", 0);
+		}
+		func()->background = 0;
 		line = readline("\001" GREEN "\002" "MINISHELL >$ " "\001" RESET "\002");
+		func()->background = 1;
 		if (!line)
 		{
 			printf("exit\n");
@@ -37,10 +95,10 @@ int	main(int ac, char **av, char **env)
 		}
 		gc_register(line);
 		add_history(line);
-		status = start(line, g_env, &status);
+		start(line);
 		gc_collect();
 	}
-	// printf("exit\n");
-	free_env(g_env);
+	free_env(func()->g_env);
 	rl_clear_history();
+	return (func()->status);
 }
