@@ -20,7 +20,7 @@ int	process_command(const char *command)
 	tokens = remove_surrounding_quotes(tokens);
 	if (!tokens)
 		return (0);
-	token_list_print(tokens);
+	// token_list_print(tokens);
 		list = grammar_check(tokens);
 	if (!list)
 		return (0);
