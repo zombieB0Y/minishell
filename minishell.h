@@ -210,7 +210,7 @@ void					append_to_buffer(exp_t *exp, char *str_to_add, size_t add_len);
 anas_list				*grammar_check(token_list_t *tokens);
 void					list_add(anas_list *list, token_node_t *token);
 void					print_anas_list(anas_list *list);
-void					remove_surrounding_quotes(token_list_t *list);
+token_list_t			*remove_surrounding_quotes(token_list_t *list);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------
