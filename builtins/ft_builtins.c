@@ -1,89 +1,4 @@
-#include "minishell.h"
-
-int	ft_env(int num)
-{
-	func()->status = 0;
-	t_env *curr;
-
-	curr = func()->g_env;
-	if (curr)
-	{
-		while (curr)
-		{
-			if (curr->value)
-			{
-				if (printf("%s=%s\n", curr->key, curr->value) == -1)
-				{
-					write(2, "env: ", 5);
-					write(2, strerror(errno), ft_strlen(strerror(errno)));
-					write (2, "\n", 1);
-					func()->status = 125;
-					break ;
-				}
-			}
-			curr = curr->next;
-		}
-	}
-	if (num == 0)
-		return (func()->status);
-	exit(func()->status);
-}
-
-void	free_node(t_env *g_env)
-{
-	free(g_env->key);
-	free(g_env->value);
-	g_env->next = NULL;
-	free(g_env);
-}
-
-int	ft_unset(token_node_t *tok, int num)
-{
-	t_env	*cur;
-	t_env	*prv;
-	int		i;
-	int		y;
-	int		flag;
-
-	cur = NULL;
-	prv = NULL;
-	y = 0;
-	flag = 0;
-	if (!tok)
-		return (0);
-	cur = func()->g_env;
-	if (cur)
-	{
-		while (cur)
-		{
-			i = 1;
-			while (tok->arguments[i])
-			{
-				if (ft_strcmp(cur->key, tok->arguments[i]) == 0)
-				{
-					if (y != 0)
-						prv->next = cur->next;
-					free_node(cur);
-					flag = 1;
-					break ;
-				}
-				i++;
-			}
-			y++;
-			prv = cur;
-			if (flag == 1)
-			{
-				flag = 0;
-				cur = func()->g_env;
-			}
-			else
-				cur = cur->next;
-		}
-	}
-	if (num == 0)
-		return (0);
-	exit(0);
-}
+#include "../minishell.h"
 
 int	ft_pwd(int num)
 {
@@ -360,20 +275,31 @@ int	ft_export(char **arguments, int num)
 			else
 			{
 				curr = func()->g_env;
-				while (curr->next)
+				if ((ft_isalpha(arguments[i][0]) || arguments[i][0] == '_')
+				&& (arguments[i][1] == '=' || ft_alpha_num(arguments[i])))
 				{
-					if (ft_strcmp(curr->key, arguments[i]) == 0)
-						break ;
-					curr = curr->next;
+					while (curr->next)
+					{
+						if (ft_strcmp(curr->key, arguments[i]) == 0)
+							break ;
+						curr = curr->next;
+					}
+					if (ft_strcmp(curr->key, arguments[i]) != 0)
+					{
+						node = malloc(sizeof(t_env));
+						node->key = ft_strdup_n(arguments[i]);
+						node->value = NULL;
+						node->flag = 0;
+						node->next = NULL;
+						curr->next = node;
+					}
 				}
-				if (ft_strcmp(curr->key, arguments[i]) != 0)
+				else
 				{
-					node = malloc(sizeof(t_env));
-					node->key = ft_strdup_n(arguments[i]);
-					node->value = NULL;
-					node->flag = 0;
-					node->next = NULL;
-					curr->next = node;
+					write(2, "export: `", 9);
+					write(2, arguments[i], ft_strlen(arguments[i]));
+					write(2, "': not a valid identifier\n", 26);
+					func()->status = 1;
 				}
 			}
 			i++;

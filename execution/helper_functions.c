@@ -6,8 +6,7 @@ int number_of_pip(anas_list *tok)
     int p = 0;
     while (current)
     {
-        if (current->arguments[0])
-            p++;
+        p++;
         current = current->next;
     }
     return (p - 1);

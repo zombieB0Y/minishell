@@ -127,7 +127,7 @@ anas_list *grammar_check(token_list_t *tokens)
         {
             if (head->next && head->next->token->type != TOKEN_EOF && head->next->token->type != TOKEN_PIPE)
             {
-                if (token->arg_c > 0)
+                if (token->arg_c > 0 || token->file_c > 0)
                 {
                     // Add the current command to our command list
                     list_add(list, token);

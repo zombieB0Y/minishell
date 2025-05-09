@@ -100,6 +100,7 @@ void	ft_child_process(int i, int pip_num, int pipes[2][2], anas_list *tok)
 		close(pipes[i % 2][0]);
 		close(pipes[i % 2][1]);
 	}
+	ft_redirects(tok->head, 0);
 	ft_exc(tok->head, pip_num, envchar, y);
 }
 
