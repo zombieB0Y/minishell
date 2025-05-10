@@ -32,36 +32,126 @@ int	ft_pwd(int num)
 	exit((func()->status));
 }
 
+// int	ft_echo(char **arguments, int num)
+// {
+// 	int(i) = 1;
+// 	int (y) = 1;
+// 	int(flag) = 0;
+// 	func()->status = 0;
+// 	if (!arguments[i])
+// 	{
+// 		if (printf("\n") == -1)
+// 		{
+// 			write(2, "echo: ", 6);
+// 			write(2, strerror(errno), ft_strlen(strerror(errno)));
+// 			write (2, "\n", 1);
+// 			func()->status = 1;
+// 		}
+// 		if (num == 0)
+// 			return (func()->status);
+// 		exit(func()->status);
+// 	}
+// 	else if (arguments[i][0] ==  '-' && arguments[i][1] ==  'n')
+// 	{
+// 		while (arguments[i][y])
+// 		{
+// 			if (arguments[i][y] != 'n')
+// 			{
+// 				flag = 0;
+// 				break ;
+// 			}
+// 			else
+// 				flag = 1;
+// 			y++;
+// 		}
+// 		if (flag)
+// 			i++;
+// 	}
+// 	while (arguments[i])
+// 	{
+// 		if (printf("%s", arguments[i]) == -1)
+// 		{
+// 			write(2, "echo: ", 6);
+// 			write(2, strerror(errno), ft_strlen(strerror(errno)));
+// 			write (2, "\n", 1);
+// 			func()->status = 1;
+// 			break ;
+// 		}
+// 		i++;
+// 		if (arguments[i])
+// 			printf(" ");
+// 	}
+// 	if (flag == 0)
+// 	{
+// 		if (printf("\n") == -1)
+// 		{
+// 			write(2, "echo: ", 6);
+// 			write(2, strerror(errno), ft_strlen(strerror(errno)));
+// 			write (2, "\n", 1);
+// 			func()->status = 1;
+// 		};
+// 	}
+// 	if (num == 0)
+// 		return (func()->status);
+// 	exit(func()->status);
+// }
+
+void error(char *str, int fd, char *message)
+{
+	write (fd, str, ft_strlen(str));
+	write (fd, ": ", 2);
+	write (fd, message, ft_strlen(str));
+}
+
 int	ft_echo(char **arguments, int num)
 {
-	int(i) = 1;
-	int(flag) = 0;
-	func()->status = 0;
+	int (i) = 1;
+	int (flag) = 0;
+	int (y);
+	int (not_option) = 0;
 	if (!arguments[i])
 	{
 		if (printf("\n") == -1)
 		{
-			write(2, "echo: ", 6);
-			write(2, strerror(errno), ft_strlen(strerror(errno)));
-			write (2, "\n", 1);
+			error(arguments[0], 2, strerror(errno));
 			func()->status = 1;
 		}
 		if (num == 0)
 			return (func()->status);
 		exit(func()->status);
 	}
-	else if (ft_strcmp(arguments[i], "-n") == 0)
+	else if (arguments[i][0] == '-' && arguments[i][1] == 'n')
 	{
-		flag = 1;
-		i++;
+		while (arguments[i])
+		{
+			y = 0;
+			if (arguments[i][y] == '-')
+				y++;
+			else
+				break ;
+			while (arguments[i][y])
+			{
+				if (arguments[i][y] != 'n')
+				{
+					if (i == 1)
+						flag = 0;
+					not_option = 1;
+					break ;
+				}
+				else
+					flag = 1;
+				y++;
+			}
+			if (not_option == 1)
+				break ;
+			i++;
+		}
 	}
 	while (arguments[i])
 	{
 		if (printf("%s", arguments[i]) == -1)
 		{
-			write(2, "echo: ", 6);
-			write(2, strerror(errno), ft_strlen(strerror(errno)));
-			write (2, "\n", 1);
+			error("echo", 2, strerror(errno));
 			func()->status = 1;
 			break ;
 		}
@@ -73,11 +163,9 @@ int	ft_echo(char **arguments, int num)
 	{
 		if (printf("\n") == -1)
 		{
-			write(2, "echo: ", 6);
-			write(2, strerror(errno), ft_strlen(strerror(errno)));
-			write (2, "\n", 1);
+			error("echo", 2, strerror(errno));
 			func()->status = 1;
-		};
+		}
 	}
 	if (num == 0)
 		return (func()->status);
@@ -383,11 +471,14 @@ void add_pwd()
 	t_env *curr;
 
 	temp = getcwd(NULL, 0);
+	if (!temp)
+		return ;
 	curr = func()->g_env;
 	node = malloc(sizeof(t_env));
 	node->key = ft_strdup_n("PWD");
 	node->value = ft_strdup_n(temp);
 	node->flag = 0;
+	node->next = NULL;
 	while (curr->next)
 	{
 		curr = curr->next;
@@ -396,19 +487,41 @@ void add_pwd()
 	free(temp);
 }
 
+void add_old()
+{
+	t_env *node;
+	char *temp;
+	t_env *curr;
+
+	temp = ft_getenv("PWD");
+	if (!temp)
+		return ;
+	curr = func()->g_env;
+	node = malloc(sizeof(t_env));
+	node->key = ft_strdup_n("OLDPWD");
+	node->value = ft_strdup_n(temp);
+	node->flag = 0;
+	node->next = NULL;
+	while (curr->next)
+	{
+		curr = curr->next;
+	}
+	curr->next = node;
+}
+
 void	edit_pwd_oldpwd(char *pwd, char *arg)
 {
 	t_env	*curr;
 	char	*temp;
 	(void)arg;
-	int (flagp) = 0;
+	// int (flagp) = 0;
 
 	curr = func()->g_env;
 	while (curr)
 	{
 		if (ft_strcmp(curr->key, "PWD") == 0)
 		{
-			flagp = 1;
+			// flagp = 1;
 			temp = getcwd(NULL, 0);
 			if (temp)
 			{
@@ -427,8 +540,11 @@ void	edit_pwd_oldpwd(char *pwd, char *arg)
 		}
 		curr = curr->next;
 	}
-	if (flagp == 0)
-		add_pwd();
+	// if (flagp == 0)
+	// {
+	// 	add_pwd();
+	// 	add_old();
+	// }
 }
 
 int	ft_cd(token_node_t *tok, int num)

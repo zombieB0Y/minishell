@@ -75,7 +75,8 @@ void ft_exc(token_node_t *tok, int num, char **envchar, int i)
 	}
 	if (!path[i])
     {
-		write(2, "command not found\n", 18);
+		write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
+		write(2, ": command not found\n", 20);
         exit(127);
     }
 }
