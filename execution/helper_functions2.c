@@ -16,7 +16,7 @@ int check_child_sig(int r)
     return (128 + WTERMSIG(r));
 }
 
-int builtins_parent(anas_list *tok, int pip_num, int *stdout_copy, int *stdin_copy)
+int builtins_parent(anas_list *tok, int pip_num)
 {
     int r;
     int d;
@@ -29,7 +29,7 @@ int builtins_parent(anas_list *tok, int pip_num, int *stdout_copy, int *stdin_co
     r = execute_builtins(tok->head, pip_num);
     if (r != 3)
     {
-        ft_copy_in_out(stdout_copy, stdin_copy);
+        // ft_copy_in_out(stdout_copy, stdin_copy);
         return (r);
     }
     return (r);
@@ -44,10 +44,10 @@ void    ft_close_parent(int pipes[2][2], int i)
 	}
 }
 
-void ft_copy_in_out(int *stdout_copy, int *stdin_copy)
+void ft_copy_in_out()
 {
-    dup2(*stdout_copy, 1);
-    dup2(*stdin_copy, 0);
-    close(*stdout_copy);
-    close(*stdin_copy);
+    dup2(func()->out, 1);
+    dup2(func()->in, 0);
+    close(func()->out);
+    close(func()->in);
 }

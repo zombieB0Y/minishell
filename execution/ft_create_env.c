@@ -42,7 +42,9 @@ char **env_to_char()
 int sign(char *env)
 {
     int (i) = 0;
-    while (env[i] != '=')
+    if (!env)
+        return (0);
+    while (env[i] && env[i] != '=')
         i++;
     return (i);
 }
