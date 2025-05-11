@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:48:42 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/11 20:00:21 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/11 21:28:58 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ char *expand_string_variables(char *original_value)
 				active_quote_char = 0;
 			else if (active_quote_char == 0)
 				active_quote_char = '\'';
+			append_to_buffer(exp, exp->current_pos, 1);
 			exp->current_pos++;
 		}
 		else if (*exp->current_pos == '"')
@@ -117,6 +118,7 @@ char *expand_string_variables(char *original_value)
 				active_quote_char = 0;
 			else if (active_quote_char == 0)
 				active_quote_char = '"';
+			append_to_buffer(exp, exp->current_pos, 1);
 			exp->current_pos++;
 		}
 		else if (*exp->current_pos == '$')
@@ -227,13 +229,16 @@ token_list_t *expand(token_list_t *tokens)
 				if (new_value != original_token_value)
 				{
 					if (new_value[0] != '\0')
-						token->value = new_value;
-					else
 					{
-						printf("Empty token value after expansion\n");
-						remove_token_node(&tokens->head, current_node);
-						current_node = tokens->head;
+						token->value = new_value;
+						// token->quote = 69;
 					}
+					// else
+					// {
+					// 	// printf("Empty token value after expansion\n");
+					// 	remove_token_node(&tokens->head, current_node);
+					// 	current_node = tokens->head;
+					// }
 				}
 			}
 		}

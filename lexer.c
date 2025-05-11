@@ -21,11 +21,11 @@ int	process_command(const char *command)
 	tokens = expand(tokens);
 	if (!tokens)
 		return (0);
-	// tokens = remove_surrounding_quotes(tokens);
+	token_list_print(tokens);
+	tokens = remove_surrounding_quotes(tokens);
 	if (!tokens)
 		return (0);
-	token_list_print(tokens);
-		list = grammar_check(tokens);
+	list = grammar_check(tokens);
 	if (!list)
 		return (0);
 	// print_anas_list(list);
