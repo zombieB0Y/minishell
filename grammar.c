@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/06 16:43:10 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/10 17:20:31 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ anas_list *grammar_check(token_list_t *tokens)
         {
             if (head->next && head->next->token->type != TOKEN_EOF && head->next->token->type != TOKEN_PIPE)
             {
-                if (token->arg_c > 0)
+                if (token->arg_c > 0 || token->file_c > 0)
                 {
                     // Add the current command to our command list
                     list_add(list, token);

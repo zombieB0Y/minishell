@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:48:42 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/10 16:51:36 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/11 16:35:39 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ char *expand_string_variables(char *original_value)
 	size_t prefix_len;
 	char *scan_ptr;
 	char *env_value;
-
+// -------------------echo "'"$USER"'"-----------------
     while (*exp->current_pos != '\0')
     {
 		prefix_len = 0;
@@ -88,6 +88,9 @@ char *expand_string_variables(char *original_value)
 
         if (active_quote_char == '\'')
             while (*scan_ptr != '\0' && *scan_ptr != '\'')
+                scan_ptr++;
+        else if (active_quote_char != 0)
+            while (*scan_ptr != '\0' && *scan_ptr != active_quote_char && *scan_ptr != '$')
                 scan_ptr++;
         else
             while (*scan_ptr != '\0' && *scan_ptr != '$' && *scan_ptr != '\'' && *scan_ptr != '"')
