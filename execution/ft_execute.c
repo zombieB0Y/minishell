@@ -150,7 +150,10 @@ int	ft_pip(int pip_num, anas_list *tok)
 	ft_fork_and_pipe(pip_num, tok, pids);
 	i = 0;
 	while (i <= pip_num)
-		waitpid(pids[i++], &r, 0);
+	{
+		i++;
+		waitpid(-1, &r, 0);
+	}
 	if (WIFSIGNALED(r))
 		return (check_child_sig(r));
 	func()->background = 0;

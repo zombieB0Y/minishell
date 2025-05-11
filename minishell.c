@@ -24,7 +24,7 @@ void handler(int sig)
 	func()->status = 130;
 	if (func()->background == 0)
 	{
-		write (1, "\n", 1);
+		write (2, "\n", 1);
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
@@ -54,9 +54,9 @@ void sig_child()
 void sig_setup()
 {
 	signal(SIGINT, handler);
+	signal(SIGTSTP, SIG_IGN);
 	signal(SIGTERM, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
-	signal(SIGTSTP, SIG_IGN);
 }
 
 

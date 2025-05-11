@@ -48,8 +48,7 @@ void check_if_full_path(token_node_t *tok, char **envchar)
         write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
         write (2, ": Is a directory\n", 18);
     }
-    else if (access(tok->arguments[0], X_OK) == 0 
-        && access(tok->arguments[0], R_OK) == 0)
+    else if (access(tok->arguments[0], X_OK | R_OK) == 0)
     {
         func()->status = 0;
         execve(tok->arguments[0], tok->arguments, envchar);
