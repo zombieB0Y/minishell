@@ -61,6 +61,11 @@ t_env *create_node(char **env, int i)
     return (node);
 }
 
+// t_env env_null(t_env *node, t_env *head)
+// {
+
+// }
+
 t_env *create_env(char **env)
 {
     t_env *node;
@@ -68,6 +73,7 @@ t_env *create_env(char **env)
     int i = 0;
     if (!env)
     {
+        // env_null(node, head);
         return (NULL);
     }
     head = create_node(env, i);

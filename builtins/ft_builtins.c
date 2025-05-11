@@ -178,29 +178,35 @@ void	add_to_env(char *arguments, int flag)
 		y = sign(arguments);
 		in_env = ft_substr(arguments, 0, y - 1);
 	}
-	if (ft_strcmp(curr->key, in_env) == 0)
+	if (func()->g_env)
 	{
-		free(curr->value);
-		curr->value = ft_substr_n(arguments, y + 1, ft_strlen(arguments));
-		return ;
-	}
-	while (curr->next)
-	{
-		if (ft_strcmp(curr->next->key, in_env) == 0)
+		if (ft_strcmp(curr->key, in_env) == 0)
 		{
-			free(curr->next->value);
-			curr->next->value = ft_substr_n(arguments, y + 1,
-					ft_strlen(arguments));
+			free(curr->value);
+			curr->value = ft_substr_n(arguments, y + 1, ft_strlen(arguments));
 			return ;
 		}
-		curr = curr->next;
+		while (curr->next)
+		{
+			if (ft_strcmp(curr->next->key, in_env) == 0)
+			{
+				free(curr->next->value);
+				curr->next->value = ft_substr_n(arguments, y + 1,
+						ft_strlen(arguments));
+				return ;
+			}
+			curr = curr->next;
+		}
 	}
 	node = malloc(sizeof(t_env));
 	node->key = ft_strdup_n(in_env);
 	node->value = ft_substr_n(arguments, y + 1, ft_strlen(arguments));
 	node->flag = 0;
 	node->next = NULL;
-	curr->next = node;
+	if (curr)
+		curr->next = node;
+	else
+		func()->g_env = node;
 }
 
 void	ft_append(char *arguments)
@@ -246,7 +252,7 @@ int ft_alpha_num(char *arg)
 	return (1);
 }
 
-int validate(char *arg)
+int validate(char *arg, int no_equal)
 {
 	int i;
 	char *key;
@@ -263,14 +269,14 @@ int validate(char *arg)
 		i = 1;
 		while (i < key_len)
 		{
-			if (flag == 0 && key[i] == '+')
+			if (flag == 0 && key[i] == '+' && no_equal == 1)
 				flag = 1;
 			else if (!ft_isalnum(key[i]) && key[i] != '_')
 				return (0);
 			i++;
 		}
 		if (flag == 1)
-			return (ft_append(arg), 0);
+			return (ft_append(arg), 2);
 	}
 	else
 		return (0);
@@ -282,6 +288,8 @@ int	ft_export(char **arguments, int num)
 	int(i) = 1;
 	t_env *node;
 	t_env *curr;
+	int (valid) = 0;
+
 	func()->status = 0;
 	if (!arguments[i])
 	{
@@ -294,9 +302,12 @@ int	ft_export(char **arguments, int num)
 		{
 			if (ft_strchr(arguments[i], '='))
 			{
-				if (validate(arguments[i]))
+				valid = validate(arguments[i], 1);
+				if (valid == 1)
+				{
 					add_to_env(arguments[i], 0);
-				else
+				}
+				else if (valid != 2)
 				{
 					write(2, "export: `", 9);
 					write(2, arguments[i], ft_strlen(arguments[i]));
@@ -307,23 +318,26 @@ int	ft_export(char **arguments, int num)
 			else
 			{
 				curr = func()->g_env;
-				if (validate(arguments[i]))
+				if (validate(arguments[i], 0))
 				{
-					while (curr->next)
+					if (curr)
 					{
-						if (ft_strcmp(curr->key, arguments[i]) == 0)
-							break ;
-						curr = curr->next;
+						while (curr->next)
+						{
+							if (ft_strcmp(curr->key, arguments[i]) == 0)
+								break ;
+							curr = curr->next;
+						}
 					}
-					if (ft_strcmp(curr->key, arguments[i]) != 0)
-					{
-						node = malloc(sizeof(t_env));
-						node->key = ft_strdup_n(arguments[i]);
-						node->value = NULL;
-						node->flag = 0;
-						node->next = NULL;
+					node = malloc(sizeof(t_env));
+					node->key = ft_strdup_n(arguments[i]);
+					node->value = NULL;
+					node->flag = 0;
+					node->next = NULL;
+					if (curr)
 						curr->next = node;
-					}
+					else
+						func()->g_env = node;
 				}
 				else
 				{

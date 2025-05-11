@@ -59,7 +59,6 @@ void sig_setup()
 	signal(SIGQUIT, SIG_IGN);
 }
 
-
 int	main(int ac, char **av, char **env)
 {
 	char *line;
