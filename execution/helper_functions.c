@@ -6,8 +6,7 @@ int number_of_pip(anas_list *tok)
     int p = 0;
     while (current)
     {
-        if (current->arguments[0])
-            p++;
+        p++;
         current = current->next;
     }
     return (p - 1);
@@ -49,8 +48,7 @@ void check_if_full_path(token_node_t *tok, char **envchar)
         write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
         write (2, ": Is a directory\n", 18);
     }
-    else if (access(tok->arguments[0], X_OK) == 0 
-        && access(tok->arguments[0], R_OK) == 0)
+    else if (access(tok->arguments[0], X_OK | R_OK) == 0)
     {
         func()->status = 0;
         execve(tok->arguments[0], tok->arguments, envchar);
@@ -66,9 +64,18 @@ void check_if_full_path(token_node_t *tok, char **envchar)
 
 void no_path(token_node_t *tok)
 {
-    write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
-    write (2, ": No such file or directory\n", 28);
-    func()->status = 127;
+    if (ft_strcmp(tok->arguments[0], "..") == 0)
+    {
+        write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
+        write (2, ": Id a directory\n", 18);
+        func()->status = 126;
+    }
+    else
+    {
+        write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
+        write (2, ": No such file or directory\n", 28);
+        func()->status = 127;
+    }
     exit(func()->status);
 }
 

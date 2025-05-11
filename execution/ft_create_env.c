@@ -40,7 +40,9 @@ char **env_to_char()
 int sign(char *env)
 {
     int (i) = 0;
-    while (env[i] != '=')
+    if (!env)
+        return (0);
+    while (env[i] && env[i] != '=')
         i++;
     return (i);
 }
@@ -53,8 +55,14 @@ t_env *create_node(char **env, int i)
     node->key = ft_substr_n(env[i], 0, y);
     node->value = ft_substr_n(env[i], y + 1, ft_strlen(env[i]));
     node->flag = 0;
+    node->next = NULL;
     return (node);
 }
+
+// t_env env_null(t_env *node, t_env *head)
+// {
+
+// }
 
 t_env *create_env(char **env)
 {
@@ -63,6 +71,7 @@ t_env *create_env(char **env)
     int i = 0;
     if (!env)
     {
+        // env_null(node, head);
         return (NULL);
     }
     head = create_node(env, i);

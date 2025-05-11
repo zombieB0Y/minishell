@@ -57,6 +57,7 @@ void ft_exc(token_node_t *tok, int num, char **envchar, int i)
     char	*tmp;
 	char	*full_path;
     char *p;
+	char **path;
 
     execute_builtins(tok, num);
     p = ft_getenv("PATH");
@@ -64,20 +65,24 @@ void ft_exc(token_node_t *tok, int num, char **envchar, int i)
 		check_if_full_path(tok, envchar);
     if (!p)
         no_path(tok);
-    char **path = ft_split_n(p, ':');
-	tmp = NULL;
-	full_path = NULL;
-	while (path[i])
+    path = ft_split_n(p, ':');
+	if (tok->arguments[0])
 	{
-		tmp = ft_strjoin(path[i], "/");
-		execute_commend(tmp, full_path, tok, envchar);
-		i++;
+		tmp = NULL;
+		full_path = NULL;
+		while (path[i])
+		{
+			tmp = ft_strjoin(path[i], "/");
+			execute_commend(tmp, full_path, tok, envchar);
+			i++;
+		}
+		if (!path[i])
+    	{
+			write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
+			write(2, ": command not found\n", 20);
+        	exit(127);
+    	}
 	}
-	if (!path[i])
-    {
-		write(2, "command not found\n", 18);
-        exit(127);
-    }
 }
 
 
@@ -100,6 +105,7 @@ void	ft_child_process(int i, int pip_num, int pipes[2][2], anas_list *tok)
 		close(pipes[i % 2][0]);
 		close(pipes[i % 2][1]);
 	}
+	ft_redirects(tok->head, 0);
 	ft_exc(tok->head, pip_num, envchar, y);
 }
 
@@ -144,7 +150,10 @@ int	ft_pip(int pip_num, anas_list *tok)
 	ft_fork_and_pipe(pip_num, tok, pids);
 	i = 0;
 	while (i <= pip_num)
-		waitpid(pids[i++], &r, 0);
+	{
+		i++;
+		waitpid(-1, &r, 0);
+	}
 	if (WIFSIGNALED(r))
 		return (check_child_sig(r));
 	func()->background = 0;
@@ -156,25 +165,25 @@ int	ft_pip(int pip_num, anas_list *tok)
 int ft_execute(anas_list *tok)
 {
     int (num_pip) = number_of_pip(tok);
-    int stdout_copy = dup(1);
-    int stdin_copy = dup(0);
+    func()->out = dup(1);
+    func()->in = dup(0);
     int r;
 
     r = 3;
     if (num_pip == 0)
     {
-        r = builtins_parent(tok, num_pip, &stdout_copy, &stdin_copy);
+        r = builtins_parent(tok, num_pip);
         if (r != 3)
-            return (r);
+            return (ft_copy_in_out(),r);
     }
     if (num_pip >= 0)
     {
         ft_pip(num_pip, tok);
-        ft_copy_in_out(&stdout_copy, &stdin_copy);
+        ft_copy_in_out();
         return (func()->status);
     }
     ft_redirects(tok->head, 1);
-    ft_copy_in_out(&stdout_copy, &stdin_copy);
+    ft_copy_in_out();
     return (func()->status); 
 }
 

@@ -153,6 +153,8 @@ typedef struct st
 	int background;
 	GCNode *gc_head;
 	t_env *g_env;
+	int out;
+	int in;
 } t_status;
 
 
@@ -264,6 +266,7 @@ void					execute_commend(char *tmp, char *full_path, token_node_t *tok, char **e
 int						number_of_pip(anas_list *tok);
 void					ft_close_parent(int pipes[2][2], int i);
 int						check_child_sig(int r);
-int						builtins_parent(anas_list *tok, int pip_num, int *stdout, int *stdin);
-void					ft_copy_in_out(int *stdout_copy, int *stdin_copy);
+int						builtins_parent(anas_list *tok, int pip_num);
+void					ft_copy_in_out();
+void					error(char *str, int fd, char *message);
 #endif

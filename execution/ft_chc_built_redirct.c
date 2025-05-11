@@ -89,7 +89,9 @@ int ft_redirects(token_node_t *tok, int flag)
 
 int execute_builtins(token_node_t *tok, int pip_num)
 {
-    if (ft_strcmp(tok->arguments[0], "env") == 0)
+    if (tok->arguments[0] == NULL)
+        return (3);
+    else if (ft_strcmp(tok->arguments[0], "env") == 0)
         return (ft_env(pip_num));
     else if (ft_strcmp(tok->arguments[0], "unset") == 0)
         return (ft_unset(tok, pip_num));
