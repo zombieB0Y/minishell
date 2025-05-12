@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:48:42 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/11 21:28:58 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/12 14:52:12 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,12 +233,12 @@ token_list_t *expand(token_list_t *tokens)
 						token->value = new_value;
 						// token->quote = 69;
 					}
-					// else
-					// {
-					// 	// printf("Empty token value after expansion\n");
-					// 	remove_token_node(&tokens->head, current_node);
-					// 	current_node = tokens->head;
-					// }
+					else
+					{
+						// printf("Empty token value after expansion\n");
+						remove_token_node(&tokens->head, current_node);
+						current_node = tokens->head;
+					}
 				}
 			}
 		}

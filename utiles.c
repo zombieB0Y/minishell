@@ -35,7 +35,10 @@ char	*shitft(char *str)
 	new_str = NULL;
 	i = 0;
 	while(str[i] && is_tab(str[i]))
+	{
 		ft_memmove(str + i, str + i + 1, ft_strlen(str) - i);
+		i++;
+	}
 	new_str = ft_strdup(str);
 	return (new_str);
 }
@@ -55,16 +58,11 @@ char	*write_heredoc(char *str, size_t count)
 	return (filename);
 }
 
-token_list_t	*capture_heredoc(token_list_t *tokens)
+token_list_t *capture_heredoc(token_list_t *tokens)
 {
-	char	buffer[1];
-	int (status) = 0;
 	char	*line;
-	size_t	bytes_read;
 	char	*delimiter;
 	lol		*head;
-	char	*heredoc_content;
-	size_t	total_len;
 	pid_t	pid;
 	int		pipefd[2];
 	int		count = 0;
@@ -78,7 +76,7 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 		{
 			if (head->next->token->type != TOKEN_WORD)
 				return (return_herdoc_error());
-			delimiter = head->next->token->value; // removing quotes in the delimiter and flaging for no expand and expanding if there no quotes
+			delimiter = head->next->token->value;
 			remove_token_node(&tokens->head, head->next);
 			tokens->size--;
 			if (pipe(pipefd) == -1)
@@ -105,16 +103,17 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 				close(pipefd[1]);
 				exit(0);
 			}
-			waitpid(pid, &status, 0);
-			if (pid != 0)
+			else
 			{
-				heredoc_content = NULL;
-				total_len = 0;
+				char	*buffer = gc_malloc(1);
+				size_t	bytes_read;
+				char	*heredoc_content = NULL;
+				size_t	total_len = 0;
+				char *new_content;
 				close(pipefd[1]);
 				while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer))) > 0)
 				{
-					// printf("here\n");
-					char *new_content = gc_malloc(total_len + bytes_read + 1);
+					new_content = gc_malloc(total_len + bytes_read + 1);
 					if (!new_content)
 						return (NULL);
 					if (heredoc_content)
@@ -125,8 +124,12 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 					heredoc_content = new_content;
 				}
 				close(pipefd[0]);
-				count++;
-				head->token->value = write_heredoc(heredoc_content, count);
+				waitpid(pid, &func()->status, 0);
+				if (heredoc_content)
+				{
+					count++;
+					head->token->value = write_heredoc(heredoc_content, count);
+				}
 			}
 		}
 		head = head->next;
