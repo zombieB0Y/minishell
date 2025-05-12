@@ -5,7 +5,9 @@
     "readline.h": "c",
     "string_view": "c",
     "type_traits": "c",
-    "algorithm": "c"
+    "algorithm": "c",
+    "string.h": "c",
+    "libft.h": "c"
   },
   "C_Cpp_Runner.msvcBatchPath": "",
   "C_Cpp_Runner.cCompilerPath": "gcc",

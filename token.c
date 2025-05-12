@@ -17,7 +17,7 @@ token_list_t	*token_list_create(void)
 	return (list);
 }
 
-token_t	*token_create(token_type_t type, char *value)
+token_t	*token_create(token_type_t type, char *value, char quote)
 {
 	token_t	*token;
 
@@ -25,17 +25,8 @@ token_t	*token_create(token_type_t type, char *value)
 	if (!token)
 		return (NULL);
 	// I can check expantion here, flag if quoted or any special case
+	token->quote = quote;
 	token->type = type;
-	// printf("---%s---\n", token_type_to_string(type));
-	if (type == TOKEN_APPEND || type == TOKEN_REDIRECT_OUT)
-	{
-		if (type == TOKEN_APPEND)
-			token->openf = OPEN_APPEND_NEW;
-		else
-			token->openf = OPEN_CREATE_NEW;
-	}
-	else
-		token->openf = OPEN_CREAT_ONLY;
 	token->value = value;
 	return (token);
 }
@@ -63,21 +54,21 @@ void	token_list_add(token_list_t *list, token_t *token)
 	}
 	list->size++;
 }
-token_t	*next_token(lexer_t *lexer, size_t len, size_t start)
-{
-	char	*value;
+// token_t	*next_token(lexer_t *lexer, size_t len, size_t start)
+// {
+// 	char	*value;
 
-	if (!lexer->in_double_quote && !lexer->in_single_quote)
-		value = gc_malloc(len + 1);
-	else
-		return NULL;
-		// value = (char *)get_quoted_input(lexer, &len);
-	if (!value)
-		return NULL;
-	ft_strncpy(value, lexer->input + start, len);
-	value[len] = '\0';
-	return (token_create(TOKEN_WORD, value));
-}
+// 	if (!lexer->in_double_quote && !lexer->in_single_quote)
+// 		value = gc_malloc(len + 1);
+// 	else
+// 		return NULL;
+// 		// value = (char *)get_quoted_input(lexer, &len);
+// 	if (!value)
+// 		return NULL;
+// 	ft_strncpy(value, lexer->input + start, len);
+// 	value[len] = '\0';
+// 	return (token_create(TOKEN_WORD, value));
+// }
 
 void	*return_herdoc_error(void)
 {

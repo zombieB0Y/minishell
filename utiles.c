@@ -35,9 +35,7 @@ char	*shitft(char *str)
 	new_str = NULL;
 	i = 0;
 	while(str[i] && is_tab(str[i]))
-	{
 		ft_memmove(str + i, str + i + 1, ft_strlen(str) - i);
-	}
 	new_str = ft_strdup(str);
 	return (new_str);
 }
@@ -80,7 +78,7 @@ token_list_t	*capture_heredoc(token_list_t *tokens)
 		{
 			if (head->next->token->type != TOKEN_WORD)
 				return (return_herdoc_error());
-			delimiter = head->next->token->value;
+			delimiter = head->next->token->value; // removing quotes in the delimiter and flaging for no expand and expanding if there no quotes
 			remove_token_node(&tokens->head, head->next);
 			tokens->size--;
 			if (pipe(pipefd) == -1)

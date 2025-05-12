@@ -20,8 +20,8 @@ void gc_register(void *ptr) {
         return;
     }
     node->ptr = ptr;
-    node->next = gc_head;
-    gc_head = node;
+    node->next = func()->gc_head;
+    func()->gc_head = node;
 }
 
 /*
@@ -47,7 +47,7 @@ void *gc_malloc(size_t size) {
  */
 void gc_free(void *ptr)
 {
-	GCNode *curr = gc_head;   // Current node in traversal
+	GCNode *curr = func()->gc_head;   // Current node in traversal
 	GCNode *prev = NULL;      // Previous node, needed for unlinking
 
 	while (curr != NULL)
@@ -58,7 +58,7 @@ void gc_free(void *ptr)
 			if (prev != NULL)
 				prev->next = curr->next;
 			else
-				gc_head = curr->next;
+				func()->gc_head = curr->next;
 
 			free(curr->ptr);  // Free the actual memory
 			free(curr);       // Free the GC node
@@ -74,28 +74,28 @@ void gc_free(void *ptr)
  *  Frees all registered pointers and clears the tracking list.
  */
 void gc_collect(void) {
-    GCNode *current = gc_head;
+    GCNode *current = func()->gc_head;
     while (current) {
         GCNode *next = current->next;
         free(current->ptr);  // Free the allocated memory
         free(current);       // Free the tracking node
         current = next;
     }
-    gc_head = NULL;
+    func()->gc_head = NULL;
 }
 
 /**
  * @brief Removes the node with the given pointer from the GC list.
  *
  * This function searches for the node containing the given pointer and
- * removes it from the global `gc_head` linked list without freeing anything.
+ * removes it from the global `func()->gc_head` linked list without freeing anything.
  * If the pointer is not found, the function does nothing.
  *
  * @param ptr The pointer to search for and remove from the GC list.
  */
 void gc_remove_ptr(void *ptr)
 {
-	GCNode *curr = gc_head;
+	GCNode *curr = func()->gc_head;
 	GCNode *prev = NULL;
 
 	while (curr != NULL)
@@ -106,7 +106,7 @@ void gc_remove_ptr(void *ptr)
 			if (prev != NULL)
 				prev->next = curr->next;
 			else
-				gc_head = curr->next;
+				func()->gc_head = curr->next;
 
 			curr->next = NULL; // Optional: detach node fully
 			return;

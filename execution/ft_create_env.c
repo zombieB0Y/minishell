@@ -5,14 +5,12 @@ int	ft_lstsize_n(t_env *lst)
 	int	count;
 
 	count = 0;
-	if (lst)
-	{
-		while (lst)
-		{
-			lst = lst->next;
-			count++;
-		}
-	}
+
+    while (lst)
+    {
+        lst = lst->next;
+        count++;
+    }
 	return (count);
 }
 

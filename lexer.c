@@ -10,11 +10,17 @@ int	process_command(const char *command)
 	tokens = tokenize(command);
 	if (!tokens)
 		return (0);
-	// print_tokens(tokens->head);
 	tokens = capture_heredoc(tokens);
 	if (!tokens)
 		return (0);
-	// tokens = expand(tokens);
+	// token_list_print(tokens);
+	tokens = expand(tokens);
+	if (!tokens)
+		return (0);
+	tokens = remove_surrounding_quotes(tokens);
+	if (!tokens)
+		return (0);
+	// token_list_print(tokens);
 	list = grammar_check(tokens);
 	if (!list)
 		return (0);
@@ -59,6 +65,7 @@ void	token_list_print(token_list_t *list)
 		if (current->token->value)
 		{
 			printf(", Value: %s", current->token->value);
+			// printf(", Quote: %c", current->token->quote);
 		}
 		printf("\n");
 		current = current->next;
@@ -72,7 +79,7 @@ token_t	*read_operator(lexer_t *lexer)
 	if (lexer->current_char == '|')
 	{
 		lexer_advance(lexer);
-		return (token_create(TOKEN_PIPE, ft_strdup("|")));
+		return (token_create(TOKEN_PIPE, ft_strdup("|"), 0));
 	}
 	else if (lexer->current_char == '<')
 	{
@@ -83,11 +90,11 @@ token_t	*read_operator(lexer_t *lexer)
 			if (lexer->current_char == '-')
 			{
 				lexer_advance(lexer);
-				return (token_create(TOKEN_HEREDOC_trunc, ft_strdup("<<-")));
+				return (token_create(TOKEN_HEREDOC_trunc, ft_strdup("<<-"), 0));
 			}
-			return (token_create(TOKEN_HEREDOC, ft_strdup("<<")));
+			return (token_create(TOKEN_HEREDOC, ft_strdup("<<"), 0));
 		}
-		return (token_create(TOKEN_REDIRECT_IN, ft_strdup("<")));
+		return (token_create(TOKEN_REDIRECT_IN, ft_strdup("<"), 0));
 	}
 	else if (lexer->current_char == '>')
 	{
@@ -95,9 +102,9 @@ token_t	*read_operator(lexer_t *lexer)
 		if (lexer->current_char == '>')
 		{
 			lexer_advance(lexer);
-			return (token_create(TOKEN_APPEND, ft_strdup(">>")));
+			return (token_create(TOKEN_APPEND, ft_strdup(">>"), 0));
 		}
-		return (token_create(TOKEN_REDIRECT_OUT, ft_strdup(">")));
+		return (token_create(TOKEN_REDIRECT_OUT, ft_strdup(">"), 0));
 	}
 	else
 	{

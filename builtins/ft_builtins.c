@@ -45,6 +45,7 @@ int	ft_echo(char **arguments, int num)
 	int flag = 0;
 	int y;
 
+	func()->status = 0;
 	if (!arguments[i])
 	{
 		if (write(1, "\n", 1) == -1)
@@ -75,8 +76,10 @@ int	ft_echo(char **arguments, int num)
 			break;
 		}
 		i++;
-		if (arguments[i])
+		if (arguments[i] && (arguments[i - 1][0] != '\0' && arguments[i][0] != '\0'))
+		{
 			write(1, " ", 1);
+		}
 	}
 	if (!flag)
 	{
@@ -264,6 +267,7 @@ int validate(char *arg, int no_equal)
 	i = sign(arg);
 	key = ft_substr(arg, 0, i);
 	key_len = ft_strlen(key);
+	printf("%d\n", key_len);
 	if (ft_isalpha(key[0]) || key[0] == '_')
 	{
 		i = 1;
@@ -271,7 +275,7 @@ int validate(char *arg, int no_equal)
 		{
 			if (flag == 0 && key[i] == '+' && no_equal == 1)
 				flag = 1;
-			else if (!ft_isalnum(key[i]) && key[i] != '_')
+			else if ((!ft_isalnum(key[i]) && key[i] != '_') || flag == 1)
 				return (0);
 			i++;
 		}

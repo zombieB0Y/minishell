@@ -26,6 +26,7 @@ token_list_t	*tokenize(const char *input)
 		}
 		token = NULL;
 		value = NULL;
+		quote = 0;
 		start = lexer->position;
 		if (!is_operator_char(lexer->current_char) && !is_whitespace(lexer->current_char))
 		{
@@ -42,13 +43,14 @@ token_list_t	*tokenize(const char *input)
 					if (lexer->current_char == quote)
 						lexer->quotes_count++;
 				}
-				lexer_advance(lexer);
-			}
+				lexer_advance(lexer); // 
+
+			} /////// kael mn hna echo "$USER"
 			if ((lexer->quotes_count % 2) != 0)
 				return (return_quoted_error());
 			len = lexer->position - start;
 			value = ft_substr(lexer->input, start, len);
-			token = token_create(TOKEN_WORD, value);
+			token = token_create(TOKEN_WORD, value, quote);
 			// hed hna ------
 			if (!token)
 				return NULL;
@@ -62,6 +64,6 @@ token_list_t	*tokenize(const char *input)
 			token_list_add(tokens, token);
 		}
 	}
-	token_list_add(tokens, token_create(TOKEN_EOF, NULL));
+	token_list_add(tokens, token_create(TOKEN_EOF, NULL, 0));
 	return (tokens);
 }
