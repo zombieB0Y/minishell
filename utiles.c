@@ -58,11 +58,23 @@ char	*write_heredoc(char *str, size_t count)
 	return (filename);
 }
 
+bool	find_quotes(char *str)
+{
+	while (*str)
+	{
+		if (is_quotes_char(*str))
+			return (true);
+		str++;
+	}
+	return (false);
+}
+
 token_list_t *capture_heredoc(token_list_t *tokens)
 {
 	char	*line;
 	char	*delimiter;
 	lol		*head;
+	bool	expand = true;
 	pid_t	pid;
 	int		pipefd[2];
 	int		count = 0;
@@ -77,6 +89,9 @@ token_list_t *capture_heredoc(token_list_t *tokens)
 			if (head->next->token->type != TOKEN_WORD)
 				return (return_herdoc_error());
 			delimiter = head->next->token->value;
+			if (find_quotes(delimiter))
+				expand = false;
+			delimiter = shift_quotes(delimiter);
 			remove_token_node(&tokens->head, head->next);
 			tokens->size--;
 			if (pipe(pipefd) == -1)
@@ -111,11 +126,13 @@ token_list_t *capture_heredoc(token_list_t *tokens)
 				size_t	total_len = 0;
 				char *new_content;
 				close(pipefd[1]);
-				while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer))) > 0)
+				waitpid(pid, &func()->status, 0);
+				while ((bytes_read = read(pipefd[0], buffer, 1)) > 0)
 				{
 					new_content = gc_malloc(total_len + bytes_read + 1);
 					if (!new_content)
 						return (NULL);
+					
 					if (heredoc_content)
 						ft_memcpy(new_content, heredoc_content, total_len);
 					ft_memcpy(new_content + total_len, buffer, bytes_read);
@@ -124,12 +141,10 @@ token_list_t *capture_heredoc(token_list_t *tokens)
 					heredoc_content = new_content;
 				}
 				close(pipefd[0]);
-				waitpid(pid, &func()->status, 0);
-				if (heredoc_content)
-				{
-					count++;
-					head->token->value = write_heredoc(heredoc_content, count);
-				}
+				if (expand)
+					heredoc_content = expand_string_variables_herdoc(heredoc_content);
+				count++;
+				head->token->value = write_heredoc(heredoc_content, count);
 			}
 		}
 		head = head->next;

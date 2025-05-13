@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:48:42 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/13 15:27:25 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/13 21:08:42 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,126 @@ void init_exp(exp_t *new, char *org)
 	new->result_len = 0;
 	new->result_capacity = 0;
 	new->expansions_done = 0;
+}
+
+char *expand_string_variables_herdoc(char *original_value)
+{
+	if (!original_value)
+		return NULL;
+	exp_t *exp = (exp_t *)gc_malloc(sizeof(exp_t));
+	if (!exp)
+	{
+		perror("malloc");
+		return original_value;
+	}
+	init_exp(exp, original_value);
+	exp->current_pos = original_value;
+	size_t	var_name_len;
+	size_t	org_len = ft_strlen(original_value);
+	char	active_quote_char = 0;
+	char	*segment_start_ptr;
+	char	*var_name_start;
+	char	*var_name_end;
+	char	*var_name_buffer;
+	size_t	prefix_len;
+	char	*scan_ptr;
+	char	*env_value;
+	while ((exp->current_pos - original_value) < (long)org_len)
+	{
+		prefix_len = 0;
+		segment_start_ptr = exp->current_pos;
+		scan_ptr = exp->current_pos;
+
+		// if (active_quote_char == '\'')
+		// 	while (*scan_ptr != '\0' && *scan_ptr != '\'')
+		// 		scan_ptr++;
+		// else if (active_quote_char != 0)
+		// 	while (*scan_ptr != '\0' && *scan_ptr != active_quote_char && *scan_ptr != '$')
+		// 		scan_ptr++;
+		if (*exp->current_pos != '\0')
+			while (*scan_ptr != '\0' && *scan_ptr != '$')
+				scan_ptr++;
+
+		if (scan_ptr > segment_start_ptr)
+			append_to_buffer(exp, segment_start_ptr, scan_ptr - segment_start_ptr);
+		exp->current_pos = scan_ptr;
+
+		if (*exp->current_pos == '\0')
+			break;
+		if (*exp->current_pos == '$')
+		{
+			// if (active_quote_char == '\'')
+			// {
+			// 	append_to_buffer(exp, exp->current_pos, 1);
+			// 	exp->current_pos++;
+			// }
+			// else
+			// {
+				exp->dollar_sign_pos = exp->current_pos;
+				var_name_start = exp->current_pos + 1;
+				var_name_end = var_name_start;
+
+				if (ft_isalpha(*var_name_end) || *var_name_end == '_')
+				{
+					var_name_end++;
+					while (ft_isalnum(*var_name_end) || *var_name_end == '_')
+					{
+						var_name_end++;
+						prefix_len++;
+					}
+				}
+				else if (ft_isdigit(*var_name_end) || *var_name_end == '?')
+					var_name_end++;
+				if (var_name_end > var_name_start)
+					var_name_len = var_name_end - var_name_start;
+				else if (var_name_end == var_name_start)
+				{
+					append_to_buffer(exp, exp->dollar_sign_pos, 1);
+					exp->current_pos++;
+					continue;
+				}
+					var_name_buffer = (char *)gc_malloc(var_name_len + 1);
+					if (!var_name_buffer)
+					{
+						perror("malloc");
+						if (exp->result_buffer == NULL && exp->expansions_done == 0)
+							return original_value;
+						return exp->result_buffer;
+					}
+					ft_memcpy(var_name_buffer, var_name_start, var_name_len);
+					var_name_buffer[var_name_len] = '\0';
+
+					env_value = NULL;
+					if (var_name_len == 1 && var_name_buffer[0] == '?')
+						env_value = ft_itoa(func()->status);
+					if (env_value == NULL)
+						env_value = ft_getenv(var_name_buffer);
+					if (env_value != NULL)
+						append_to_buffer(exp, env_value, ft_strlen(env_value));
+					exp->expansions_done++;
+					exp->current_pos = var_name_end;
+			// }
+		}
+		else
+		{
+			append_to_buffer(exp, exp->current_pos, 1);
+			exp->current_pos++;
+		}
+	}
+	if (exp->result_buffer == NULL && exp->expansions_done == 0)
+		return original_value;
+	if (exp->result_buffer == NULL)
+	{
+		exp->result_buffer = (char *)gc_malloc(1);
+		if (exp->result_buffer)
+			exp->result_buffer[0] = '\0';
+		else
+		{
+			perror("malloc");
+			return original_value;
+		}
+	}
+	return exp->result_buffer;
 }
 
 char *expand_string_variables(char *original_value)
