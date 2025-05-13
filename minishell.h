@@ -17,6 +17,7 @@
 # include <unistd.h>
 # include <signal.h>
 # include <limits.h>
+# include "header.h"
 
 # define GREEN "\033[32m"
 # define RED "\033[31m"

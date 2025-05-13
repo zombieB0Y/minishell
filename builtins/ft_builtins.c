@@ -3,18 +3,26 @@
 int	ft_pwd(int num)
 {
 	char	*pwd;
+	char	*envpwd;
 
 	pwd = getcwd(NULL, 0);
 	func()->status = 0;
 	if (pwd == NULL)
 	{
-		if (printf("%s\n", ft_getenv("PWD")) == -1)
+		envpwd = ft_getenv("PWD");
+		if (envpwd)
 		{
-			write(2, "pwd: ", 5);
-			write(2, strerror(errno), ft_strlen(strerror(errno)));
-			write (2, "\n", 1);
-			func()->status = 1;
+			printf("hani d5elt\n");
+			if (printf("%s\n", envpwd) == -1)
+			{
+				write(2, "pwd: ", 5);
+				write(2, strerror(errno), ft_strlen(strerror(errno)));
+				write (2, "\n", 1);
+				func()->status = 1;
+			}
 		}
+		else
+			perror("getocwd");
 	}
 	else
 	{
@@ -267,7 +275,6 @@ int validate(char *arg, int no_equal)
 	i = sign(arg);
 	key = ft_substr(arg, 0, i);
 	key_len = ft_strlen(key);
-	printf("%d\n", key_len);
 	if (ft_isalpha(key[0]) || key[0] == '_')
 	{
 		i = 1;
@@ -462,8 +469,9 @@ void edit_pwd_oldpwd(char *old_pwd)
 	// this part needs fixing
     if (!new_pwd)
 	{
-		error("cd", 2 , strerror(errno));
-		write (2, "\n", 1);
+		// error("cd", 2 , strerror(errno));
+		perror("cd");
+		// write (2, "\n", 1);
         return ;
 	}
     set_env_var("PWD", new_pwd);
