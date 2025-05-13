@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:48:42 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/13 13:42:25 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/13 14:50:37 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,17 +70,18 @@ char *expand_string_variables(char *original_value)
 	exp->current_pos = original_value;
 	
 	// pid_t pid = getpid();
-	size_t var_name_len;
-	char active_quote_char = 0;
-	char *segment_start_ptr;
-	char *var_name_start;
-	char *var_name_end;
-	char *var_name_buffer;
-	size_t prefix_len;
-	char *scan_ptr;
-	char *env_value;
+	size_t	var_name_len;
+	size_t	org_len = ft_strlen(original_value);
+	char	active_quote_char = 0;
+	char	*segment_start_ptr;
+	char	*var_name_start;
+	char	*var_name_end;
+	char	*var_name_buffer;
+	size_t	prefix_len;
+	char	*scan_ptr;
+	char	*env_value;
 // -------------------echo "'"$USER"'"-----------------
-	while (*exp->current_pos != '\0')
+	while ((exp->current_pos - original_value) < (long)org_len)
 	{
 		prefix_len = 0;
 		segment_start_ptr = exp->current_pos;
@@ -145,21 +146,27 @@ char *expand_string_variables(char *original_value)
 				}
 				else if (ft_isdigit(*var_name_end) || *var_name_end == '?')
 					var_name_end++;
-				else
+				// else
+				// {
+				// 	// append_to_buffer(exp, exp->dollar_sign_pos, 1);
+				// 	exp->current_pos++;
+				// 	continue;
+				// }
+				if (var_name_end > var_name_start)
+					var_name_len = var_name_end - var_name_start;
+				else if (var_name_end == var_name_start)
 				{
-					// append_to_buffer(exp, exp->dollar_sign_pos, 1);
+					append_to_buffer(exp, exp->dollar_sign_pos, 1);
 					exp->current_pos++;
 					continue;
 				}
-
-				var_name_len = var_name_end - var_name_start;
-				if (var_name_len == 0 && (*(var_name_start - 1) == '?'))
-				{
-					append_to_buffer(exp, exp->dollar_sign_pos, 1);
-					exp->current_pos = var_name_start;
-				}
-				else
-				{
+				// if (var_name_len == 0 && (*(var_name_start - 1) == '?'))
+				// {
+				// 	append_to_buffer(exp, exp->dollar_sign_pos, 1);
+				// 	exp->current_pos = var_name_start;
+				// }
+				// else
+				// {
 					var_name_buffer = (char *)gc_malloc(var_name_len + 1);
 					if (!var_name_buffer)
 					{
@@ -182,7 +189,7 @@ char *expand_string_variables(char *original_value)
 						append_to_buffer(exp, env_value, ft_strlen(env_value));
 					exp->expansions_done++;
 					exp->current_pos = var_name_end;
-				}
+				// }
 			}
 		}
 		else
