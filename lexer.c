@@ -1,5 +1,9 @@
 #include "minishell.h"
 
+
+// to_do_list : echo "'"$USER"'"
+// 1. check if the command is empty $l ls
+
 int	process_command(const char *command)
 {
 	token_list_t	*tokens;
@@ -17,10 +21,10 @@ int	process_command(const char *command)
 	tokens = expand(tokens);
 	if (!tokens)
 		return (0);
+	// token_list_print(tokens);
 	tokens = remove_surrounding_quotes(tokens);
 	if (!tokens)
 		return (0);
-	// token_list_print(tokens);
 	list = grammar_check(tokens);
 	if (!list)
 		return (0);

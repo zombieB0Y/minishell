@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:48:42 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/10 16:51:36 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/12 14:52:12 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,219 +14,238 @@
 
 void append_to_buffer(exp_t *exp, char *str_to_add, size_t add_len)
 {
-    if (add_len == 0)
-        return ;
-    if (exp->result_buffer == NULL)
-    {
-        exp->result_capacity = add_len + 1;
-        exp->result_buffer = (char *)gc_malloc(exp->result_capacity);
-        if (!exp->result_buffer)
-        {
-            perror("malloc");
-            return ;
-        }
-        exp->result_len = 0;
-        exp->result_buffer[0] = '\0';
-    }
-    else if (exp->result_len + add_len + 1 > exp->result_capacity)
-    {
-        exp->result_capacity = exp->result_len + add_len + 1;
-        char *new_buffer = (char *)ft_realloc(exp->result_buffer, exp->result_len, exp->result_capacity);
-        if (!new_buffer)
-        {
-            perror("realloc");
-            return ;
-        }
-        exp->result_buffer = new_buffer;
-    }
-    ft_strncat(exp->result_buffer, str_to_add, add_len);
-    exp->result_len += add_len + 1;
+	if (add_len == 0)
+		return ;
+	if (exp->result_buffer == NULL)
+	{
+		exp->result_capacity = add_len + 1;
+		exp->result_buffer = (char *)gc_malloc(exp->result_capacity);
+		if (!exp->result_buffer)
+		{
+			perror("malloc");
+			return ;
+		}
+		exp->result_len = 0;
+		exp->result_buffer[0] = '\0';
+	}
+	else if (exp->result_len + add_len + 1 > exp->result_capacity)
+	{
+		exp->result_capacity = exp->result_len + add_len + 1;
+		char *new_buffer = (char *)ft_realloc(exp->result_buffer, exp->result_len, exp->result_capacity);
+		if (!new_buffer)
+		{
+			perror("realloc");
+			return ;
+		}
+		exp->result_buffer = new_buffer;
+	}
+	ft_strncat(exp->result_buffer, str_to_add, add_len);
+	exp->result_len += add_len + 1;
 }
 
 void init_exp(exp_t *new, char *org)
 {
-    (void)org;
-    new->dollar_sign_pos = NULL;
-    new->current_pos = NULL;
-    new->result_buffer = NULL;
-    new->result_len = 0;
-    new->result_capacity = 0;
-    new->expansions_done = 0;
+	(void)org;
+	new->dollar_sign_pos = NULL;
+	new->current_pos = NULL;
+	new->result_buffer = NULL;
+	new->result_len = 0;
+	new->result_capacity = 0;
+	new->expansions_done = 0;
 }
 
 char *expand_string_variables(char *original_value)
 {
-    if (!original_value)
-        return NULL;
+	if (!original_value)
+		return NULL;
 
-    exp_t *exp = (exp_t *)gc_malloc(sizeof(exp_t));
-    if (!exp)
-    {
-        perror("malloc");
-        return original_value;
-    }
+	exp_t *exp = (exp_t *)gc_malloc(sizeof(exp_t));
+	if (!exp)
+	{
+		perror("malloc");
+		return original_value;
+	}
 	
-    init_exp(exp, original_value);
-    exp->current_pos = original_value;
+	init_exp(exp, original_value);
+	exp->current_pos = original_value;
 	
 	// pid_t pid = getpid();
 	size_t var_name_len;
-    char active_quote_char = 0;
-    char *segment_start_ptr;
+	char active_quote_char = 0;
+	char *segment_start_ptr;
 	char *var_name_start;
 	char *var_name_end;
 	char *var_name_buffer;
 	size_t prefix_len;
 	char *scan_ptr;
 	char *env_value;
-
-    while (*exp->current_pos != '\0')
-    {
+// -------------------echo "'"$USER"'"-----------------
+	while (*exp->current_pos != '\0')
+	{
 		prefix_len = 0;
-        segment_start_ptr = exp->current_pos;
-        scan_ptr = exp->current_pos;
+		segment_start_ptr = exp->current_pos;
+		scan_ptr = exp->current_pos;
 
-        if (active_quote_char == '\'')
-            while (*scan_ptr != '\0' && *scan_ptr != '\'')
-                scan_ptr++;
-        else
-            while (*scan_ptr != '\0' && *scan_ptr != '$' && *scan_ptr != '\'' && *scan_ptr != '"')
-                scan_ptr++;
+		if (active_quote_char == '\'')
+			while (*scan_ptr != '\0' && *scan_ptr != '\'')
+				scan_ptr++;
+		else if (active_quote_char != 0)
+			while (*scan_ptr != '\0' && *scan_ptr != active_quote_char && *scan_ptr != '$')
+				scan_ptr++;
+		else
+			while (*scan_ptr != '\0' && *scan_ptr != '$' && *scan_ptr != '\'' && *scan_ptr != '"')
+				scan_ptr++;
 
-        if (scan_ptr > segment_start_ptr)
-            append_to_buffer(exp, segment_start_ptr, scan_ptr - segment_start_ptr);
+		if (scan_ptr > segment_start_ptr)
+			append_to_buffer(exp, segment_start_ptr, scan_ptr - segment_start_ptr);
 		// printf("exp->result_buffer = %s\n", exp->result_buffer);
-        exp->current_pos = scan_ptr;
+		exp->current_pos = scan_ptr;
 
-        if (*exp->current_pos == '\0')
-            break;
-        else if (*exp->current_pos == '\'')
-        {
-            if (active_quote_char == '\'')
-                active_quote_char = 0;
-            else if (active_quote_char == 0)
-                active_quote_char = '\'';
-            exp->current_pos++;
-        }
-        else if (*exp->current_pos == '"')
-        {
-            if (active_quote_char == '"')
-                active_quote_char = 0;
-            else if (active_quote_char == 0)
-                active_quote_char = '"';
-            exp->current_pos++;
-        }
-        else if (*exp->current_pos == '$')
-        {
-            if (active_quote_char == '\'')
-            {
-                append_to_buffer(exp, exp->current_pos, 1);
-                exp->current_pos++;
-            }
-            else
-            {
-                exp->dollar_sign_pos = exp->current_pos;
-                var_name_start = exp->current_pos + 1;
-                var_name_end = var_name_start;
+		if (*exp->current_pos == '\0')
+			break;
+		else if (*exp->current_pos == '\'')
+		{
+			if (active_quote_char == '\'')
+				active_quote_char = 0;
+			else if (active_quote_char == 0)
+				active_quote_char = '\'';
+			append_to_buffer(exp, exp->current_pos, 1);
+			exp->current_pos++;
+		}
+		else if (*exp->current_pos == '"')
+		{
+			if (active_quote_char == '"')
+				active_quote_char = 0;
+			else if (active_quote_char == 0)
+				active_quote_char = '"';
+			append_to_buffer(exp, exp->current_pos, 1);
+			exp->current_pos++;
+		}
+		else if (*exp->current_pos == '$')
+		{
+			if (active_quote_char == '\'')
+			{
+				append_to_buffer(exp, exp->current_pos, 1);
+				exp->current_pos++;
+			}
+			else
+			{
+				exp->dollar_sign_pos = exp->current_pos;
+				var_name_start = exp->current_pos + 1;
+				var_name_end = var_name_start;
 
-                if (ft_isalpha(*var_name_end) || *var_name_end == '_')
-                {
-                    var_name_end++;
-                    while (ft_isalnum(*var_name_end) || *var_name_end == '_')
+				if (ft_isalpha(*var_name_end) || *var_name_end == '_')
+				{
+					var_name_end++;
+					while (ft_isalnum(*var_name_end) || *var_name_end == '_')
 					{
-                        var_name_end++;
+						var_name_end++;
 						prefix_len++;
 					}
-                }
-                else if (ft_isdigit(*var_name_end) || *var_name_end == '?' || *var_name_end == '$' || *var_name_end == '#')
-                    var_name_end++;
-                else
-                {
-                    append_to_buffer(exp, exp->dollar_sign_pos, 1);
-                    exp->current_pos++;
-                    continue;
-                }
+				}
+				else if (ft_isdigit(*var_name_end) || *var_name_end == '?')
+					var_name_end++;
+				else
+				{
+					// append_to_buffer(exp, exp->dollar_sign_pos, 1);
+					exp->current_pos++;
+					continue;
+				}
 
-                var_name_len = var_name_end - var_name_start;
-                if (var_name_len == 0 && (*(var_name_start - 1) == '?'))
-                {
-                    append_to_buffer(exp, exp->dollar_sign_pos, 1);
-                    exp->current_pos = var_name_start;
-                }
-                else
-                {
-                    var_name_buffer = (char *)gc_malloc(var_name_len + 1);
-                    if (!var_name_buffer)
-                    {
-                        perror("malloc");
-                        if (exp->result_buffer == NULL && exp->expansions_done == 0)
-                            return original_value;
-                        return exp->result_buffer;
-                    }
-                    ft_memcpy(var_name_buffer, var_name_start, var_name_len);
-                    var_name_buffer[var_name_len] = '\0';
+				var_name_len = var_name_end - var_name_start;
+				if (var_name_len == 0 && (*(var_name_start - 1) == '?'))
+				{
+					append_to_buffer(exp, exp->dollar_sign_pos, 1);
+					exp->current_pos = var_name_start;
+				}
+				else
+				{
+					var_name_buffer = (char *)gc_malloc(var_name_len + 1);
+					if (!var_name_buffer)
+					{
+						perror("malloc");
+						if (exp->result_buffer == NULL && exp->expansions_done == 0)
+							return original_value;
+						return exp->result_buffer;
+					}
+					ft_memcpy(var_name_buffer, var_name_start, var_name_len);
+					var_name_buffer[var_name_len] = '\0';
 
-                    env_value = NULL;
-                    if (var_name_len == 1 && var_name_buffer[0] == '?')
-                        env_value = ft_itoa(func()->status);
-                    // else if (var_name_len == 1 && var_name_buffer[0] == '$')
-                    //     env_value = ft_itoa(pid);
-                    if (env_value == NULL)
-                        env_value = ft_getenv(var_name_buffer);
-                    if (env_value != NULL)
-                        append_to_buffer(exp, env_value, ft_strlen(env_value));
-                    exp->expansions_done++;
-                    exp->current_pos = var_name_end;
-                }
-            }
-        }
-        else
-        {
-            append_to_buffer(exp, exp->current_pos, 1);
-            exp->current_pos++;
-        }
-    }
-    if (exp->result_buffer == NULL && exp->expansions_done == 0)
-        return original_value;
-    if (exp->result_buffer == NULL)
-    {
-        exp->result_buffer = (char *)gc_malloc(1);
-        if (exp->result_buffer)
-            exp->result_buffer[0] = '\0';
-        else
-        {
-            perror("malloc");
-            return original_value;
-        }
-    }
-    return exp->result_buffer;
+					env_value = NULL;
+					if (var_name_len == 1 && var_name_buffer[0] == '?')
+						env_value = ft_itoa(func()->status);
+					// else if (var_name_len == 1 && var_name_buffer[0] == '$')
+					//     env_value = ft_itoa(pid);
+					if (env_value == NULL)
+						env_value = ft_getenv(var_name_buffer);
+					if (env_value != NULL)
+						append_to_buffer(exp, env_value, ft_strlen(env_value));
+					exp->expansions_done++;
+					exp->current_pos = var_name_end;
+				}
+			}
+		}
+		else
+		{
+			append_to_buffer(exp, exp->current_pos, 1);
+			exp->current_pos++;
+		}
+	}
+	if (exp->result_buffer == NULL && exp->expansions_done == 0)
+		return original_value;
+	if (exp->result_buffer == NULL)
+	{
+		exp->result_buffer = (char *)gc_malloc(1);
+		if (exp->result_buffer)
+			exp->result_buffer[0] = '\0';
+		else
+		{
+			perror("malloc");
+			return original_value;
+		}
+	}
+	return exp->result_buffer;
 }
 
 token_list_t *expand(token_list_t *tokens)
 {
-    if (!tokens || !tokens->head)
-        return tokens;
+	if (!tokens || !tokens->head)
+		return tokens;
 
-    lol *current_node = tokens->head;
-    char *new_value;
-    token_t *token;
+	lol *current_node = tokens->head;
+	// lol *prev_node = NULL;
+	char *new_value;
+	token_t *token;
 
-    while (current_node)
-    {
-        token = current_node->token;
-        if (token && token->type == TOKEN_WORD && token->value != NULL)
-        {
-            if (ft_strchr(token->value, '$'))
-            {
-                char *original_token_value = token->value;
-                new_value = expand_string_variables(original_token_value);
-                if (new_value != original_token_value)
-                    token->value = new_value;
-            }
-        }
-        current_node = current_node->next;
-    }
-    return tokens;
+	while (current_node)
+	{
+		token = current_node->token;
+		if (token && token->type == TOKEN_WORD && token->value != NULL)
+		{
+			if (ft_strchr(token->value, '$'))
+			{
+				char *original_token_value = token->value;
+				new_value = expand_string_variables(original_token_value);
+				if (new_value != original_token_value)
+				{
+					if (new_value[0] != '\0')
+					{
+						token->value = new_value;
+						// token->quote = 69;
+					}
+					else
+					{
+						// printf("Empty token value after expansion\n");
+						remove_token_node(&tokens->head, current_node);
+						current_node = tokens->head;
+					}
+				}
+			}
+		}
+		// prev_node = current_node;
+		current_node = current_node->next;
+	}
+	return tokens;
 }
 
 // void append_to_buffer(exp_t *exp, char *str_to_add, size_t add_len)
@@ -586,13 +605,13 @@ token_list_t *expand(token_list_t *tokens)
 	// if (ft_strlen(exp->current_pos) > 0)
 	// 	append_to_buffer(exp, exp->current_pos, ft_strlen(exp->current_pos));
 	// if (exp->expansions_done == 0)
-    // {
-    //     return (original_value);
-    // }
+	// {
+	//     return (original_value);
+	// }
 	// else
 	// {
-    //     if (!exp->result_buffer)
-    //     exp->result_buffer = ft_strdup("");
+	//     if (!exp->result_buffer)
+	//     exp->result_buffer = ft_strdup("");
 	// 	return exp->result_buffer;
 	// }
 // }

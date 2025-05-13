@@ -7,7 +7,9 @@
     "type_traits": "c",
     "algorithm": "c",
     "string.h": "c",
-    "libft.h": "c"
+    "libft.h": "c",
+    "bit": "c",
+    "random": "c"
   },
   "C_Cpp_Runner.msvcBatchPath": "",
   "C_Cpp_Runner.cCompilerPath": "gcc",
@@ -65,5 +67,6 @@
   "C_Cpp_Runner.useLeakSanitizer": false,
   "C_Cpp_Runner.showCompilationTime": false,
   "C_Cpp_Runner.useLinkTimeOptimization": false,
-  "C_Cpp_Runner.msvcSecureNoWarnings": false
+  "C_Cpp_Runner.msvcSecureNoWarnings": false,
+  "C_Cpp.default.compilerPath": "/usr/bin/clang"
 }

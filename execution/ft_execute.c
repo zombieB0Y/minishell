@@ -151,8 +151,8 @@ int	ft_pip(int pip_num, anas_list *tok)
 	i = 0;
 	while (i <= pip_num)
 	{
-		i++;
 		waitpid(-1, &r, 0);
+		i++;
 	}
 	if (WIFSIGNALED(r))
 		return (check_child_sig(r));
@@ -164,6 +164,12 @@ int	ft_pip(int pip_num, anas_list *tok)
 
 int ft_execute(anas_list *tok)
 {
+	// if (tok->head->arg_c == 0 && tok->head->file_c == 0)
+	// {
+	// 	func()->status = 127;
+	// 	write (2, "command not found\n", 17);
+	// 	return (func()->status);
+	// }
     int (num_pip) = number_of_pip(tok);
     func()->out = dup(1);
     func()->in = dup(0);

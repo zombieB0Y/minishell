@@ -232,6 +232,7 @@ void					gc_register(void *ptr);
 char					*substr_dup(const char *start, size_t len);
 char					*substr_dup(const char *start, size_t len);
 token_list_t			*capture_heredoc(token_list_t *tokens);
+char					*shitft(char *str);
 //----------execution--------
 int						ft_execute(anas_list *tok);
 char					**ft_split_n(char const *s, char c);
