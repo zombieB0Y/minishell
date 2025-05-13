@@ -151,8 +151,8 @@ int	ft_pip(int pip_num, anas_list *tok)
 	i = 0;
 	while (i <= pip_num)
 	{
-		i++;
 		waitpid(-1, &r, 0);
+		i++;
 	}
 	if (WIFSIGNALED(r))
 		return (check_child_sig(r));
