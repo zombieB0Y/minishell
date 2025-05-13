@@ -80,6 +80,7 @@ int	main(int ac, char **av, char **env)
 		}
 		func()->background = 0;
 		line = readline("\001" GREEN "\002" "MINISHELL >$ " "\001" RESET "\002");
+		// line = getline()
 		func()->background = 1;
 		if (!line)
 		{

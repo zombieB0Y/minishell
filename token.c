@@ -73,6 +73,7 @@ void	token_list_add(token_list_t *list, token_t *token)
 void	*return_herdoc_error(void)
 {
 	ft_putstr_fd("heredoc ?\n", 2);
+	func()->status = 2;
 	return (NULL);
 }
 
