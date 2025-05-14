@@ -5,7 +5,7 @@ int ft_redirect_out(files_t *files, int flag)
     int fd;
 
     func()->status = 0;
-    fd = open(files->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    fd = open(files->file, O_WRONLY | O_CREAT | O_TRUNC , 0644);
     if (fd == -1)
     {
         write(2, files->file, ft_strlen(files->file));

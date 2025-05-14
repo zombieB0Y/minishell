@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:48:42 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/13 21:08:42 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/14 14:37:58 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ char *expand_string_variables_herdoc(char *original_value)
 	exp->current_pos = original_value;
 	size_t	var_name_len;
 	size_t	org_len = ft_strlen(original_value);
-	char	active_quote_char = 0;
+	// char	active_quote_char = 0;
 	char	*segment_start_ptr;
 	char	*var_name_start;
 	char	*var_name_end;

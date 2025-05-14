@@ -97,6 +97,7 @@ token_list_t *capture_heredoc(token_list_t *tokens)
 			if (pipe(pipefd) == -1)
 				return (NULL);
 			pid = fork();
+			sig_child();
 			if (pid == -1)
 				return (NULL);
 			if (pid == 0)
@@ -127,6 +128,10 @@ token_list_t *capture_heredoc(token_list_t *tokens)
 				char *new_content;
 				close(pipefd[1]);
 				waitpid(pid, &func()->status, 0);
+				if (WIFSIGNALED(func()->status))
+				{
+					check_child_sig(func()->status);
+				}
 				while ((bytes_read = read(pipefd[0], buffer, 1)) > 0)
 				{
 					new_content = gc_malloc(total_len + bytes_read + 1);
