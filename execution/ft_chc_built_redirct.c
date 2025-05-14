@@ -8,13 +8,16 @@ int ft_redirect_out(files_t *files, int flag)
     fd = open(files->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (fd == -1)
     {
-        write(2, files->file, ft_strlen(files->file));
-        write(2, ": ", 2);
-        write(2, strerror(errno), ft_strlen(strerror(errno)));
-        write(2, "\n", 1);
+        // write(2, files->file, ft_strlen(files->file));
+        // write(2, ": ", 2);
+        // write(2, strerror(errno), ft_strlen(strerror(errno)));
+        // write(2, "\n", 1);
+        perror(files->file);
         func()->status = 1;
         if (flag == 0)
+        {
             exit(func()->status);
+        }
         return (2);
     }
     dup2(fd, 1);

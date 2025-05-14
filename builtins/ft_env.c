@@ -14,9 +14,7 @@ int	ft_env(int num)
 			{
 				if (printf("%s=%s\n", curr->key, curr->value) == -1)
 				{
-					write(2, "env: ", 5);
-					write(2, strerror(errno), ft_strlen(strerror(errno)));
-					write (2, "\n", 1);
+					perror("env");
 					func()->status = 125;
 					break ;
 				}

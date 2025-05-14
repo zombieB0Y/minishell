@@ -44,5 +44,5 @@ int ft_unset(token_node_t *tok, int num)
 		remove_env_var(target);
         i++;
     }
-    return handle_exit_status(num);
+    return (handle_exit_status(num));
 }

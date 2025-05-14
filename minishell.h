@@ -273,4 +273,5 @@ int						check_child_sig(int r);
 int						builtins_parent(anas_list *tok, int pip_num);
 void					ft_copy_in_out();
 void					error(char *str, int fd, char *message);
+int						handle_exit_status(int num);
 #endif
