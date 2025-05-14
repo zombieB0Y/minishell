@@ -64,7 +64,7 @@ void ft_exc(token_node_t *tok, int num, char **envchar, int i)
 	if (ft_strchr(tok->arguments[0], '/'))
 		check_if_full_path(tok, envchar);
     if (!p)
-        no_path(tok);
+        no_path(tok, envchar);
     path = ft_split_n(p, ':');
 	if (tok->arguments[0])
 	{

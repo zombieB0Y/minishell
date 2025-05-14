@@ -24,4 +24,5 @@ typedef struct s_gnl
 char        *get_next_line(int fd);
 int            ft_line_verifier(char *buf);
 char        *my_ft_strjoin(char const *s1, char const *s2);
+char    *read_input(void);
 #endif

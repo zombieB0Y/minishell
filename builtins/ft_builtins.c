@@ -84,7 +84,7 @@ int	ft_echo(char **arguments, int num)
 			break;
 		}
 		i++;
-		if (arguments[i] && (arguments[i - 1][0] != '\0' && arguments[i][0] != '\0'))
+		if (arguments[i])
 		{
 			write(1, " ", 1);
 		}
@@ -369,7 +369,9 @@ int	ft_export(char **arguments, int num)
 int	ft_num_inside(char *arg)
 {
 	int(i) = 0;
-	if (arg[i] == '-')
+	if (arg && arg[i] == '\0')
+		return (1);
+	if (arg[i] == '-' || arg[i] == '+')
 		i++;
 	while (arg[i])
 	{
@@ -399,37 +401,38 @@ int is_all_didgits(char *arg)
 int	ft_exit(char **arguments, int num)
 {
 	int(i) = 1;
+	(void) num;
 	ft_copy_in_out(func()->out, func()->in);
 	if (!arguments[i])
 	{
-		if (num == 0)
-			write(2, "exit\n", 5);
+		// if (num == 0)
+		// 	write(2, "exit\n", 5);
 		exit(func()->status);
 	}
-	else if (arguments[i + 1])
+	else if (ft_num_inside(arguments[i]) == 1)
 	{
-		if (num == 0)
-			write(2, "exit\n", 5);
-		write(2, "exit: too many arguments\n", 25);
-		func()->status = 1;
-		if (!is_all_didgits(arguments[i]))
-			exit(func()->status);
-	}
-	else if (ft_num_inside(arguments[1]) == 1)
-	{
-		if (num == 0)
-			write(2, "exit\n", 5);
+		// if (num == 0)
+		// 	write(2, "exit\n", 5);
 		write(2, "exit: ", 6);
 		write(2, arguments[1], ft_strlen(arguments[1]));
 		write(2, ": numeric argument required\n", 28);
 		func()->status = 2;
 		exit(func()->status);
 	}
+	else if (arguments[i + 1])
+	{
+		// if (num == 0)
+		// 	write(2, "exit\n", 5);
+		write(2, "exit: too many arguments\n", 25);
+		func()->status = 1;
+		if (!is_all_didgits(arguments[i]))
+		exit(func()->status);
+	}
 	else
 	{
 		func()->status = ft_atoi(arguments[i]);
-		if (num == 0)
-			write(2, "exit\n", 5);
+		// if (num == 0)
+		// 	write(2, "exit\n", 5);
 		exit(func()->status);
 	}
 	return (func()->status);

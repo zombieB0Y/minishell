@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/11 20:23:54 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/13 20:14:25 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,12 +87,14 @@ void list_add(anas_list *list, token_node_t *node)
 anas_list *return_pip_error()
 {
     ft_putstr_fd("Syntax error: invalid use of pipe\n", 2);
+    func()->status = 2;
     return NULL;
 }
 
 anas_list *return_redirection_error()
 {
     ft_putstr_fd("Syntax error: invalid redirection\n", 2);
+    func()->status = 2;
     return NULL;
 }
 

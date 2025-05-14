@@ -57,25 +57,36 @@ void check_if_full_path(token_node_t *tok, char **envchar)
     {
         func()->status = 126;
         write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
-        write (2, ": Permission 1denied\n", 21);
+        write (2, ": Permission denied\n", 21);
     }
     exit(func()->status);
 }
 
-void no_path(token_node_t *tok)
+void no_path(token_node_t *tok, char **envchar)
 {
+    char (*path) = getcwd(NULL, 0);
+    char (*temp) = ft_strjoin(path, "/");
+    char (*full_cmd) = ft_strjoin(temp, tok->arguments[0]);
+    free(path);
     if (ft_strcmp(tok->arguments[0], "..") == 0)
     {
         write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
         write (2, ": Id a directory\n", 18);
         func()->status = 126;
     }
-    else
+    else if (access(full_cmd, X_OK) == 0)
     {
-        write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
-        write (2, ": No such file or directory\n", 28);
-        func()->status = 127;
+        execve(full_cmd, tok->arguments, envchar);
+        perror("execve");
     }
+    else
+        check_if_full_path(tok, envchar);
+    // else
+    // {
+    //     write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
+    //     write (2, ": No such file or directory\n", 28);
+    //     func()->status = 127;
+    // }
     exit(func()->status);
 }
 

@@ -209,11 +209,13 @@ void					*return_quoted_error(void);
 token_list_t			*expand(token_list_t *tokens);
 char					*expand_string_variables(char *original_value);
 void					append_to_buffer(exp_t *exp, char *str_to_add, size_t add_len);
+char					*expand_string_variables_herdoc(char *original_value);
 // Grammar fucntions
 anas_list				*grammar_check(token_list_t *tokens);
 void					list_add(anas_list *list, token_node_t *token);
 void					print_anas_list(anas_list *list);
 token_list_t			*remove_surrounding_quotes(token_list_t *list);
+char					*shift_quotes(char *str);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------
@@ -263,7 +265,7 @@ int						ft_redirects(token_node_t *tok, int flag);
 int						execute_builtins(token_node_t *tok, int pip_num);
 char					**env_to_char();
 void					check_if_full_path(token_node_t *tok, char **envchar);
-void					no_path(token_node_t *tok);
+void					no_path(token_node_t *tok, char **envchar);
 void					execute_commend(char *tmp, char *full_path, token_node_t *tok, char **envchar);
 int						number_of_pip(anas_list *tok);
 void					ft_close_parent(int pipes[2][2], int i);

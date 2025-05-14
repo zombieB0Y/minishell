@@ -76,13 +76,29 @@ int ft_redirects(token_node_t *tok, int flag)
         while (tok->files)
         {
             if (tok->files->type == TOKEN_REDIRECT_OUT)
+            {    
                 r = (ft_redirect_out(tok->files, flag));
+                if (r == 2)
+                    break ;
+            }
             else if (tok->files->type == TOKEN_REDIRECT_IN || tok->files->type == TOKEN_HEREDOC || tok->files->type == TOKEN_HEREDOC_trunc)
+            {
                 r = (ft_redirect_in(tok->files, flag));
+                if (r == 2)
+                    break ;
+            }
             else if (tok->files->type == TOKEN_APPEND)
+            {
                 r = (ft_redirect_append(tok->files, flag));
+                if (r == 2)
+                    break ;
+            }
             tok->files = tok->files->next;
         }
+    }
+    if (tok->arguments[0] == NULL && flag == 0)
+    {
+        exit(r);
     }
     return (r);
 }
