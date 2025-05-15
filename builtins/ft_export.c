@@ -1,10 +1,23 @@
 #include "../minishell.h"
-void search_for_first(t_env *g_env, t_env **to_print)
-{
-    t_env *temp;
 
-    temp = g_env;
-    while (temp)
+void	number_to_print(int *total_count)
+{
+	t_env *curr;
+
+	curr = func()->g_env;
+	while (curr)
+	{
+		(*total_count)++;
+		curr = curr->next;
+	}
+}
+
+void capture_variable(t_env **to_print)
+{
+	t_env* temp;
+
+	temp = func()->g_env;
+	while (temp)
 	{
 		if (temp->flag == 0)
 		{
@@ -14,50 +27,43 @@ void search_for_first(t_env *g_env, t_env **to_print)
 		temp = temp->next;
 	}
 }
-void first_to_print(t_env *to_print)
+
+void print_variable(t_env **to_print)
 {
-    if (ft_strcmp(to_print->key, "_") != 0)
+	if ((*to_print)->value)
 	{
-		if (to_print->value)
-		{
-			if (printf("declare -x %s=\"%s\"\n", to_print->key,
-				to_print->value) == -1)
-                {
-					perror("export");
-					func()->status = 1;
-				}
-		}
-		else
-		{
-			if (printf("declare -x %s\n", to_print->key) == -1)
+		if (printf("declare -x %s=\"%s\"\n", (*to_print)->key,
+			(*to_print)->value) == -1)
 			{
 				perror("export");
 				func()->status = 1;
 			}
+	}
+	else
+	{
+		if (printf("declare -x %s\n", (*to_print)->key) == -1)
+		{
+			perror("export");
+			func()->status = 1;
 		}
 	}
 }
 
-void	export_print(t_env *g_env)
+void	export_print()
 {
 	int		(printed_count) = 0;
 	int		(total_count) = 0;
-	t_env	(*curr) = g_env;
 	t_env	*to_print;
 
-	curr = g_env;
-	while (curr)
-	{
-		total_count++;
-		curr = curr->next;
-	}
+	number_to_print(&total_count);
 	while (printed_count < total_count)
 	{
 		to_print = NULL;
-		search_for_first(g_env, &to_print);
+		capture_variable(&to_print);
 		if (to_print)
 		{
-			first_to_print(to_print);
+			if (ft_strcmp(to_print->key, "_") != 0)
+				print_variable(&to_print);
 			to_print->flag = 1;
 			printed_count++;
 		}
@@ -72,48 +78,50 @@ void	flag_to_zero(t_env *g_env)
 		g_env = g_env->next;
 	}
 }
-void get_key_flag(char *arguments, int flag, char *in_env, int y)
+char *get_key(char *arguments, int y, int flag)
 {
+	char *in_env;
 
-    if (flag == 0)
+	in_env = NULL;
+	if (flag == 0)
 		in_env = ft_substr(arguments, 0, y);
 	else
 		in_env = ft_substr(arguments, 0, y - 1);
+	return (in_env);
 }
-int search_in_env(t_env *curr, char *in_env, char *arguments, int y)
+
+int if_in_env(t_env **curr, char *arguments, int y, char *in_env)
 {
-    if (ft_strcmp(curr->key, in_env) == 0)
+	if (ft_strcmp((*curr)->key, in_env) == 0)
 	{
-		free(curr->value);
-		curr->value = ft_substr_n(arguments, y + 1, ft_strlen(arguments));
+		free((*curr)->value);
+		(*curr)->value = ft_substr_n(arguments, y + 1, ft_strlen(arguments));
 		return (1);
 	}
-	while (curr->next)
+	while ((*curr)->next)
 	{
-		if (ft_strcmp(curr->next->key, in_env) == 0)
+		if (ft_strcmp((*curr)->next->key, in_env) == 0)
 		{
-			free(curr->next->value);
-			curr->next->value = ft_substr_n(arguments, y + 1,
-				ft_strlen(arguments));
+			free((*curr)->next->value);
+			(*curr)->next->value = ft_substr_n(arguments, y + 1,
+					ft_strlen(arguments));
 			return (1);
 		}
-		curr = curr->next;
+		(*curr) = (*curr)->next;
 	}
-    return (0);
+	return (0);
 }
 
 void	add_to_env(char *arguments, int flag)
 {
-	char	(*in_env) = NULL;
 	t_env(*node) = NULL;
 	t_env(*curr) = func()->g_env;
 	int(y) = sign(arguments);
-
-	get_key_flag(arguments, flag, in_env, y);
+	char (*in_env) = get_key(arguments, y, flag);
 	if (func()->g_env)
 	{
-		if (search_in_env(curr, in_env, arguments, y) == 1)
-            return ;
+		if (if_in_env(&curr, arguments, y, in_env) == 1)
+			return ;
 	}
 	node = malloc(sizeof(t_env));
 	node->key = ft_strdup_n(in_env);
@@ -175,7 +183,6 @@ int validate(char *arg, int no_equal)
 	char (*key) = ft_substr(arg, 0, i);
 	int (key_len) = ft_strlen(key);
 	int (flag) = 0;
-
 	if (!arg)
 		return (0);
 	if (ft_isalpha(key[0]) || key[0] == '_')
@@ -185,8 +192,7 @@ int validate(char *arg, int no_equal)
 		{
 			if (flag == 0 && key[i] == '+' && no_equal == 1)
 				flag = 1;
-			else if ((!ft_isalnum(key[i]) && key[i] != '_')
-                || flag == 1)
+			else if ((!ft_isalnum(key[i]) && key[i] != '_') || flag == 1)
 				return (0);
 			i++;
 		}
@@ -198,86 +204,79 @@ int validate(char *arg, int no_equal)
 	return (1);
 }
 
-void put_to_env(char *arguments)
+void in_env(char **arguments, int i)
 {
-    int valid;
+	int valid;
 
-    valid = validate(arguments, 1);
+	valid = validate(arguments[i], 1);
 	if (valid == 1)
-	{
-		add_to_env(arguments, 0);
-    }
+		add_to_env(arguments[i], 0);
 	else if (valid != 2)
 	{
 		write(2, "export: `", 9);
-        error(arguments, 2, "': not a valid identifier\n");
+		error(arguments[i], 2, "': not a valid identifier\n");
 		func()->status = 1;
 	}
 }
 
-void put_to_export(t_env *curr, char *arguments)
+void in_export(t_env *curr, char **arguments, int i)
 {
-    t_env *node;
-
-    if (curr)
+	t_env *node;
+	if (curr)
 	{
 		while (curr->next)
 		{
-			if (ft_strcmp(curr->key, arguments) == 0)
+			if (ft_strcmp(curr->key, arguments[i]) == 0)
 				break ;
 			curr = curr->next;
 		}
 	}
 	node = malloc(sizeof(t_env));
-    if (!node)
-    {
-        return ;
-    }
-	node->key = ft_strdup_n(arguments);
+	if (!node)
+		return ;
+	node->key = ft_strdup_n(arguments[i]);
 	node->value = NULL;
 	node->flag = 0;
 	node->next = NULL;
 	if (curr)
 		curr->next = node;
 	else
-		func()->g_env = node;
+		func()->g_env = node;	
 }
 
-void loop_on_arguments(char **arguments, int i)
+void no_equal(char **arguments, int i)
 {
-    t_env *curr;
-    while (arguments[i])
+	if (validate(arguments[i], 0))
+		in_export(func()->g_env, arguments, i);
+	else
 	{
-		if (ft_strchr(arguments[i], '='))
-			put_to_env(arguments[i]);
-		else
-		{
-			curr = func()->g_env;
-			if (validate(arguments[i], 0))
-				put_to_export(curr, arguments[i]);
-			else
-			{
-				write(2, "export: `", 9);
-				error(arguments[i], 2, "': not a valid identifier\n");
-				func()->status = 1;
-			}
-		}
-		i++;
+		write(2, "export: `", 9);
+		error(arguments[i], 2, "': not a valid identifier\n");
+		func()->status = 1;
 	}
 }
 
 int	ft_export(char **arguments, int num)
 {
-    int i;
+	int(i) = 1;
 
-    i = 1;
 	func()->status = 0;
 	if (!arguments[i])
 	{
-		export_print(func()->g_env);
+		export_print();
 		flag_to_zero(func()->g_env);
 	}
 	else
-		loop_on_arguments(arguments, i);
+	{
+		while (arguments[i])
+		{
+			if (ft_strchr(arguments[i], '='))
+				in_env(arguments, i);
+			else
+				no_equal(arguments, i);
+			i++;
+		}
+	}
 	return (handle_exit_status(num));
 }
+

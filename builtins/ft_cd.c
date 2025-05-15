@@ -42,12 +42,10 @@ void edit_pwd_oldpwd(char *old_pwd)
 
     free(new_pwd);
 }
-void go_home(void)
+void go_home(char **target)
 {
-    char *target;
-
-    target = ft_getenv("HOME");
-    if (!target)
+    *target = ft_getenv("HOME");
+    if (!(*target))
 	{
         write(2, "cd: HOME not set\n", 17);
         func()->status = 1;
@@ -68,7 +66,7 @@ int ft_cd(token_node_t *tok, int num)
 	else
 	{
         if (!tok->arguments[1])
-            go_home();
+            go_home(&target);
         else
             target = tok->arguments[1];
         if (target && chdir(target) == -1)
