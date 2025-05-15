@@ -24,7 +24,6 @@ int builtins_parent(anas_list *tok, int pip_num)
 
     r = 3;
     d = ft_redirects(tok->head, 1);
-    // printf("%d\n", d);
     if (d == 2)
     {
         return (func()->status);
@@ -32,7 +31,6 @@ int builtins_parent(anas_list *tok, int pip_num)
     r = execute_builtins(tok->head, pip_num);
     if (r != 3)
     {
-        // ft_copy_in_out(stdout_copy, stdin_copy);
         return (r);
     }
     return (r);

@@ -27,6 +27,7 @@ char    *ft_word(char const *s, char c, size_t *i)
         (*i)++;
         return (ptr);
 }
+
 size_t  ft_count_word(char const *s, char c)
 {
         size_t  i;

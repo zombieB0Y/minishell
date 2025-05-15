@@ -59,11 +59,6 @@ t_env *create_node(char **env, int i)
     return (node);
 }
 
-// t_env env_null(t_env *node, t_env *head)
-// {
-
-// }
-
 t_env *create_env(char **env)
 {
     t_env *node;

@@ -81,12 +81,6 @@ void no_path(token_node_t *tok, char **envchar)
     }
     else
         check_if_full_path(tok, envchar);
-    // else
-    // {
-    //     write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
-    //     write (2, ": No such file or directory\n", 28);
-    //     func()->status = 127;
-    // }
     exit(func()->status);
 }
 
@@ -95,7 +89,9 @@ void execute_commend(char *tmp, char *full_path, token_node_t *tok, char **envch
 	full_path = ft_strjoin(tmp, tok->arguments[0]);
 	if (access(full_path, X_OK) == 0)
 	{
-        ft_redirects(tok, 0);
+        // ft_redirects(tok, 0);
 		execve(full_path, tok->arguments, envchar);
+        ft_copy_in_out();
+        perror("execev");
 	}
 }
