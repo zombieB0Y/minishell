@@ -21,7 +21,6 @@ int builtins_parent(anas_list *tok, int pip_num)
     int r;
     int d;
 
-
     r = 3;
     d = ft_redirects(tok->head, 1);
     if (d == 2)

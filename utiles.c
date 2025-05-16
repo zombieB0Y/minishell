@@ -104,8 +104,8 @@ token_list_t *capture_heredoc(token_list_t *tokens)
 				close(pipefd[0]);
 				while (1)
 				{
-					line = read_input();
-					// line = readline("heredoc>  ");
+					// line = read_input();
+					line = readline("heredoc>  ");
 					gc_register(line);
 					if (!line)
 						break;

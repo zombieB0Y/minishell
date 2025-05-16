@@ -40,13 +40,21 @@ void too_many_arg(char **arguments, int i, int num)
 	write(2, "exit: too many arguments\n", 25);
 	func()->status = 1;
 	if (!is_all_didgits(arguments[i]))
-	exit(func()->status);
+	{
+		ft_copy_in_out();
+		gc_collect();
+        free_env(func()->g_env);
+		exit(func()->status);
+	}
 }
 
 void not_numeric(char **arguments, int num)
 {
     if (num == 0)
 		write(2, "exit\n", 5);
+	ft_copy_in_out();
+	gc_collect();
+    free_env(func()->g_env);
 	write(2, "exit: ", 6);
     error(arguments[1], 2, ": numeric argument required\n");
 	func()->status = 2;
@@ -62,6 +70,9 @@ int	ft_exit(char **arguments, int num)
 	{
 		if (num == 0)
 			write(2, "exit\n", 5);
+		ft_copy_in_out();
+		gc_collect();
+        free_env(func()->g_env);
 		exit(func()->status);
 	}
 	else if (ft_num_inside(arguments[i]) == 1)
@@ -73,6 +84,9 @@ int	ft_exit(char **arguments, int num)
 		func()->status = ft_atoi(arguments[i]);
 		if (num == 0)
 			write(2, "exit\n", 5);
+		ft_copy_in_out();
+		gc_collect();
+        free_env(func()->g_env);
 		exit(func()->status);
 	}
 	return (func()->status);

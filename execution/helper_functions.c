@@ -93,5 +93,7 @@ void execute_commend(char *tmp, char *full_path, token_node_t *tok, char **envch
 		execve(full_path, tok->arguments, envchar);
         ft_copy_in_out();
         perror("execev");
+        gc_collect();
+        free_env(func()->g_env);
 	}
 }

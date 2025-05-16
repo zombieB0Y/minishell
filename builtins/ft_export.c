@@ -208,6 +208,7 @@ void in_env(char **arguments, int i)
 {
 	int valid;
 
+	printf("here\n");
 	valid = validate(arguments[i], 1);
 	if (valid == 1)
 		add_to_env(arguments[i], 0);

@@ -23,8 +23,10 @@ void ft_exc(token_node_t *tok, int num, char **envchar, int i)
 		}
 		if (!path[i])
     	{
-			error(tok->arguments[0], 2, ": command not found\n");
+			error(tok->arguments[0], 2, "command not found\n");
 			ft_copy_in_out();
+			gc_collect();
+        	free_env(func()->g_env);
         	exit(127);
     	}
 	}
@@ -52,6 +54,8 @@ void	ft_child_process(int i, int pip_num, int pipes[2][2], anas_list *tok)
 	}
 	ft_redirects(tok->head, 0);
 	ft_exc(tok->head, pip_num, envchar, y);
+	// gc_collect();
+    // free_env(func()->g_env);
 }
 
 

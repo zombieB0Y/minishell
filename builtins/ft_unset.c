@@ -4,6 +4,9 @@ int handle_exit_status(int num)
 {
     if (num == 0) 
 		return func()->status;
+    ft_copy_in_out();
+    gc_collect();
+    free_env(func()->g_env);
     exit(func()->status);
 }
 

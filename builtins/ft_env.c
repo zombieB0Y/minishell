@@ -22,7 +22,5 @@ int	ft_env(int num)
 			curr = curr->next;
 		}
 	}
-	if (num == 0)
-		return (func()->status);
-	exit(func()->status);
+	return (handle_exit_status(num));
 }
