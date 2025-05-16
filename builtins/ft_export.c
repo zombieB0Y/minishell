@@ -151,7 +151,10 @@ void	ft_append(char *arguments)
 			value = ft_substr(arguments, i + 1, ft_strlen(arguments));
 			key = ft_strdup(curr->value);
 			free(curr->value);
-			curr->value = ft_strjoin_n(key, value);
+			if (key)
+				curr->value = ft_strjoin_n(key, value);
+			else
+				curr->value = ft_strdup_n(value);
 			return ;
 		}
 		curr = curr->next;
@@ -208,7 +211,6 @@ void in_env(char **arguments, int i)
 {
 	int valid;
 
-	printf("here\n");
 	valid = validate(arguments[i], 1);
 	if (valid == 1)
 		add_to_env(arguments[i], 0);
@@ -228,9 +230,11 @@ void in_export(t_env *curr, char **arguments, int i)
 		while (curr->next)
 		{
 			if (ft_strcmp(curr->key, arguments[i]) == 0)
-				break ;
+				return ;
 			curr = curr->next;
 		}
+		if (ft_strcmp(curr->key, arguments[i]) == 0)
+			return ;
 	}
 	node = malloc(sizeof(t_env));
 	if (!node)
