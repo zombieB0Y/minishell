@@ -68,7 +68,8 @@ void no_path(token_node_t *tok, char **envchar)
     char (*temp) = ft_strjoin(path, "/");
     char (*full_cmd) = ft_strjoin(temp, tok->arguments[0]);
     free(path);
-    if (ft_strcmp(tok->arguments[0], "..") == 0)
+    if (ft_strcmp(tok->arguments[0], "..") == 0
+        || ft_strcmp(tok->arguments[0], ".") == 0)
     {
         write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
         write (2, ": Id a directory\n", 18);
