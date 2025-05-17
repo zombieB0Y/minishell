@@ -95,7 +95,7 @@ int ft_redirects(token_node_t *tok, int flag)
             tok->files = tok->files->next;
         }
     }
-    if (tok->arguments[0] == NULL && flag == 0)
+    if (tok->arguments[0] == NULL  && flag == 0)
     {
         exit(r);
     }
