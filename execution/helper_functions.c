@@ -59,6 +59,9 @@ void check_if_full_path(token_node_t *tok, char **envchar)
         write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
         write (2, ": Permission denied\n", 21);
     }
+    ft_copy_in_out();
+    gc_collect();
+    free_env(func()->g_env);
     exit(func()->status);
 }
 
@@ -82,6 +85,9 @@ void no_path(token_node_t *tok, char **envchar)
     }
     else
         check_if_full_path(tok, envchar);
+    ft_copy_in_out();
+    gc_collect();
+    free_env(func()->g_env);
     exit(func()->status);
 }
 
