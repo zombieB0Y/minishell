@@ -87,13 +87,14 @@ void no_path(token_node_t *tok, char **envchar)
 void execute_commend(char *tmp, char *full_path, token_node_t *tok, char **envchar)
 {
 	full_path = ft_strjoin(tmp, tok->arguments[0]);
-	if (access(full_path, X_OK) == 0)
-	{
+	if (access(full_path, X_OK) == 0
+        && ft_strcmp(tok->arguments[0], "\0") != 0)
+	    {
         // ft_redirects(tok, 0);
-		execve(full_path, tok->arguments, envchar);
-        ft_copy_in_out();
-        perror("execev");
-        gc_collect();
-        free_env(func()->g_env);
-	}
+		    execve(full_path, tok->arguments, envchar);
+            ft_copy_in_out();
+            perror("execev");
+            gc_collect();
+            free_env(func()->g_env);
+	    }
 }
