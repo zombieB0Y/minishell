@@ -54,21 +54,101 @@ void	token_list_add(token_list_t *list, token_t *token)
 	}
 	list->size++;
 }
-// token_t	*next_token(lexer_t *lexer, size_t len, size_t start)
-// {
-// 	char	*value;
+bool	do_this(size_t what_to_do, lexer_t *lexer)
+{
+	if (what_to_do == 'o' + 'w')
+		return (!is_operator_char(lexer->current_char)
+				&& !is_whitespace(lexer->current_char));
+	else if (what_to_do == 'o' + 'w' + 'e')
+		return (!is_operator_char(lexer->current_char)
+				&& !is_whitespace(lexer->current_char)
+				&& !lexer_is_at_end(lexer));
+	return (false);
+}
 
-// 	if (!lexer->in_double_quote && !lexer->in_single_quote)
-// 		value = gc_malloc(len + 1);
-// 	else
-// 		return NULL;
-// 		// value = (char *)get_quoted_input(lexer, &len);
-// 	if (!value)
-// 		return NULL;
-// 	ft_strncpy(value, lexer->input + start, len);
-// 	value[len] = '\0';
-// 	return (token_create(TOKEN_WORD, value));
-// }
+void	handeler_of_something(lexer_t *lexer, char *quote)
+{
+	if (is_quotes_char(lexer->current_char))
+	{
+		*quote = lexer->current_char;
+		lexer->quotes_count++;
+		lexer_advance(lexer);
+		while (!lexer_is_at_end(lexer) && lexer->current_char != *quote)
+			lexer_advance(lexer);
+		if (lexer->current_char == *quote)
+			lexer->quotes_count++;
+	}
+	lexer_advance(lexer);
+}
+
+token_t	*return_redi_or_herdoc(lexer_t *lexer)
+{
+	lexer_advance(lexer);
+	if (lexer->current_char == '<')
+	{
+		lexer_advance(lexer);
+		if (lexer->current_char == '-')
+		{
+			lexer_advance(lexer);
+			return (next_token(lexer, TOKEN_HEREDOC_trunc, 0));
+		}
+		return (next_token(lexer, TOKEN_HEREDOC, 0));
+	}
+	return (next_token(lexer, TOKEN_REDIRECT_IN, 0));
+}
+
+tokenize_t	*init_diana(const char *input)
+{
+	tokenize_t	*(diana) = gc_malloc((sizeof(tokenize_t)));
+	if (!input)
+		return (NULL);
+	diana->lexer = lexer_create(input);
+	if (!diana->lexer)
+		return (NULL);
+	diana->start = diana->lexer->position;
+	diana->len = 0;
+	diana->tokens = token_list_create();
+	return (diana);
+}
+
+void	make_token(tokenize_t *diana)
+{
+	diana->len = diana->lexer->position - diana->start;
+	diana->value = ft_substr(diana->lexer->input, diana->start, diana->len);
+	diana->token = token_create(TOKEN_WORD, diana->value, diana->quote);
+}
+
+void	update(tokenize_t *diana)
+{
+	if (is_whitespace(diana->lexer->current_char))
+		lexer_advance(diana->lexer);
+	diana->token = NULL;
+	diana->value = NULL;
+	diana->quote = 0;
+	diana->start = diana->lexer->position;
+}
+
+token_t	*next_token(lexer_t *lexer, token_type_t type, size_t quote)
+{
+	char	*value;
+
+	if (type == TOKEN_PIPE)
+	{
+		value = ft_strdup("|");
+		lexer_advance(lexer);
+	}
+	else if (type == TOKEN_REDIRECT_IN)
+		value = ft_strdup("<");
+	else if (type == TOKEN_REDIRECT_OUT)
+		value = ft_strdup(">");
+	else if (type == TOKEN_APPEND)
+		value = ft_strdup(">>");
+	else if (type == TOKEN_HEREDOC)
+		value = ft_strdup("<<");
+	else if (type == TOKEN_HEREDOC_trunc)
+		value = ft_strdup("<<-");
+	return (token_create(type, ft_strdup(value), quote));
+}
 
 void	*return_herdoc_error(void)
 {

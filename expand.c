@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:48:42 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/14 14:37:58 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/17 15:01:05 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,6 @@ char *expand_string_variables_herdoc(char *original_value)
 		prefix_len = 0;
 		segment_start_ptr = exp->current_pos;
 		scan_ptr = exp->current_pos;
-
-		// if (active_quote_char == '\'')
-		// 	while (*scan_ptr != '\0' && *scan_ptr != '\'')
-		// 		scan_ptr++;
-		// else if (active_quote_char != 0)
-		// 	while (*scan_ptr != '\0' && *scan_ptr != active_quote_char && *scan_ptr != '$')
-		// 		scan_ptr++;
 		if (*exp->current_pos != '\0')
 			while (*scan_ptr != '\0' && *scan_ptr != '$')
 				scan_ptr++;
@@ -334,42 +327,58 @@ char *expand_string_variables(char *original_value)
 	return exp->result_buffer;
 }
 
+typedef struct expand_s
+{
+	lol		*current_node;
+	char	*new_value;
+	token_t *token;
+}			expand_t;
+
+expand_t	*init_expand(token_list_t *tokens)
+{
+	expand_t	*exp;
+
+	exp = gc_malloc(sizeof(expand_t));
+	if (!exp)
+		return (NULL);
+	exp->current_node = tokens->head;
+	return (exp);
+}
+
+void	try_expand()
+
 token_list_t *expand(token_list_t *tokens)
 {
 	if (!tokens || !tokens->head)
 		return tokens;
-
-	lol *current_node = tokens->head;
-	// lol *prev_node = NULL;
-	char *new_value;
-	token_t *token;
-
-	while (current_node)
+	// lol *current_node = tokens->head;
+	// char *new_value;
+	// token_t *token;
+	expand_t	*(exp) = init_expand(tokens);
+	if (!exp)
+		return (NULL);
+	while (exp->current_node)
 	{
-		token = current_node->token;
-		if (token && token->type == TOKEN_WORD && token->value != NULL)
+		exp->token = exp->current_node->token;
+		if (exp->token && exp->token->type == TOKEN_WORD && exp->token->value != NULL)
 		{
-			if (ft_strchr(token->value, '$'))
+			if (ft_strchr(exp->token->value, '$'))
 			{
-				char *original_token_value = token->value;
-				new_value = expand_string_variables(original_token_value);
-				if (new_value != original_token_value)
-				{
-					if (new_value[0] != '\0')
-					{
-						token->value = new_value;
-						// token->quote = 69;
-					}
-					else
-					{
-						// printf("Empty token value after expansion\n");
-						remove_token_node(&tokens->head, current_node);
-						current_node = tokens->head;
-					}
-				}
+				// char *original_token_value = token->value;
+				// new_value = expand_string_variables(original_token_value);
+				// if (new_value != original_token_value)
+				// {
+				// 	if (new_value[0] != '\0')
+				// 		token->value = new_value;
+				// 	else
+				// 	{
+				// 		remove_token_node(&tokens->head, current_node);
+				// 		current_node = tokens->head;
+				// 	}
+				// }
+				try_expand(tokens, exp);
 			}
 		}
-		// prev_node = current_node;
 		current_node = current_node->next;
 	}
 	return tokens;

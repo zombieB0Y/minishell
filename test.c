@@ -2,68 +2,29 @@
 
 token_list_t	*tokenize(const char *input)
 {
-	token_list_t *tokens;
-	char	*value;
-    lexer_t	*lexer = lexer_create(input);
-	token_t	*token;
-	char	quote;
-	size_t	start = lexer->position;
-	size_t	len = 0;
-	// size_t i;
-
-	// int	flag = 0;
-	// i = 0;
-	if (!input)
+	tokenize_t	*(diana) = init_diana(input);
+	if (!diana)
 		return (NULL);
-	tokens = token_list_create();
-	while (!lexer_is_at_end(lexer))
+	while (!lexer_is_at_end(diana->lexer))
 	{
-		// flag = 0;
-		if (is_whitespace(lexer->current_char))
+		update(diana);
+		if (do_this(('o' + 'w'), diana->lexer))
 		{
-			lexer_advance(lexer);
-			continue;
-		}
-		token = NULL;
-		value = NULL;
-		quote = 0;
-		start = lexer->position;
-		if (!is_operator_char(lexer->current_char) && !is_whitespace(lexer->current_char))
-		{
-			// jma3 while f fucntion wahda return token wla null; ------
-			while (!is_operator_char(lexer->current_char) && !is_whitespace(lexer->current_char) && !lexer_is_at_end(lexer))
-			{
-				if (is_quotes_char(lexer->current_char))
-				{
-					quote = lexer->current_char;
-					lexer->quotes_count++;
-					lexer_advance(lexer);
-					while (!lexer_is_at_end(lexer) && lexer->current_char != quote)
-						lexer_advance(lexer);
-					if (lexer->current_char == quote)
-						lexer->quotes_count++;
-				}
-				lexer_advance(lexer); // 
-
-			} /////// kael mn hna echo "$USER"
-			if ((lexer->quotes_count % 2) != 0)
+			while (do_this(('o' + 'w' + 'e'), diana->lexer))
+				handeler_of_something(diana->lexer, &diana->quote);
+			if ((diana->lexer->quotes_count % 2) != 0)
 				return (return_quoted_error());
-			len = lexer->position - start;
-			value = ft_substr(lexer->input, start, len);
-			token = token_create(TOKEN_WORD, value, quote);
-			// hed hna ------
-			if (!token)
-				return NULL;
-			token_list_add(tokens,token);
+			make_token(diana);
+			token_list_add(diana->tokens,diana->token);
 		}
-		if (is_operator_char(lexer->current_char) && !lexer_is_at_end(lexer))
+		if (is_operator_char(diana->lexer->current_char) && !lexer_is_at_end(diana->lexer))
 		{
-			token = read_operator(lexer);
-			if (!token)
+			diana->token = read_operator(diana->lexer);
+			if (!diana->token)
 				return NULL;
-			token_list_add(tokens, token);
+			token_list_add(diana->tokens, diana->token);
 		}
 	}
-	token_list_add(tokens, token_create(TOKEN_EOF, NULL, 0));
-	return (tokens);
+	token_list_add(diana->tokens, token_create(TOKEN_EOF, NULL, 0));
+	return (diana->tokens);
 }

@@ -1,2 +1,2 @@
 #!/bin/bash
-make re && make clean && valgrind --leak-check=full --suppressions=read.supp ./minishell
+make && make clean && valgrind --leak-check=full --suppressions=read.supp ./minishell

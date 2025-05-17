@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 21:29:26 by codespace         #+#    #+#             */
-/*   Updated: 2025/05/12 15:06:41 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/14 21:15:06 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ token_list_t *remove_surrounding_quotes(token_list_t *list)
 	{
 	// 	if (current_node->token->quote != 69)
 	// 	{
+			// printf("curr %s\n", current_node->token->value);
 			if (ft_strchr(current_node->token->value, '\'') || ft_strchr(current_node->token->value, '"'))
 				current_node->token->value = shift_quotes(current_node->token->value);
 		// 	if (current_node->token->type != TOKEN_EOF && current_node->token->value[0] == '\0')

@@ -37,6 +37,31 @@
 
 /*  waaaaaaaaaaaaaaaa new line chof lih chi hal "ls \n-l" */
 
+# include "minishell.h"
+# include <fcntl.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 1
+# endif
+
+typedef struct s_gnl
+{
+    int        i;
+    int        j;
+    int        y;
+    int        lenstr;
+    char    *str;
+    char    *line;
+}            t_gnl;
+
+char        *get_next_line(int fd);
+int            ft_line_verifier(char *buf);
+char        *my_ft_strjoin(char const *s1, char const *s2);
+// #endif
+
 typedef struct exp_s
 {
 	char	*dollar_sign_pos;
@@ -157,10 +182,31 @@ typedef struct st
 	int in;
 } t_status;
 
+typedef struct tokenize_s
+{
+	token_list_t	*tokens;
+	char			*value;
+    lexer_t			*lexer;
+	token_t			*token;
+	char			quote;
+	size_t			start;
+	size_t			len;
+}					tokenize_t;
 
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 10
-# endif
+typedef struct heredoc_s
+{
+	char	*delimiter;
+	lol		*head;
+	char	*heredoc_content;
+	bool	expand;
+	pid_t	pid;
+	int		pipefd[2];
+	int		count;
+}			heredoc_t;
+
+// # ifndef BUFFER_SIZE
+// #  define BUFFER_SIZE 10
+// # endif
 
 
 // Lexer operations
@@ -173,9 +219,13 @@ bool					lexer_is_at_end(lexer_t *lexer);
 
 // Token operations
 token_t					*token_create(token_type_t type, char *value, char quote);
-// token_t					*next_token(lexer_t *lexer, size_t len, size_t start);
+token_t					*next_token(lexer_t *lexer, token_type_t type, size_t quote);
+void					update(tokenize_t *diana);
+void					make_token(tokenize_t *diana);
+tokenize_t				*init_diana(const char *input);
+token_t					*return_redi_or_herdoc(lexer_t *lexer);
 // void					token_destroy(token_t *token);
-const char				*token_type_to_string(token_type_t type);
+// const char				*token_type_to_string(token_type_t type);
 
 // Token list operations
 token_list_t			*token_list_create(void);
@@ -187,6 +237,9 @@ void					token_list_print(token_list_t *list);
 bool					is_operator_char(char ch);
 bool					is_quotes_char(char ch);
 char					get_quotes(lexer_t *lexer);
+// fucntion for norm
+bool					do_this(size_t what_to_do, lexer_t *lexer);
+void					handeler_of_something(lexer_t *lexer, char *quote);
 
 // Token generation
 // token_t					*read_word(lexer_t *lexer);
