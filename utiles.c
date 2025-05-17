@@ -101,6 +101,7 @@ token_list_t *capture_heredoc(token_list_t *tokens)
 				return (NULL);
 			if (pid == 0)
 			{
+				heredoc_signal();
 				close(pipefd[0]);
 				while (1)
 				{
@@ -128,6 +129,14 @@ token_list_t *capture_heredoc(token_list_t *tokens)
 				char *new_content;
 				close(pipefd[1]);
 				waitpid(pid, &func()->status, 0);
+				if (WIFSIGNALED(func()->status))
+				{
+					if (WTERMSIG(func()->status) == SIGINT)
+    				{
+        				func()->status = 130;
+        				return (NULL);
+    				}
+				}
 				while ((bytes_read = read(pipefd[0], buffer, 1)) > 0)
 				{
 					new_content = gc_malloc(total_len + bytes_read + 1);

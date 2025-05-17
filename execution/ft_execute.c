@@ -54,8 +54,6 @@ void	ft_child_process(int i, int pip_num, int pipes[2][2], anas_list *tok)
 	}
 	ft_redirects(tok->head, 0);
 	ft_exc(tok->head, pip_num, envchar, y);
-	// gc_collect();
-    // free_env(func()->g_env);
 }
 
 

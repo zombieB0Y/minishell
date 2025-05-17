@@ -45,6 +45,12 @@ void handler(int sig)
 // 	write (2, "Quit (core dumped)\n", 20);
 // }
 
+void heredoc_signal(void)
+{
+	signal(SIGINT, SIG_DFL);
+    signal(SIGQUIT, SIG_IGN);
+}
+
 void sig_child()
 {
 	signal(SIGINT, SIG_DFL);
