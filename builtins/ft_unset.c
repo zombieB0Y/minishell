@@ -1,51 +1,62 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_unset.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/18 17:10:30 by abenba            #+#    #+#             */
+/*   Updated: 2025/05/18 17:10:32 by abenba           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-int handle_exit_status(int num)
+int	handle_exit_status(int num)
 {
-    if (num == 0) 
-		return func()->status;
-    ft_copy_in_out();
-    gc_collect();
-    free_env(func()->g_env);
-    exit(func()->status);
+	if (num == 0)
+		return (func()->status);
+	ft_copy_in_out();
+	gc_collect();
+	free_env(func()->g_env);
+	exit(func()->status);
 }
 
-void remove_env_var(const char *key)
+void	remove_env_var(const char *key)
 {
-    t_env *prev = NULL;
-    t_env *curr = func()->g_env;
-
-    while (curr)
+	t_env *(prev) = NULL;
+	t_env *(curr) = func()->g_env;
+	while (curr)
 	{
-        if (ft_strcmp(curr->key, key) == 0)
+		if (ft_strcmp(curr->key, key) == 0)
 		{
-            if (prev)
-                prev->next = curr->next;
-            else
-                func()->g_env = curr->next;
-            free(curr->key);
-            free(curr->value);
-            free(curr);
-            return;
-        }
-        prev = curr;
-        curr = curr->next;
-    }
+			if (prev)
+				prev->next = curr->next;
+			else
+				func()->g_env = curr->next;
+			free(curr->key);
+			free(curr->value);
+			free(curr);
+			return ;
+		}
+		prev = curr;
+		curr = curr->next;
+	}
 }
 
-int ft_unset(token_node_t *tok, int num)
+int	ft_unset(token_node_t *tok, int num)
 {
-    int i = 1;
-	char *target;
+	char	*target;
 
+	int (i) = 1;
 	func()->status = 0;
-    if (!tok->arguments[1])
-        return handle_exit_status(num);
-    while (tok->arguments[i])
+	if (!tok->arguments[1])
+		return (handle_exit_status(num));
+	while (tok->arguments[i])
 	{
 		target = tok->arguments[i];
 		remove_env_var(target);
-        i++;
-    }
-    return (handle_exit_status(num));
+		i++;
+	}
+	return (handle_exit_status(num));
 }
