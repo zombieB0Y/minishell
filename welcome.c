@@ -33,5 +33,4 @@ void    print_welcome()
         "╚══════╝╚══════╝ ╚═════╝ ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝       ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝╚══════╝",
         RESET);
     printf("\n%s%s%s\n", GREEN, "This project was done by abenba & zoentifi\n", RESET);
-
 }

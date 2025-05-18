@@ -159,6 +159,32 @@ typedef struct st
 } t_status;
 
 
+typedef struct tokenize_s
+{
+	token_list_t *tokens;
+	char	*value;
+    lexer_t	*lexer;
+	token_t	*token;
+	char	quote;
+	size_t	start;
+	size_t	len;
+}			tokenize_t;
+
+
+typedef struct exp_tools_s
+{
+	size_t	var_name_len;
+	size_t	org_len;
+	char	*segment_start_ptr;
+	char	*var_name_start;
+	char	*var_name_end;
+	char	*var_name_buffer;
+	size_t	prefix_len;
+	char	*scan_ptr;
+	char	*env_value;
+}			exp_tools_t;
+
+
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
 # endif

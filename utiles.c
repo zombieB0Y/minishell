@@ -69,108 +69,135 @@ bool	find_quotes(char *str)
 	return (false);
 }
 
-token_list_t *capture_heredoc(token_list_t *tokens)
+typedef struct heredoc_s
 {
 	char	*line;
 	char	*delimiter;
 	lol		*head;
-	bool	expand = true;
+	bool	expand;
 	pid_t	pid;
 	int		pipefd[2];
-	int		count = 0;
+	int		count;
+	char	*buffer;
+	size_t	bytes_read;
+	char	*content;
+	size_t	total_len;
+	char	*new_content;
+}			heredoc_t;
 
-	if (!tokens)
+heredoc_t	*init_heredoc(void)
+{
+	heredoc_t	*heredoc;
+
+	heredoc = gc_malloc(sizeof(heredoc_t));
+	if (!heredoc)
 		return (NULL);
-	head = tokens->head;
-	while (head)
+	heredoc->line = NULL;
+	heredoc->delimiter = NULL;
+	heredoc->head = NULL;
+	heredoc->expand = true;
+	heredoc->count = 0;
+	return (heredoc);
+}
+void	actual_heredoc(heredoc_t *heredoc)
+{
+	heredoc_signal();
+	close(heredoc->pipefd[0]);
+	while (1)
 	{
-		if (head->token->type == TOKEN_HEREDOC || head->token->type == TOKEN_HEREDOC_trunc)
-		{
-			if (head->next->token->type != TOKEN_WORD)
-				return (return_herdoc_error());
-			delimiter = head->next->token->value;
-			if (find_quotes(delimiter))
-				expand = false;
-			delimiter = shift_quotes(delimiter);
-			remove_token_node(&tokens->head, head->next);
-			tokens->size--;
-			if (pipe(pipefd) == -1)
-				return (NULL);
-			pid = fork();
-			if (pid == -1)
-				return (NULL);
-			if (pid == 0)
-			{
-				heredoc_signal();
-				close(pipefd[0]);
-				while (1)
-				{
-					// line = read_input();
-					line = readline("heredoc>  ");
-					gc_register(line);
-					if (!line)
-						break;
-					if (ft_strcmp(line, delimiter) == 0)
-						break;
-					if (head->token->type == TOKEN_HEREDOC_trunc)
-						line = shitft(line);
-					write(pipefd[1], line, ft_strlen(line));
-					write(pipefd[1], "\n", 1);
-				}
-				close(pipefd[1]);
-				exit(0);
-			}
-			else
-			{
-				char	*buffer = gc_malloc(1);
-				size_t	bytes_read;
-				char	*heredoc_content = NULL;
-				size_t	total_len = 0;
-				char *new_content;
-				close(pipefd[1]);
-				waitpid(pid, &func()->status, 0);
-				if (WIFSIGNALED(func()->status))
-				{
-					if (WTERMSIG(func()->status) == SIGINT)
-    				{
-        				func()->status = 130;
-        				return (NULL);
-    				}
-				}
-				while ((bytes_read = read(pipefd[0], buffer, 1)) > 0)
-				{
-					new_content = gc_malloc(total_len + bytes_read + 1);
-					if (!new_content)
-						return (NULL);
-					
-					if (heredoc_content)
-						ft_memcpy(new_content, heredoc_content, total_len);
-					ft_memcpy(new_content + total_len, buffer, bytes_read);
-					total_len += bytes_read;
-					new_content[total_len] = '\0';
-					heredoc_content = new_content;
-				}
-				close(pipefd[0]);
-				if (expand)
-					heredoc_content = expand_string_variables_herdoc(heredoc_content);
-				count++;
-				head->token->value = write_heredoc(heredoc_content, count);
-			}
-		}
-		head = head->next;
+		heredoc->line = readline("heredoc>  ");
+		gc_register(heredoc->line);
+		if (!heredoc->line)
+			break;
+		if (ft_strcmp(heredoc->line, heredoc->delimiter) == 0)
+			break;
+		if (heredoc->head->token->type == TOKEN_HEREDOC_trunc)
+			heredoc->line = shitft(heredoc->line);
+		write(heredoc->pipefd[1], heredoc->line, ft_strlen(heredoc->line));
+		write(heredoc->pipefd[1], "\n", 1);
 	}
-	return tokens;
+	close(heredoc->pipefd[1]);
+	// free_process();
+	exit(0);
 }
 
+heredoc_t	*capture_delimiter(heredoc_t *heredoc, token_list_t *tokens)
+{
+	if (heredoc->head->next->token->type != TOKEN_WORD)
+		return (return_herdoc_error());
+	heredoc->delimiter = heredoc->head->next->token->value;
+	if (find_quotes(heredoc->delimiter))
+		heredoc->expand = false;
+	heredoc->delimiter = shift_quotes(heredoc->delimiter);
+	remove_token_node(&tokens->head, heredoc->head->next);
+	tokens->size--;
+	return (heredoc);
+}
 
-// int	check(char *p)
-// {
-// 	// --- test sdfasfas\s
-// 	if (*p && !is_whitespace(*p) && *p != '|' && *p != '>' && *p != '<')
-// 	{
-// 		// if (*p == '\\' && *(p + 1) && (*(p + 1) == '\'' || *(p + 1) == '"'))
-// 		// 	ft_memmove(p, p + 1, ft_strlen(p));
-// 		return (0);
-// 	}
-// 	return (1);
-// }
+heredoc_t	*wait_heredoc(heredoc_t *heredoc)
+{
+	heredoc->buffer = gc_malloc(1);
+	heredoc->bytes_read = 0;
+	heredoc->content = NULL;
+	heredoc->total_len = 0;
+	heredoc->new_content = NULL;
+	close(heredoc->pipefd[1]);
+	waitpid(heredoc->pid, &func()->status, 0);
+	if (WIFSIGNALED(func()->status))
+	{
+		if (WTERMSIG(func()->status) == SIGINT)
+		{
+			func()->status = 130;
+			return (NULL);
+		}
+	}
+	return (heredoc);
+}
+heredoc_t	*read_heredoc(heredoc_t *heredoc)
+{
+	while ((heredoc->bytes_read = read(heredoc->pipefd[0], heredoc->buffer, 1)) > 0)
+	{
+		heredoc->new_content = gc_malloc(heredoc->total_len + heredoc->bytes_read + 1);
+		if (!heredoc->new_content)
+			return (NULL);
+		
+		if (heredoc->content)
+			ft_memcpy(heredoc->new_content, heredoc->content, heredoc->total_len);
+		ft_memcpy(heredoc->new_content + heredoc->total_len, heredoc->buffer, heredoc->bytes_read);
+		heredoc->total_len += heredoc->bytes_read;
+		heredoc->new_content[heredoc->total_len] = '\0';
+		heredoc->content = heredoc->new_content;
+	}
+	close(heredoc->pipefd[0]);
+	if (heredoc->expand)
+		heredoc->content = expand_string_variables_herdoc(heredoc->content);
+	heredoc->count++;
+	heredoc->head->token->value = write_heredoc(heredoc->content, heredoc->count);
+	return (heredoc);
+}
+
+token_list_t *capture_heredoc(token_list_t *tokens)
+{
+	heredoc_t	*(heredoc) = init_heredoc();
+	if (!tokens)
+		return (NULL);
+	heredoc->head = tokens->head;
+	while (heredoc->head)
+	{
+		if (heredoc->head->token->type == TOKEN_HEREDOC || heredoc->head->token->type == TOKEN_HEREDOC_trunc)
+		{
+			if (!capture_delimiter(heredoc, tokens) || (pipe(heredoc->pipefd) == -1))
+				return (NULL);
+			heredoc->pid = fork();
+			if (heredoc->pid == -1)
+				return (NULL);
+			if (heredoc->pid == 0)
+				actual_heredoc(heredoc);
+			else
+				if (!wait_heredoc(heredoc) || !read_heredoc(heredoc))
+					return (NULL);
+		}
+		heredoc->head = heredoc->head->next;
+	}
+	return (tokens);
+}

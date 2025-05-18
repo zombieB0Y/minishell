@@ -1,69 +1,80 @@
 #include "minishell.h"
 
+tokenize_t	*init_tokenize(const char *input)
+{
+	tokenize_t	*tok;
+
+	tok = gc_malloc(sizeof(tokenize_t));
+	if (!tok)
+		return (NULL);
+	tok->tokens = NULL;
+	tok->value = NULL;
+    tok->lexer = lexer_create(input);
+	tok->token = NULL;
+	tok->quote = 0;
+	tok->start = tok->lexer->position;
+	tok->len = 0;
+	return (tok);
+}
+
+void	read_quotes(tokenize_t *tok)
+{
+	tok->quote = tok->lexer->current_char;
+	tok->lexer->quotes_count++;
+	lexer_advance(tok->lexer);
+	while (!lexer_is_at_end(tok->lexer) && tok->lexer->current_char != tok->quote)
+		lexer_advance(tok->lexer);
+	if (tok->lexer->current_char == tok->quote)
+		tok->lexer->quotes_count++;
+}
+
+tokenize_t	*capture_word(tokenize_t *tok)
+{
+	if (!is_operator_char(tok->lexer->current_char) && !is_whitespace(tok->lexer->current_char))
+	{
+		while (!is_operator_char(tok->lexer->current_char) && !is_whitespace(tok->lexer->current_char) && !lexer_is_at_end(tok->lexer))
+		{
+			if (is_quotes_char(tok->lexer->current_char))
+				read_quotes(tok);
+			lexer_advance(tok->lexer);
+		}
+		if ((tok->lexer->quotes_count % 2) != 0)
+			return (return_quoted_error());
+		tok->len = tok->lexer->position - tok->start;
+		tok->value = ft_substr(tok->lexer->input, tok->start, tok->len);
+		tok->token = token_create(TOKEN_WORD, tok->value, tok->quote);
+		if (!tok->token)
+			return (NULL);
+		token_list_add(tok->tokens,tok->token);
+	}
+	return (tok);
+}
+
 token_list_t	*tokenize(const char *input)
 {
-	token_list_t *tokens;
-	char	*value;
-    lexer_t	*lexer = lexer_create(input);
-	token_t	*token;
-	char	quote;
-	size_t	start = lexer->position;
-	size_t	len = 0;
-	// size_t i;
-
-	// int	flag = 0;
-	// i = 0;
-	if (!input)
+	tokenize_t	*(tok) = init_tokenize(input);
+	if (!tok || !tok->lexer)
 		return (NULL);
-	tokens = token_list_create();
-	while (!lexer_is_at_end(lexer))
+	tok->tokens = token_list_create();
+	while (!lexer_is_at_end(tok->lexer))
 	{
-		// flag = 0;
-		if (is_whitespace(lexer->current_char))
+		if (is_whitespace(tok->lexer->current_char))
 		{
-			lexer_advance(lexer);
+			lexer_advance(tok->lexer);
 			continue;
 		}
-		token = NULL;
-		value = NULL;
-		quote = 0;
-		start = lexer->position;
-		if (!is_operator_char(lexer->current_char) && !is_whitespace(lexer->current_char))
+		tok->token = NULL;
+		tok->value = NULL;
+		tok->start = tok->lexer->position;
+		if (!capture_word(tok))
+			return (NULL);
+		if (is_operator_char(tok->lexer->current_char) && !lexer_is_at_end(tok->lexer))
 		{
-			// jma3 while f fucntion wahda return token wla null; ------
-			while (!is_operator_char(lexer->current_char) && !is_whitespace(lexer->current_char) && !lexer_is_at_end(lexer))
-			{
-				if (is_quotes_char(lexer->current_char))
-				{
-					quote = lexer->current_char;
-					lexer->quotes_count++;
-					lexer_advance(lexer);
-					while (!lexer_is_at_end(lexer) && lexer->current_char != quote)
-						lexer_advance(lexer);
-					if (lexer->current_char == quote)
-						lexer->quotes_count++;
-				}
-				lexer_advance(lexer); // 
-
-			} /////// kael mn hna echo "$USER"
-			if ((lexer->quotes_count % 2) != 0)
-				return (return_quoted_error());
-			len = lexer->position - start;
-			value = ft_substr(lexer->input, start, len);
-			token = token_create(TOKEN_WORD, value, quote);
-			// hed hna ------
-			if (!token)
+			tok->token = read_operator(tok->lexer);
+			if (!tok->token)
 				return NULL;
-			token_list_add(tokens,token);
-		}
-		if (is_operator_char(lexer->current_char) && !lexer_is_at_end(lexer))
-		{
-			token = read_operator(lexer);
-			if (!token)
-				return NULL;
-			token_list_add(tokens, token);
+			token_list_add(tok->tokens, tok->token);
 		}
 	}
-	token_list_add(tokens, token_create(TOKEN_EOF, NULL, 0));
-	return (tokens);
+	return (token_list_add(tok->tokens, token_create(TOKEN_EOF, NULL, 0)), tok->tokens);
 }
