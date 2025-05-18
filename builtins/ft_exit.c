@@ -64,8 +64,8 @@ void not_numeric(char **arguments, int num)
 int	ft_exit(char **arguments, int num)
 {
 	int(i) = 1;
-	(void) num;
 	ft_copy_in_out(func()->out, func()->in);
+	printf("%s\n", arguments[i]);
 	if (!arguments[i])
 	{
 		if (num == 0)

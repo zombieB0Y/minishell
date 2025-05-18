@@ -12,6 +12,9 @@ int ft_redirect_out(files_t *files, int flag)
         func()->status = 1;
         if (flag == 0)
         {
+            ft_copy_in_out();
+			gc_collect();
+        	free_env(func()->g_env);
             exit(func()->status);
         }
         return (2);
@@ -30,13 +33,15 @@ int ft_redirect_in(files_t *files, int flag)
     fd = open(files->file, O_RDONLY);
     if (fd == -1)
     {
-        write(2, files->file, ft_strlen(files->file));
-        write(2, ": ", 2);
-        write(2, strerror(errno), ft_strlen(strerror(errno)));
-        write(2, "\n", 1);
+        perror(files->file);
         func()->status = 1;
         if (flag == 0)
+        {
+            ft_copy_in_out();
+			gc_collect();
+        	free_env(func()->g_env);
             exit(func()->status);
+        }
         return (2);
     }
     if (dup2(fd, 0) == -1)
@@ -53,17 +58,20 @@ int ft_redirect_append(files_t *files, int flag)
     fd = open(files->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
     if (fd == -1)
     {
-        write(2, files->file, ft_strlen(files->file));
-        write(2, ": ", 2);
-        write(2, strerror(errno), ft_strlen(strerror(errno)));
-        write(2, "\n", 1);
+        perror(files->file);
         func()->status = 1;
         if (flag == 0)
+        {
+            ft_copy_in_out();
+			gc_collect();
+        	free_env(func()->g_env);
             exit(func()->status);
+        }
         return (2);
     }
     if (dup2(fd, 1) == -1)
         perror("dup2");
+    close(fd);
     return (0);
 }
 
@@ -99,6 +107,9 @@ int ft_redirects(token_node_t *tok, int flag)
     }
     if (tok->arguments[0] == NULL  && flag == 0)
     {
+        ft_copy_in_out();
+		gc_collect();
+        free_env(func()->g_env);
         exit(r);
     }
     return (r);
