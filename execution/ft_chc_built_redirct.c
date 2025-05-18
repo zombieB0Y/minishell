@@ -16,7 +16,8 @@ int ft_redirect_out(files_t *files, int flag)
         }
         return (2);
     }
-    dup2(fd, 1);
+    if (dup2(fd, 1) == -1)
+        perror("dup2");
     close(fd);
     return (0);
 }
@@ -38,7 +39,8 @@ int ft_redirect_in(files_t *files, int flag)
             exit(func()->status);
         return (2);
     }
-    dup2(fd, 0);
+    if (dup2(fd, 0) == -1)
+        perror("dup2");
     close(fd);
     return (0);
 }
@@ -60,8 +62,8 @@ int ft_redirect_append(files_t *files, int flag)
             exit(func()->status);
         return (2);
     }
-    dup2(fd, 1);
-    close(fd);
+    if (dup2(fd, 1) == -1)
+        perror("dup2");
     return (0);
 }
 
