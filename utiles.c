@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utiles.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/18 21:48:21 by zoentifi          #+#    #+#             */
+/*   Updated: 2025/05/18 21:51:09 by zoentifi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	is_tab(int c)
@@ -34,7 +46,7 @@ char	*shitft(char *str)
 
 	new_str = NULL;
 	i = 0;
-	while(str[i] && is_tab(str[i]))
+	while (str[i] && is_tab(str[i]))
 	{
 		ft_memmove(str + i, str + i + 1, ft_strlen(str) - i);
 		i++;
@@ -47,7 +59,7 @@ char	*write_heredoc(char *str, size_t count)
 {
 	char	*filename;
 	int		fd;
-	
+
 	filename = NULL;
 	filename = ft_strjoin("/tmp/heredoc_", ft_itoa(count));
 	if (!filename)
@@ -69,22 +81,6 @@ bool	find_quotes(char *str)
 	return (false);
 }
 
-typedef struct heredoc_s
-{
-	char	*line;
-	char	*delimiter;
-	lol		*head;
-	bool	expand;
-	pid_t	pid;
-	int		pipefd[2];
-	int		count;
-	char	*buffer;
-	size_t	bytes_read;
-	char	*content;
-	size_t	total_len;
-	char	*new_content;
-}			heredoc_t;
-
 heredoc_t	*init_heredoc(void)
 {
 	heredoc_t	*heredoc;
@@ -99,6 +95,7 @@ heredoc_t	*init_heredoc(void)
 	heredoc->count = 0;
 	return (heredoc);
 }
+
 void	actual_heredoc(heredoc_t *heredoc)
 {
 	heredoc_signal();
@@ -108,9 +105,9 @@ void	actual_heredoc(heredoc_t *heredoc)
 		heredoc->line = readline("heredoc>  ");
 		gc_register(heredoc->line);
 		if (!heredoc->line)
-			break;
+			break ;
 		if (ft_strcmp(heredoc->line, heredoc->delimiter) == 0)
-			break;
+			break ;
 		if (heredoc->head->token->type == TOKEN_HEREDOC_trunc)
 			heredoc->line = shitft(heredoc->line);
 		write(heredoc->pipefd[1], heredoc->line, ft_strlen(heredoc->line));
@@ -153,49 +150,56 @@ heredoc_t	*wait_heredoc(heredoc_t *heredoc)
 	}
 	return (heredoc);
 }
+
 heredoc_t	*read_heredoc(heredoc_t *heredoc)
 {
-	while ((heredoc->bytes_read = read(heredoc->pipefd[0], heredoc->buffer, 1)) > 0)
+	heredoc->bytes_read = read(heredoc->pipefd[0], heredoc->buffer, 1);
+	while (heredoc->bytes_read > 0)
 	{
-		heredoc->new_content = gc_malloc(heredoc->total_len + heredoc->bytes_read + 1);
+		heredoc->new_content = gc_malloc(heredoc->total_len
+				+ heredoc->bytes_read + 1);
 		if (!heredoc->new_content)
 			return (NULL);
-		
 		if (heredoc->content)
-			ft_memcpy(heredoc->new_content, heredoc->content, heredoc->total_len);
-		ft_memcpy(heredoc->new_content + heredoc->total_len, heredoc->buffer, heredoc->bytes_read);
+			ft_memcpy(heredoc->new_content, heredoc->content,
+				heredoc->total_len);
+		ft_memcpy(heredoc->new_content + heredoc->total_len, heredoc->buffer,
+			heredoc->bytes_read);
 		heredoc->total_len += heredoc->bytes_read;
 		heredoc->new_content[heredoc->total_len] = '\0';
 		heredoc->content = heredoc->new_content;
+		heredoc->bytes_read = read(heredoc->pipefd[0], heredoc->buffer, 1);
 	}
 	close(heredoc->pipefd[0]);
 	if (heredoc->expand)
 		heredoc->content = expand_string_variables_herdoc(heredoc->content);
 	heredoc->count++;
-	heredoc->head->token->value = write_heredoc(heredoc->content, heredoc->count);
+	heredoc->head->token->value = write_heredoc(heredoc->content,
+			heredoc->count);
 	return (heredoc);
 }
 
-token_list_t *capture_heredoc(token_list_t *tokens)
+token_list_t	*capture_heredoc(token_list_t *tokens)
 {
-	heredoc_t	*(heredoc) = init_heredoc();
+	heredoc_t *(heredoc) = init_heredoc();
 	if (!tokens)
 		return (NULL);
 	heredoc->head = tokens->head;
 	while (heredoc->head)
 	{
-		if (heredoc->head->token->type == TOKEN_HEREDOC || heredoc->head->token->type == TOKEN_HEREDOC_trunc)
+		if (heredoc->head->token->type == TOKEN_HEREDOC
+			|| heredoc->head->token->type == TOKEN_HEREDOC_trunc)
 		{
-			if (!capture_delimiter(heredoc, tokens) || (pipe(heredoc->pipefd) == -1))
+			if (!capture_delimiter(heredoc, tokens)
+				|| (pipe(heredoc->pipefd) == -1))
 				return (NULL);
 			heredoc->pid = fork();
 			if (heredoc->pid == -1)
 				return (NULL);
 			if (heredoc->pid == 0)
 				actual_heredoc(heredoc);
-			else
-				if (!wait_heredoc(heredoc) || !read_heredoc(heredoc))
-					return (NULL);
+			else if (!wait_heredoc(heredoc) || !read_heredoc(heredoc))
+				return (NULL);
 		}
 		heredoc->head = heredoc->head->next;
 	}

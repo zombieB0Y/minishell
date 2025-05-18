@@ -3,54 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 14:43:54 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/08 20:17:15 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/18 21:53:52 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-
-int	ft_isspace(char c)
-{
-	return (c == ' ' || c == '\t' || c == '\n');
-}
-
-// void	is_qou(char **ptr, char const *s, int i, size_t *y)
-// {
-// 	(*ptr)[*y] = s[i];
-// 	(*y)++;
-// }
-
-
-// static char	*ft_word(char const *s, size_t *i)
-// {
-// 	size_t	word;
-// 	size_t	y;
-// 	char	*ptr;
-
-// 	word = 0;
-// 	while (s[(*i)] && !ft_isspace(s[(*i)]))
-// 	{
-// 		word++;
-// 		(*i)++;
-// 	}
-// 	*i = *i - word;
-// 	y = 0;
-// 	ptr = (char *)malloc(word + 1);
-// 	if (!ptr)
-// 		return (NULL);
-// 	while (s[(*i)] && !ft_isspace(s[(*i)]))
-// 	{
-// 		if (s[(*i)] != '\'' && s[(*i)] != '\"')
-// 			is_qou(&ptr, s, *i, &y);
-// 		(*i)++;
-// 	}
-// 	ptr[y] = '\0';
-// 	(*i)++;
-// 	return (ptr);
-// }
 
 static char	*ft_word(char const *s, size_t *i)
 {

@@ -5,8 +5,10 @@
 # include <ctype.h>
 # include <errno.h>
 # include <fcntl.h>
+# include <limits.h>
 # include <readline/history.h>
 # include <readline/readline.h>
+# include <signal.h>
 # include <stdbool.h>
 # include <stdint.h>
 # include <stdio.h>
@@ -15,67 +17,47 @@
 # include <sys/stat.h>
 # include <sys/wait.h>
 # include <unistd.h>
-# include <signal.h>
-# include <limits.h>
-# include "header.h"
 
 # define GREEN "\033[32m"
 # define RED "\033[31m"
 # define RESET "\033[0m"
 
-
-/*
-	Brace Expansion
-	Tilde Expansion
-	Shell Parameter Expansion -- hada howa '$'
-	Command Substitution
-	Arithmetic Expansion
-	Process Substitution
-	Word Splitting
-	Filename Expansion
-	Quote Removal
-*/
-
-/*  waaaaaaaaaaaaaaaa new line chof lih chi hal "ls \n-l" */
-
 typedef struct exp_s
 {
-	char	*dollar_sign_pos;
-    char	*current_pos;
-    char	*result_buffer;
-    size_t	result_len;
-    size_t	result_capacity;
-    int		expansions_done;
-}		exp_t;
+	char				*dollar_sign_pos;
+	char				*current_pos;
+	char				*result_buffer;
+	size_t				result_len;
+	size_t				result_capacity;
+	int					expansions_done;
+}						exp_t;
 
-
-/* Token type definitions */
 typedef enum
 {
-	TOKEN_WORD,         // Commands, arguments, etc.
-	TOKEN_PIPE,         // |
-	TOKEN_REDIRECT_IN,  // <
-	TOKEN_REDIRECT_OUT, // >
-	TOKEN_APPEND,       // >>
-	TOKEN_HEREDOC,      // <<
+	TOKEN_WORD,          // Commands, arguments, etc.
+	TOKEN_PIPE,          // |
+	TOKEN_REDIRECT_IN,   // <
+	TOKEN_REDIRECT_OUT,  // >
+	TOKEN_APPEND,        // >>
+	TOKEN_HEREDOC,       // <<
 	TOKEN_HEREDOC_trunc, // <<- (heredoc with trim)
-	TOKEN_EOF           // End of input
+	TOKEN_EOF            // End of input
 }						token_type_t;
 
 typedef enum e_open_flags
 {
 	OPEN_CREATE_NEW = O_CREAT | O_TRUNC | O_WRONLY,
 	OPEN_APPEND_NEW = O_CREAT | O_APPEND | O_WRONLY,
-	OPEN_CREAT_ONLY  = O_CREAT | O_WRONLY
+	OPEN_CREAT_ONLY = O_CREAT | O_WRONLY
 }						t_open_flags;
 
 typedef struct env
 {
-        char *key;
-        char *value;
-        int flag;
-        struct env *next;
-} t_env;
+	char				*key;
+	char				*value;
+	int					flag;
+	struct env			*next;
+}						t_env;
 
 /* Token structure */
 typedef struct
@@ -109,16 +91,16 @@ typedef struct token_node
 	struct token_node	*next;
 }						token_node_t;
 
-typedef	struct node
+typedef struct node
 {
-	token_node_t	*head;
-	token_node_t	*tail;
-}				anas_list;
+	token_node_t		*head;
+	token_node_t		*tail;
+}						anas_list;
 
 typedef struct
 {
-	lol		*head;
-	lol		*tail;
+	lol					*head;
+	lol					*tail;
 	size_t				size;
 }						token_list_t;
 
@@ -138,75 +120,80 @@ typedef struct GCNode
 {
 	void				*ptr;
 	struct GCNode		*next;
-}
-						GCNode;
+}						GCNode;
 typedef struct expo_list
 {
-	char *key;
-	char *value;
-	int flag;
-	struct expo_list *next;
-} t_expo;
+	char				*key;
+	char				*value;
+	int					flag;
+	struct expo_list	*next;
+}						t_expo;
 
 typedef struct st
 {
-	int status;
-	int background;
-	GCNode *gc_head;
-	t_env *g_env;
-	int out;
-	int in;
-} t_status;
-
+	int					status;
+	int					background;
+	GCNode				*gc_head;
+	t_env				*g_env;
+	int					out;
+	int					in;
+}						t_status;
 
 typedef struct tokenize_s
 {
-	token_list_t *tokens;
-	char	*value;
-    lexer_t	*lexer;
-	token_t	*token;
-	char	quote;
-	size_t	start;
-	size_t	len;
-}			tokenize_t;
-
+	token_list_t		*tokens;
+	char				*value;
+	lexer_t				*lexer;
+	token_t				*token;
+	char				quote;
+	size_t				start;
+	size_t				len;
+}						tokenize_t;
 
 typedef struct exp_tools_s
 {
-	size_t	var_name_len;
-	size_t	org_len;
-	char	*segment_start_ptr;
-	char	*var_name_start;
-	char	*var_name_end;
-	char	*var_name_buffer;
-	size_t	prefix_len;
-	char	*scan_ptr;
-	char	*env_value;
-}			exp_tools_t;
+	size_t				var_name_len;
+	size_t				org_len;
+	char				*segment_start_ptr;
+	char				*var_name_start;
+	char				*var_name_end;
+	char				*var_name_buffer;
+	size_t				prefix_len;
+	char				*scan_ptr;
+	char				*env_value;
+}						exp_tools_t;
 
+typedef struct heredoc_s
+{
+	char				*line;
+	char				*delimiter;
+	lol					*head;
+	bool				expand;
+	pid_t				pid;
+	int					pipefd[2];
+	int					count;
+	char				*buffer;
+	size_t				bytes_read;
+	char				*content;
+	size_t				total_len;
+	char				*new_content;
+}						heredoc_t;
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
 # endif
 
-
 // Lexer operations
 lexer_t					*lexer_create(const char *input);
-// void					lexer_destroy(lexer_t *lexer);
 void					lexer_advance(lexer_t *lexer);
-// char					lexer_peek(lexer_t *lexer, size_t offset);
 bool					lexer_is_at_end(lexer_t *lexer);
-// bool					lexer_is_escaped(lexer_t *lexer);
 
 // Token operations
-token_t					*token_create(token_type_t type, char *value, char quote);
-// token_t					*next_token(lexer_t *lexer, size_t len, size_t start);
-// void					token_destroy(token_t *token);
 const char				*token_type_to_string(token_type_t type);
+token_t					*token_create(token_type_t type, char *value, char quote);
 
 // Token list operations
 token_list_t			*token_list_create(void);
-// void					token_list_destroy(token_list_t *list);
 void					token_list_add(token_list_t *list, token_t *token);
 void					token_list_print(token_list_t *list);
 
@@ -216,16 +203,9 @@ bool					is_quotes_char(char ch);
 char					get_quotes(lexer_t *lexer);
 
 // Token generation
-// token_t					*read_word(lexer_t *lexer);
 token_t					*read_operator(lexer_t *lexer);
-// char					*read_quoted_string(lexer_t *lexer, char quote_char);
-// void					reset_quotes(lexer_t *lexer, char quote_char);
-// void					*get_quoted_input(lexer_t *lexer, size_t *len);
-// int						end_capture_quotes(lexer_t *lexer, char *input);
-// token_t					*read_subshell(lexer_t *lexer);
 token_list_t			*tokenize(const char *input);
-void					remove_token_node(lol **head,
-							lol *target);
+void					remove_token_node(lol **head, lol *target);
 
 // Error functions
 void					*return_herdoc_error(void);
@@ -234,7 +214,8 @@ void					*return_quoted_error(void);
 // Expand fucntions
 token_list_t			*expand(token_list_t *tokens);
 char					*expand_string_variables(char *original_value);
-void					append_to_buffer(exp_t *exp, char *str_to_add, size_t add_len);
+void					append_to_buffer(exp_t *exp, char *str_to_add,
+							size_t add_len);
 char					*expand_string_variables_herdoc(char *original_value);
 // Grammar fucntions
 anas_list				*grammar_check(token_list_t *tokens);
@@ -268,7 +249,8 @@ char					**ft_split_n(char const *s, char c);
 t_env					*create_env(char **env);
 int						ft_env(int num);
 int						ft_unset(token_node_t *tok, int num);
-char					*ft_substr_n(char const *s, unsigned int start, size_t len);
+char					*ft_substr_n(char const *s, unsigned int start,
+							size_t len);
 char					*ft_strdup_n(const char *s1);
 void					free_env(t_env *g_env);
 void					ft_free(char **ptr);
@@ -281,27 +263,29 @@ int						ft_exit(char **arguments, int num);
 char					*ft_strjoin_n(char const *s1, char const *s2);
 char					*ft_getenv(char *key);
 int						ft_cd(token_node_t *tok, int num);
-void					sig_child();
-void 					sig_setup();
+void					sig_child(void);
+void					sig_setup(void);
 t_status				*func(void);
 int						is_valid_llong(char *str);
 int						ft_redirects(token_node_t *tok, int flag);
 int						execute_builtins(token_node_t *tok, int pip_num);
-char					**env_to_char();
+char					**env_to_char(void);
 void					check_if_full_path(token_node_t *tok, char **envchar);
 void					no_path(token_node_t *tok, char **envchar);
-void					execute_commend(char *tmp, char *full_path, token_node_t *tok, char **envchar);
+void					execute_commend(char *tmp, char *full_path,
+							token_node_t *tok, char **envchar);
 int						number_of_pip(anas_list *tok);
 void					ft_close_parent(int pipes[2][2], int i);
 int						check_child_sig(int r);
 int						builtins_parent(anas_list *tok, int pip_num);
-void					ft_copy_in_out();
+void					ft_copy_in_out(void);
 void					error(char *str, int fd, char *message);
 int						handle_exit_status(int num);
 void					heredoc_signal(void);
 void					free_process(void);
 char					*get_key(char *arguments, int y, int flag);
-int						if_in_env(t_env **curr, char *arguments, int y, char *in_env);
+int						if_in_env(t_env **curr, char *arguments, int y,
+							char *in_env);
 void					add_to_env(char *arguments, int flag);
 void					ft_append(char *arguments);
 int						ft_alpha_num(char *arg);

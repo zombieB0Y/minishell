@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_exit.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 16:59:51 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/18 16:59:53 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/18 22:07:32 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	not_numeric(char **arguments, int num)
 int	ft_exit(char **arguments, int num)
 {
 	int (i) = 1;
-	ft_copy_in_out(func()->out, func()->in);
+	ft_copy_in_out();
 	if (!arguments[i])
 	{
 		if (num == 0)
