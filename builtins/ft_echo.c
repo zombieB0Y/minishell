@@ -61,12 +61,17 @@ int	ft_echo(char **arguments, int num)
 		{
 			perror("echo");
 			func()->status = 1;
-			break ;
+			return (handle_exit_status(num));
 		}
 		i++;
 		if (arguments[i])
 		{
-			write(1, " ", 1);
+			if (write(1, " ", 1) == -1)
+			{
+				perror("echo");
+				func()->status = 1;
+				return (handle_exit_status(num));
+			}
 		}
 	}
 	if (!flag)

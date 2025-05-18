@@ -40,7 +40,7 @@ void	capture_variable(t_env **to_print)
 	}
 }
 
-void	print_variable(t_env **to_print)
+int	print_variable(t_env **to_print, int num)
 {
 	if ((*to_print)->value)
 	{
@@ -49,6 +49,7 @@ void	print_variable(t_env **to_print)
 		{
 			perror("export");
 			func()->status = 1;
+			return (handle_exit_status(num));
 		}
 	}
 	else
@@ -57,11 +58,13 @@ void	print_variable(t_env **to_print)
 		{
 			perror("export");
 			func()->status = 1;
+			return (handle_exit_status(num));
 		}
 	}
+	return (0);
 }
 
-void	export_print(void)
+void	export_print(int num)
 {
 	t_env	*to_print;
 
@@ -75,7 +78,10 @@ void	export_print(void)
 		if (to_print)
 		{
 			if (ft_strcmp(to_print->key, "_") != 0)
-				print_variable(&to_print);
+				if (print_variable(&to_print, num) == 1)
+				{
+					return ;
+				}
 			to_print->flag = 1;
 			printed_count++;
 		}
