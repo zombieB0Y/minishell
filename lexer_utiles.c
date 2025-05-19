@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer_utiles.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/19 23:16:55 by zoentifi          #+#    #+#             */
+/*   Updated: 2025/05/19 23:17:58 by zoentifi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 lexer_t	*lexer_create(const char *input)
@@ -18,27 +30,4 @@ lexer_t	*lexer_create(const char *input)
 		lexer->current_char = '\0';
 	lexer->quotes_count = 0;
 	return (lexer);
-}
-
-void	*return_quoted_error(void)
-{
-	ft_putstr_fd("Quotes ?\n",2);
-	return NULL;
-}
-
-bool	is_quotes_char(char ch)
-{
-	return (ch == '\'' || ch == '"');
-}
-
-bool	is_operator_char(char ch)
-{
-	return (ch == '|' || ch == '<' || ch == '>');
-}
-
-char	get_quotes(lexer_t *lexer)
-{
-	if (lexer->input[lexer->position - 1] == '"')
-		return ('"');
-	return ('\'');
 }

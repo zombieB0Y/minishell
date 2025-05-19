@@ -3,32 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   grammar.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/19 20:57:10 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/19 23:19:36 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-token_node_t	*init_anas_list(void)
-{
-	token_node_t	*node;
-
-	node = (token_node_t *)gc_malloc(sizeof(token_node_t));
-	if (!node)
-		return (NULL);
-	node->arguments = (char **)gc_malloc(sizeof(char *) * 1);
-	if (!node->arguments)
-		return (NULL);
-	node->arguments[0] = NULL;
-	node->arg_c = 0;
-	node->file_c = 0;
-	node->files = NULL;
-	node->next = NULL;
-	return (node);
-}
 
 char	**add_argumant(char **args, char *arg, size_t arg_c)
 {
@@ -135,23 +117,6 @@ bool	handle_redir(lol *head, token_node_t *token)
 	return (true);
 }
 
-void	*initialize(token_list_t *tokens, lol **head, token_node_t **token,
-		anas_list **list)
-{
-	if (!tokens)
-		return (NULL);
-	*head = tokens->head;
-	(*list) = (anas_list *)gc_malloc(sizeof(anas_list));
-	if (!(*list))
-		return (NULL);
-	(*list)->head = NULL;
-	(*list)->tail = NULL;
-	(*token) = init_anas_list();
-	if (!(*token))
-		return (NULL);
-	return ((void *)token);
-}
-
 void	*handle_tokens(lol **head, token_node_t *token)
 {
 	if ((*head)->token->type == TOKEN_WORD)
@@ -180,7 +145,6 @@ bool	is_pipe_valid(token_node_t **token, anas_list *list, lol **head)
 		(*token) = init_anas_list();
 		if (!(*token))
 			return (false);
-		
 	}
 	else
 		return (return_pip_error(), false);

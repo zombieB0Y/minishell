@@ -6,7 +6,7 @@
 /*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 22:02:18 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/18 22:02:21 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/19 23:15:41 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ void	gc_register(void *ptr)
 	if (!node)
 		return ;
 	node->ptr = ptr;
-	node->next = func()->gc_head;
-	func()->gc_head = node;
+	node->next = func()->g_head;
+	func()->g_head = node;
 }
 
 void	*gc_malloc(size_t size)
@@ -45,7 +45,7 @@ void	gc_collect(void)
 	GCNode	*current;
 	GCNode	*next;
 
-	current = func()->gc_head;
+	current = func()->g_head;
 	while (current)
 	{
 		next = current->next;
@@ -53,5 +53,5 @@ void	gc_collect(void)
 		free(current);
 		current = next;
 	}
-	func()->gc_head = NULL;
+	func()->g_head = NULL;
 }

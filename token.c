@@ -1,8 +1,16 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   token.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/19 22:30:51 by zoentifi          #+#    #+#             */
+/*   Updated: 2025/05/19 22:31:35 by zoentifi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-/*
- * Token operations
- */
+#include "minishell.h"
 
 token_list_t	*token_list_create(void)
 {
@@ -54,21 +62,15 @@ void	token_list_add(token_list_t *list, token_t *token)
 	list->size++;
 }
 
-void	*return_herdoc_error(void)
+void	remove_token_node(lol **head, lol *target)
 {
-	ft_putstr_fd("heredoc ?\n", 2);
-	func()->status = 2;
-	return (NULL);
-}
+	lol	*curr;
+	lol	*prev;
 
-void remove_token_node(lol **head, lol *target)
-{
 	if (!head || !*head || !target)
-		return;
-
-	lol *curr = *head;
-	lol *prev = NULL;
-
+		return ;
+	curr = *head;
+	prev = NULL;
 	while (curr != NULL)
 	{
 		if (curr == target)
@@ -76,11 +78,9 @@ void remove_token_node(lol **head, lol *target)
 			if (prev)
 				prev->next = curr->next;
 			else
-				*head = curr->next; // Removed head
-
-			curr->next = NULL; // Optional: fully detach node
-			
-			return;
+				*head = curr->next;
+			curr->next = NULL;
+			return ;
 		}
 		prev = curr;
 		curr = curr->next;

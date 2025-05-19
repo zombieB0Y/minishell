@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/19 22:56:25 by zoentifi          #+#    #+#             */
+/*   Updated: 2025/05/19 23:21:53 by zoentifi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -17,6 +29,7 @@
 # include <sys/stat.h>
 # include <sys/wait.h>
 # include <unistd.h>
+// # include "diana.h"
 
 # define GREEN "\033[32m"
 # define RED "\033[31m"
@@ -133,7 +146,7 @@ typedef struct st
 {
 	int					status;
 	int					background;
-	GCNode				*gc_head;
+	GCNode				*g_head;
 	t_env				*g_env;
 	int					out;
 	int					in;
@@ -183,34 +196,31 @@ typedef struct heredoc_s
 #  define BUFFER_SIZE 10
 # endif
 
+// Token operations
+tokenize_t				*init_tokenize(const char *input);
 // Lexer operations
 lexer_t					*lexer_create(const char *input);
 void					lexer_advance(lexer_t *lexer);
 bool					lexer_is_at_end(lexer_t *lexer);
-
-// Token operations
-const char				*token_type_to_string(token_type_t type);
-token_t					*token_create(token_type_t type, char *value, char quote);
-
 // Token list operations
 token_list_t			*token_list_create(void);
 void					token_list_add(token_list_t *list, token_t *token);
-void					token_list_print(token_list_t *list);
-
 // Character classification
 bool					is_operator_char(char ch);
+int						is_tab(int c);
 bool					is_quotes_char(char ch);
-char					get_quotes(lexer_t *lexer);
-
+int						is_quoted(int c);
+bool					find_quotes(char *str);
+int						is_whitespace(int c);
+token_t					*token_create(token_type_t type, char *value,
+							char quote);
 // Token generation
 token_t					*read_operator(lexer_t *lexer);
 token_list_t			*tokenize(const char *input);
 void					remove_token_node(lol **head, lol *target);
-
 // Error functions
 void					*return_herdoc_error(void);
 void					*return_quoted_error(void);
-
 // Expand fucntions
 token_list_t			*expand(token_list_t *tokens);
 char					*expand_string_variables(char *original_value);
@@ -219,6 +229,9 @@ void					append_to_buffer(exp_t *exp, char *str_to_add,
 char					*expand_string_variables_herdoc(char *original_value);
 // Grammar fucntions
 anas_list				*grammar_check(token_list_t *tokens);
+token_node_t			*init_anas_list(void);
+void					*initialize(token_list_t *tokens, lol **head,
+							token_node_t **token, anas_list **list);
 void					list_add(anas_list *list, token_node_t *token);
 void					print_anas_list(anas_list *list);
 token_list_t			*remove_surrounding_quotes(token_list_t *list);
@@ -226,24 +239,28 @@ char					*shift_quotes(char *str);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------
-int						start(char *line);
 int						process_command(const char *command);
-//--------functions------------
-// int						check(char *p);
-int						is_whitespace(int c);
-// int						is_quoted(int c);
+//--------heredoc------------
+token_list_t			*capture_heredoc(token_list_t *tokens);
+heredoc_t				*init_heredoc(void);
+char					*write_heredoc(char *str, size_t count);
 //---------alloc fucntions------------
 void					*gc_malloc(size_t size);
-void					gc_free(void *ptr);
-void					gc_remove_ptr(void *ptr);
 void					gc_collect(void);
 void					gc_register(void *ptr);
 //-------------Token Type: WORD, Value: s'---
 char					*substr_dup(const char *start, size_t len);
-char					*substr_dup(const char *start, size_t len);
-token_list_t			*capture_heredoc(token_list_t *tokens);
 char					*shitft(char *str);
-//----------execution--------
+void					actual_heredoc(heredoc_t *heredoc);
+heredoc_t				*capture_delimiter(heredoc_t *heredoc,
+							token_list_t *tokens);
+heredoc_t				*wait_heredoc(heredoc_t *heredoc);
+//--------------SIGNALS--------------
+t_status				*func(void);
+void					handler(int sig);
+void					sig_child(void);
+void					sig_setup(void);
+void					heredoc_signal(void);
 int						ft_execute(anas_list *tok);
 char					**ft_split_n(char const *s, char c);
 t_env					*create_env(char **env);
@@ -263,9 +280,6 @@ int						ft_exit(char **arguments, int num);
 char					*ft_strjoin_n(char const *s1, char const *s2);
 char					*ft_getenv(char *key);
 int						ft_cd(token_node_t *tok, int num);
-void					sig_child(void);
-void					sig_setup(void);
-t_status				*func(void);
 int						is_valid_llong(char *str);
 int						ft_redirects(token_node_t *tok, int flag);
 int						execute_builtins(token_node_t *tok, int pip_num);
@@ -281,7 +295,6 @@ int						builtins_parent(anas_list *tok, int pip_num);
 void					ft_copy_in_out(void);
 void					error(char *str, int fd, char *message);
 int						handle_exit_status(int num);
-void					heredoc_signal(void);
 void					free_process(void);
 char					*get_key(char *arguments, int y, int flag);
 int						if_in_env(t_env **curr, char *arguments, int y,

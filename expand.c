@@ -263,10 +263,10 @@ char	*expand_string_variables_herdoc(char *original_value)
 
 char	*expand_string_variables(char *original_value)
 {
-	int (res) = 0;
+	int(res) = 0;
 	exp_t *(exp) = init_exp(original_value);
 	exp_tools_t *(tools) = init_tools(original_value);
-	char (active_quote_char) = 0;
+	char(active_quote_char) = 0;
 	while ((exp->current_pos - original_value) < (long)tools->org_len)
 	{
 		handle_exp_quotes(active_quote_char, exp, tools);
