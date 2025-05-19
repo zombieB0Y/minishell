@@ -78,10 +78,12 @@ void	export_print(int num)
 		if (to_print)
 		{
 			if (ft_strcmp(to_print->key, "_") != 0)
+			{
 				if (print_variable(&to_print, num) == 1)
 				{
 					return ;
 				}
+			}
 			to_print->flag = 1;
 			printed_count++;
 		}

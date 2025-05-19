@@ -84,6 +84,7 @@ void	no_path(token_node_t *tok, char **envchar)
 	}
 	else if (access(full_cmd, X_OK) == 0)
 	{
+		func()->status = 0;
 		execve(full_cmd, tok->arguments, envchar);
 		perror("execve");
 	}
@@ -101,10 +102,10 @@ void	execute_commend(char *t, char *f, token_node_t *tok, char **e)
 		&& ft_strcmp(tok->arguments[0], ".") != 0
 		&& ft_strcmp(tok->arguments[0], "..") != 0)
 	{
-		ft_redirects(tok, 0);
+		// ft_redirects(tok, 0);
 		execve(f, tok->arguments, e);
 		ft_copy_in_out();
-		perror("execev");
+		perror("execve");
 		gc_collect();
 		free_env(func()->g_env);
 	}
