@@ -68,6 +68,9 @@ token_list_t	*tokenize(const char *input)
 		tok->start = tok->lexer->position;
 		if (!capture_word(tok))
 			return (NULL);
+		// tok = capture_word(tok);
+		// if (!tok)
+		// 	return (NULL);
 		if (is_operator_char(tok->lexer->current_char) && !lexer_is_at_end(tok->lexer))
 		{
 			tok->token = read_operator(tok->lexer);

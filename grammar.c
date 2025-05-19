@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   grammar.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/18 21:47:39 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/19 18:18:13 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,31 +152,31 @@ void	*initialize(token_list_t *tokens, lol **head, token_node_t **token,
 	return ((void *)token);
 }
 
-void	*handle_tokens(lol *head, token_node_t *token)
+void	*handle_tokens(lol **head, token_node_t *token)
 {
-	if (head->token->type == TOKEN_WORD)
+	if ((*head)->token->type == TOKEN_WORD)
 	{
-		token->arguments = add_argumant(token->arguments, head->token->value,
+		token->arguments = add_argumant(token->arguments, (*head)->token->value,
 				token->arg_c);
 		token->arg_c++;
-		head = head->next;
+		(*head) = (*head)->next;
 	}
-	else if (is_redir(head->token->type))
+	else if (is_redir((*head)->token->type))
 	{
-		if (!handle_redir(head, token))
+		if (!handle_redir((*head), token))
 			return (return_redirection_error());
 		else
-			head = head->next;
+			(*head) = (*head)->next;
 	}
 	return ((void *)token);
 }
 
-bool	is_pipe_valid(token_node_t **token, anas_list *list, lol *head)
+bool	is_pipe_valid(token_node_t **token, anas_list *list, lol **head)
 {
 	if ((*token)->arg_c > 0 || (*token)->file_c > 0)
 	{
 		list_add(list, (*token));
-		head = head->next;
+		(*head) = (*head)->next;
 		(*token) = init_anas_list();
 		if (!(*token))
 			return (false);
@@ -201,13 +201,13 @@ anas_list	*grammar_check(token_list_t *tokens)
 			if (head->next && head->next->token->type != TOKEN_EOF
 				&& head->next->token->type != TOKEN_PIPE)
 			{
-				if (!is_pipe_valid(&token, list, head))
+				if (!is_pipe_valid(&token, list, &head))
 					return (NULL);
 				else
 					return (return_pip_error(), NULL);
 			}
 		}
-		else if (!handle_tokens(head, token))
+		else if (!handle_tokens(&head, token))
 			return (NULL);
 	}
 	list_add(list, token);
