@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/19 18:18:13 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/19 20:57:10 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,6 +180,7 @@ bool	is_pipe_valid(token_node_t **token, anas_list *list, lol **head)
 		(*token) = init_anas_list();
 		if (!(*token))
 			return (false);
+		
 	}
 	else
 		return (return_pip_error(), false);
@@ -203,9 +204,9 @@ anas_list	*grammar_check(token_list_t *tokens)
 			{
 				if (!is_pipe_valid(&token, list, &head))
 					return (NULL);
-				else
-					return (return_pip_error(), NULL);
 			}
+			else
+				return (return_pip_error(), NULL);
 		}
 		else if (!handle_tokens(&head, token))
 			return (NULL);
