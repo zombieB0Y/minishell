@@ -102,7 +102,6 @@ void	execute_commend(char *t, char *f, token_node_t *tok, char **e)
 		&& ft_strcmp(tok->arguments[0], ".") != 0
 		&& ft_strcmp(tok->arguments[0], "..") != 0)
 	{
-		// ft_redirects(tok, 0);
 		execve(f, tok->arguments, e);
 		ft_copy_in_out();
 		perror("execve");

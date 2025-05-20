@@ -12,7 +12,7 @@
 
 #include "../minishell.h"
 
-int echo_error(int num)
+int	echo_error(int num)
 {
 	perror("echo");
 	func()->status = 1;
