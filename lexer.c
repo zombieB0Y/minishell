@@ -4,6 +4,24 @@
 // to_do_list : echo "'"$USER"'"
 // 1. check if the command is empty $l ls
 
+token_list_t	*count_heredoc(token_list_t *tokens)
+{
+	lol	*head;
+
+	size_t	(count) = 0;
+	head = tokens->head;
+	while (head->token->type != TOKEN_EOF)
+	{
+		if (head->token->type == TOKEN_HEREDOC
+			|| head->token->type == TOKEN_HEREDOC_trunc)
+			count++;
+		head = head->next;
+	}
+	if (count > 16)
+		return (NULL);
+	return (tokens);
+}
+
 int	process_command(const char *command)
 {
 	token_list_t	*tokens;
@@ -14,6 +32,14 @@ int	process_command(const char *command)
 	tokens = tokenize(command);
 	if (!tokens)
 		return (0);
+	tokens = count_heredoc(tokens);
+	if (!tokens)
+	{
+		error("MINISHELL", 2, "maximum here-document count exceeded !\n");
+		func()->status = 2;
+		free_process();
+		exit(2);
+	}
 	tokens = capture_heredoc(tokens);
 	if (!tokens)
 		return (0);
@@ -28,7 +54,7 @@ int	process_command(const char *command)
 	list = grammar_check(tokens);
 	if (!list)
 		return (0);
-	//print_anas_list(list);
+	// print_anas_list(list);
 	// current = list->head;
 	// token_list_print(tokens);
 	// while (current)

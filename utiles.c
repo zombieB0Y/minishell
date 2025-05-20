@@ -43,16 +43,16 @@ char	*shitft(char *str)
 	return (new_str);
 }
 
-char	*write_heredoc(char *str, size_t count)
+char	*write_heredoc(char *str)
 {
 	char	*filename;
 	int		fd;
-	
 	filename = NULL;
-	filename = ft_strjoin("/tmp/heredoc_", ft_itoa(count));
+	char	(*tmp) = gc_malloc(1);
+	filename = ft_strjoin("/tmp/heredoc_", ft_itoa((size_t)tmp));
 	if (!filename)
 		return (NULL);
-	fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	ft_putstr_fd(str, fd);
 	close(fd);
 	return (filename);
@@ -118,6 +118,7 @@ token_list_t *capture_heredoc(token_list_t *tokens)
 					write(pipefd[1], "\n", 1);
 				}
 				close(pipefd[1]);
+				free_process();
 				exit(0);
 			}
 			else
@@ -154,7 +155,7 @@ token_list_t *capture_heredoc(token_list_t *tokens)
 				if (expand)
 					heredoc_content = expand_string_variables_herdoc(heredoc_content);
 				count++;
-				head->token->value = write_heredoc(heredoc_content, count);
+				head->token->value = write_heredoc(heredoc_content);
 			}
 		}
 		head = head->next;
