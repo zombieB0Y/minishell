@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_utiles.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 23:16:55 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/21 01:59:07 by zm               ###   ########.fr       */
+/*   Updated: 2025/05/21 16:00:24 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-lexer_t	*lexer_create(const char *input)
+t_lexer	*lexer_create(const char *input)
 {
-	lexer_t	*lexer;
+	t_lexer	*lexer;
 
-	lexer = (lexer_t *)gc_malloc(sizeof(lexer_t));
+	lexer = (t_lexer *)gc_malloc(sizeof(t_lexer));
 	if (!lexer)
 		return (NULL);
 	lexer->input = ft_strdup(input);
@@ -32,7 +32,7 @@ lexer_t	*lexer_create(const char *input)
 	return (lexer);
 }
 
-bool	is_redir(token_type_t type)
+bool	is_redir(t_token_type type)
 {
 	return (type == TOKEN_REDIRECT_IN || type == TOKEN_REDIRECT_OUT
 		|| type == TOKEN_APPEND || type == TOKEN_HEREDOC

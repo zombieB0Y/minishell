@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:48:42 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/21 02:12:47 by zm               ###   ########.fr       */
+/*   Updated: 2025/05/21 16:11:20 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	read_until_dollar(exp_t *exp, exp_tools_t *tools)
+void	read_until_dollar(t_exp *exp, t_exp_tools *tools)
 {
 	tools->prefix_len = 0;
 	tools->segment_start_ptr = exp->current_pos;
@@ -21,17 +21,17 @@ void	read_until_dollar(exp_t *exp, exp_tools_t *tools)
 		while (*tools->scan_ptr != '\0' && *tools->scan_ptr != '$')
 			tools->scan_ptr++;
 	if (tools->scan_ptr > tools->segment_start_ptr)
-		append_to_buffer(exp, tools->segment_start_ptr,
-			tools->scan_ptr - tools->segment_start_ptr);
+		append_to_buffer(exp, tools->segment_start_ptr, tools->scan_ptr
+			- tools->segment_start_ptr);
 	exp->current_pos = tools->scan_ptr;
 }
 
 char	*expand_string_variables_herdoc(char *original_value)
 {
-	exp_t	*exp;
+	t_exp	*exp;
 
 	exp = init_exp(original_value);
-	exp_tools_t *(tools) = init_tools(original_value);
+	t_exp_tools *(tools) = init_tools(original_value);
 	while ((exp->current_pos - original_value) < (long)tools->org_len)
 	{
 		read_until_dollar(exp, tools);
@@ -54,8 +54,8 @@ char	*expand_string_variables_herdoc(char *original_value)
 char	*expand_string_variables(char *original_value)
 {
 	int (res) = 0;
-	exp_t *(exp) = init_exp(original_value);
-	exp_tools_t *(tools) = init_tools(original_value);
+	t_exp *(exp) = init_exp(original_value);
+	t_exp_tools *(tools) = init_tools(original_value);
 	char (active_quote_char) = 0;
 	while ((exp->current_pos - original_value) < (long)tools->org_len)
 	{
@@ -78,7 +78,7 @@ char	*expand_string_variables(char *original_value)
 	return (return_result(exp, original_value));
 }
 
-token_t	*expand_this(token_t *token, token_list_t *tokens, lol *current_node)
+t_token	*expand_this(t_token *token, t_token_list *tokens, t_lol *current_node)
 {
 	char	*new_value;
 
@@ -99,10 +99,10 @@ token_t	*expand_this(token_t *token, token_list_t *tokens, lol *current_node)
 	return (token);
 }
 
-token_list_t	*expand(token_list_t *tokens)
+t_token_list	*expand(t_token_list *tokens)
 {
-	token_t	*token;
-	lol		*current_node;
+	t_token	*token;
+	t_lol	*current_node;
 
 	if (!tokens || !tokens->head)
 		return (tokens);

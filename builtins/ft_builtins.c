@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_builtins.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 17:38:28 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/18 17:38:30 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/21 15:36:06 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../exec.h"
 
 void	error(char *str, int fd, char *message)
 {

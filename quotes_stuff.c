@@ -6,7 +6,7 @@
 /*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 22:15:56 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/19 23:18:04 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:00:24 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ bool	is_quotes_char(char ch)
 	return (ch == '\'' || ch == '"');
 }
 
-char	get_quotes(lexer_t *lexer)
+char	get_quotes(t_lexer *lexer)
 {
 	if (lexer->input[lexer->position - 1] == '"')
 		return ('"');

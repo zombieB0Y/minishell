@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strdup_n.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 18:37:41 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/18 18:37:42 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/21 15:35:45 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../exec.h"
 
 void	free_env(t_env *g_env)
 {

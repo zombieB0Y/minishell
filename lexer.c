@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 23:18:16 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/21 02:01:44 by zm               ###   ########.fr       */
+/*   Updated: 2025/05/21 16:06:16 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-token_t	*read_redir_in(lexer_t *lexer)
+t_token	*read_redir_in(t_lexer *lexer)
 {
 	if (lexer->current_char == '<')
 	{
@@ -27,7 +27,7 @@ token_t	*read_redir_in(lexer_t *lexer)
 	return (token_create(TOKEN_REDIRECT_IN, ft_strdup("<"), 0));
 }
 
-token_t	*read_operator(lexer_t *lexer)
+t_token	*read_operator(t_lexer *lexer)
 {
 	if (lexer->current_char == '|')
 	{
@@ -53,7 +53,7 @@ token_t	*read_operator(lexer_t *lexer)
 		return (NULL);
 }
 
-void	*handle_tokens(lol **head, token_node_t *token)
+void	*handle_tokens(t_lol **head, t_token_node *token)
 {
 	if ((*head)->token->type == TOKEN_WORD)
 	{

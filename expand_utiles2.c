@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   expand_utiles2.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 02:05:24 by zm                #+#    #+#             */
-/*   Updated: 2025/05/21 02:05:42 by zm               ###   ########.fr       */
+/*   Updated: 2025/05/21 15:54:30 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "exec.h"
 
-void	actual_expand(exp_t *exp, exp_tools_t *tools)
+void	actual_expand(t_exp *exp, t_exp_tools *tools)
 {
 	ft_memcpy(tools->var_name_buffer, tools->var_name_start,
 		tools->var_name_len);
@@ -28,8 +29,8 @@ void	actual_expand(exp_t *exp, exp_tools_t *tools)
 	exp->current_pos = tools->var_name_end;
 }
 
-void	handle_exp_quotes(char active_quote_char, exp_t *exp,
-		exp_tools_t *tools)
+void	handle_exp_quotes(char active_quote_char, t_exp *exp,
+		t_exp_tools *tools)
 {
 	tools->prefix_len = 0;
 	tools->segment_start_ptr = exp->current_pos;
@@ -51,7 +52,7 @@ void	handle_exp_quotes(char active_quote_char, exp_t *exp,
 	exp->current_pos = tools->scan_ptr;
 }
 
-char	*return_result(exp_t *exp, char *original_value)
+char	*return_result(t_exp *exp, char *original_value)
 {
 	if (exp->result_buffer == NULL && exp->expansions_done == 0)
 		return (original_value);
@@ -66,7 +67,7 @@ char	*return_result(exp_t *exp, char *original_value)
 	return (exp->result_buffer);
 }
 
-bool	expand_quotes(exp_t *exp, char *active_quote_char)
+bool	expand_quotes(t_exp *exp, char *active_quote_char)
 {
 	if (*exp->current_pos == '\'')
 	{
@@ -91,7 +92,7 @@ bool	expand_quotes(exp_t *exp, char *active_quote_char)
 	return (false);
 }
 
-bool	read_dollar_sign(exp_t *exp, exp_tools_t *tools)
+bool	read_dollar_sign(t_exp *exp, t_exp_tools *tools)
 {
 	read_key(exp, tools);
 	if (tools->var_name_end > tools->var_name_start)

@@ -6,22 +6,20 @@
 /*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 22:02:18 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/19 23:15:41 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:09:37 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "exec.h"
 
 void	gc_register(void *ptr)
 {
-	GCNode	*node;
+	t_GCNode	*node;
 
 	if (!ptr)
 		return ;
-	node = malloc(sizeof(GCNode));
+	node = malloc(sizeof(t_GCNode));
 	if (!node)
 		return ;
 	node->ptr = ptr;
@@ -42,8 +40,8 @@ void	*gc_malloc(size_t size)
 
 void	gc_collect(void)
 {
-	GCNode	*current;
-	GCNode	*next;
+	t_GCNode	*current;
+	t_GCNode	*next;
 
 	current = func()->g_head;
 	while (current)

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_cd.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 13:18:28 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/18 13:18:30 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/21 15:59:38 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../exec.h"
 
 void	set_env_var(const char *key, const char *value)
 {
@@ -66,7 +66,7 @@ void	go_home(char **target)
 	}
 }
 
-int	ft_cd(token_node_t *tok, int num)
+int	ft_cd(t_token_node *tok, int num)
 {
 	char *(target) = NULL;
 	char *(old_pwd) = ft_getenv("PWD");

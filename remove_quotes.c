@@ -6,7 +6,7 @@
 /*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 21:29:26 by codespace         #+#    #+#             */
-/*   Updated: 2025/05/19 23:13:09 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:06:16 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,9 @@ char	*shift_quotes(char *str)
 	return (ft_strdup(str));
 }
 
-token_list_t	*remove_surrounding_quotes(token_list_t *list)
+t_token_list	*remove_surrounding_quotes(t_token_list *list)
 {
-	lol	*curr_node;
+	t_lol	*curr_node;
 
 	if (!list || !list->head)
 		return (list);

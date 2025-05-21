@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_chc_built_redirct.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 17:53:24 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/21 00:19:35 by zm               ###   ########.fr       */
+/*   Updated: 2025/05/21 15:59:38 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../exec.h"
 
-int	ft_redirect_out(files_t *files, int flag)
+int	ft_redirect_out(t_files *files, int flag)
 {
 	int	fd;
 
@@ -37,7 +37,7 @@ int	ft_redirect_out(files_t *files, int flag)
 	return (0);
 }
 
-int	ft_redirect_in(files_t *files, int flag)
+int	ft_redirect_in(t_files *files, int flag)
 {
 	int	fd;
 
@@ -62,7 +62,7 @@ int	ft_redirect_in(files_t *files, int flag)
 	return (0);
 }
 
-int	ft_redirect_append(files_t *files, int flag)
+int	ft_redirect_append(t_files *files, int flag)
 {
 	int	fd;
 
@@ -87,7 +87,7 @@ int	ft_redirect_append(files_t *files, int flag)
 	return (0);
 }
 
-int	ft_redirects(token_node_t *tok, int flag)
+int	ft_redirects(t_token_node *tok, int flag)
 {
 	int	r;
 
@@ -108,7 +108,7 @@ int	ft_redirects(token_node_t *tok, int flag)
 	return (r);
 }
 
-int	execute_builtins(token_node_t *tok, int pip_num)
+int	execute_builtins(t_token_node *tok, int pip_num)
 {
 	if (tok->arguments[0] == NULL)
 		return (3);

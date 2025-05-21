@@ -6,13 +6,13 @@
 /*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 21:48:21 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/19 23:12:50 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:01:59 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-heredoc_t	*read_heredoc(heredoc_t *heredoc)
+t_heredoc	*read_heredoc(t_heredoc *heredoc)
 {
 	heredoc->bytes_read = read(heredoc->pipefd[0], heredoc->buffer, 1);
 	while (heredoc->bytes_read > 0)
@@ -40,9 +40,9 @@ heredoc_t	*read_heredoc(heredoc_t *heredoc)
 	return (heredoc);
 }
 
-token_list_t	*capture_heredoc(token_list_t *tokens)
+t_token_list	*capture_heredoc(t_token_list *tokens)
 {
-	heredoc_t *(heredoc) = init_heredoc();
+	t_heredoc *(heredoc) = init_heredoc();
 	if (!tokens)
 		return (NULL);
 	heredoc->head = tokens->head;

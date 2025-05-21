@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 22:33:01 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/21 02:13:07 by zm               ###   ########.fr       */
+/*   Updated: 2025/05/21 16:00:47 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	read_quotes(tokenize_t *tok)
+void	read_quotes(t_tokenize *tok)
 {
 	tok->quote = tok->lexer->current_char;
 	tok->lexer->quotes_count++;
@@ -24,7 +24,7 @@ void	read_quotes(tokenize_t *tok)
 		tok->lexer->quotes_count++;
 }
 
-tokenize_t	*capture_word(tokenize_t *tok)
+t_tokenize	*capture_word(t_tokenize *tok)
 {
 	if (!is_operator_char(tok->lexer->current_char)
 		&& !is_whitespace(tok->lexer->current_char))
@@ -49,16 +49,16 @@ tokenize_t	*capture_word(tokenize_t *tok)
 	return (tok);
 }
 
-void	update(tokenize_t **tok)
+void	update(t_tokenize **tok)
 {
 	(*tok)->token = NULL;
 	(*tok)->value = NULL;
 	(*tok)->start = (*tok)->lexer->position;
 }
 
-token_list_t	*tokenize(const char *input)
+t_token_list	*tokenize(const char *input)
 {
-	tokenize_t *(tok) = init_tokenize(input);
+	t_tokenize *(tok) = init_tokenize(input);
 	if (!tok || !tok->lexer)
 		return (NULL);
 	tok->tokens = token_list_create();

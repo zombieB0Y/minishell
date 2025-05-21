@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   helper_functions2.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 18:53:00 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/18 18:53:02 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/21 16:08:57 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../exec.h"
 
 int	check_child_sig(int r)
 {
@@ -28,7 +28,7 @@ int	check_child_sig(int r)
 	return (128 + WTERMSIG(r));
 }
 
-int	builtins_parent(anas_list *tok, int pip_num)
+int	builtins_parent(t_anas_list *tok, int pip_num)
 {
 	int	r;
 	int	d;

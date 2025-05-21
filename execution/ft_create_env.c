@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_create_env.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 17:56:03 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/18 17:56:04 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/21 15:35:20 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../exec.h"
 
 int	ft_lstsize_n(t_env *lst)
 {

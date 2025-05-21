@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_valid_long.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 09:37:57 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/19 09:37:58 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/21 15:37:19 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "exec.h"
 
 int	for_norm(long long *num, long long overflow, char str, int sign)
 {

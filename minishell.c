@@ -6,13 +6,14 @@
 /*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 23:13:30 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/19 23:16:43 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:09:37 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "exec.h"
 
-// GCNode	*g_head;
+// t_GCNode	*g_head;
 
 int	check_args(int ac, char **av)
 {

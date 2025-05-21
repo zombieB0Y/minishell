@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split_n.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 18:36:06 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/18 18:36:08 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/21 15:35:40 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../exec.h"
 
 char	*ft_word(char const *s, char c, size_t *i)
 {

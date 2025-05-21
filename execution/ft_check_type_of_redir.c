@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_check_type_of_redir.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 17:46:57 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/18 17:46:58 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/21 15:59:38 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../exec.h"
 
-int	check_type_redi(token_node_t *tok, int flag)
+int	check_type_redi(t_token_node *tok, int flag)
 {
 	int	r;
 
@@ -40,13 +40,13 @@ int	check_type_redi(token_node_t *tok, int flag)
 	return (r);
 }
 
-void	no_command(token_node_t *tok)
+void	no_command(t_token_node *tok)
 {
 	error(tok->arguments[0], 2, "command not found\n");
 	free_process();
 }
 
-void	permission_denied(token_node_t *tok)
+void	permission_denied(t_token_node *tok)
 {
 	func()->status = 126;
 	error(tok->arguments[0], 2, "Permission denied\n");

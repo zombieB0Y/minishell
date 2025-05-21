@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   stuff.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 02:06:35 by zm                #+#    #+#             */
-/*   Updated: 2025/05/21 02:07:03 by zm               ###   ########.fr       */
+/*   Updated: 2025/05/21 15:55:25 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	expand_dollar_sign(exp_t *exp, exp_tools_t *tools, char active_quote_char)
+int	expand_dollar_sign(t_exp *exp, t_exp_tools *tools, char active_quote_char)
 {
 	if (active_quote_char == '\'')
 	{

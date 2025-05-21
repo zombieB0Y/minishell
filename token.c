@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   token.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 22:30:51 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/21 01:59:40 by zm               ###   ########.fr       */
+/*   Updated: 2025/05/21 16:08:57 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-token_list_t	*token_list_create(void)
+t_token_list	*token_list_create(void)
 {
-	token_list_t	*list;
+	t_token_list	*list;
 
-	list = (token_list_t *)gc_malloc(sizeof(token_list_t));
+	list = (t_token_list *)gc_malloc(sizeof(t_token_list));
 	if (!list)
 		return (NULL);
 	list->head = NULL;
@@ -25,11 +25,11 @@ token_list_t	*token_list_create(void)
 	return (list);
 }
 
-token_t	*token_create(token_type_t type, char *value, char quote)
+t_token	*token_create(t_token_type type, char *value, char quote)
 {
-	token_t	*token;
+	t_token	*token;
 
-	token = (token_t *)gc_malloc(sizeof(token_t));
+	token = (t_token *)gc_malloc(sizeof(t_token));
 	if (!token)
 		return (NULL);
 	token->quote = quote;
@@ -38,13 +38,13 @@ token_t	*token_create(token_type_t type, char *value, char quote)
 	return (token);
 }
 
-void	token_list_add(token_list_t *list, token_t *token)
+void	token_list_add(t_token_list *list, t_token *token)
 {
-	lol	*node;
+	t_lol	*node;
 
 	if (!list || !token)
 		return ;
-	node = (lol *)gc_malloc(sizeof(lol));
+	node = (t_lol *)gc_malloc(sizeof(t_lol));
 	if (!node)
 		return ;
 	node->token = token;
@@ -64,10 +64,10 @@ void	token_list_add(token_list_t *list, token_t *token)
 	list->size++;
 }
 
-void	remove_token_node(lol **head, lol *target)
+void	remove_token_node(t_lol **head, t_lol *target)
 {
-	lol	*curr;
-	lol	*prev;
+	t_lol	*curr;
+	t_lol	*prev;
 
 	if (!head || !*head || !target)
 		return ;
@@ -89,7 +89,7 @@ void	remove_token_node(lol **head, lol *target)
 	}
 }
 
-void	list_add(anas_list *list, token_node_t *node)
+void	list_add(t_anas_list *list, t_token_node *node)
 {
 	if (!list->head)
 	{

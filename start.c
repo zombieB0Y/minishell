@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   start.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 22:44:14 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/21 01:54:01 by zm               ###   ########.fr       */
+/*   Updated: 2025/05/21 16:08:57 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "exec.h"
 
-int	check_pipe_syntax(lol *head)
+int	check_pipe_syntax(t_lol *head)
 {
 	if (head->prev == NULL)
 		return (0);
@@ -22,16 +23,16 @@ int	check_pipe_syntax(lol *head)
 	return (0);
 }
 
-int	check_redir_syntax(lol *head)
+int	check_redir_syntax(t_lol *head)
 {
 	if (head->next->token->type != TOKEN_WORD)
 		return (0);
 	return (1);
 }
 
-int	check_syntax(token_list_t *tokens)
+int	check_syntax(t_token_list *tokens)
 {
-	lol(*head) = tokens->head;
+	t_lol(*head) = tokens->head;
 	while (head->token->type != TOKEN_EOF)
 	{
 		if (head->token->type == TOKEN_PIPE && !check_pipe_syntax(head))
@@ -45,8 +46,8 @@ int	check_syntax(token_list_t *tokens)
 
 int	process_command(const char *command)
 {
-	token_list_t	*tokens;
-	anas_list		*list;
+	t_token_list	*tokens;
+	t_anas_list		*list;
 
 	tokens = tokenize(command);
 	if (!tokens)
@@ -65,6 +66,5 @@ int	process_command(const char *command)
 	list = grammar_check(tokens);
 	if (!list)
 		return (0);
-	// print_anas_list(list);
 	return (ft_execute(list));
 }

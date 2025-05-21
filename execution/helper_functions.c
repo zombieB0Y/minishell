@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   helper_functions.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 18:48:05 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/18 18:48:07 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/21 16:08:57 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../exec.h"
 
-int	number_of_pip(anas_list *tok)
+int	number_of_pip(t_anas_list *tok)
 {
-	token_node_t *(current) = tok->head;
+	t_token_node *(current) = tok->head;
 	int (p) = 0;
 	while (current)
 	{
@@ -42,7 +42,7 @@ char	*ft_getenv(char *key)
 	return (value);
 }
 
-void	check_if_full_path(token_node_t *tok, char **envchar)
+void	check_if_full_path(t_token_node *tok, char **envchar)
 {
 	struct stat	st;
 
@@ -69,7 +69,7 @@ void	check_if_full_path(token_node_t *tok, char **envchar)
 	exit(func()->status);
 }
 
-void	no_path(token_node_t *tok, char **envchar)
+void	no_path(t_token_node *tok, char **envchar)
 {
 	if (ft_strcmp(tok->arguments[0], "..") == 0
 		|| ft_strcmp(tok->arguments[0], ".") == 0)
@@ -84,7 +84,7 @@ void	no_path(token_node_t *tok, char **envchar)
 	exit(func()->status);
 }
 
-void	execute_commend(char *t, char *f, token_node_t *tok, char **e)
+void	execute_commend(char *t, char *f, t_token_node *tok, char **e)
 {
 	f = ft_strjoin(t, tok->arguments[0]);
 	if (access(f, X_OK) == 0

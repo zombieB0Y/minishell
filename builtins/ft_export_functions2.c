@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export_functions2.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 17:33:33 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/18 17:33:35 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/21 15:36:42 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../exec.h"
 
 void	number_to_print(int *total_count)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   grammar.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/21 02:01:11 by zm               ###   ########.fr       */
+/*   Updated: 2025/05/21 16:10:51 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,12 @@ char	**add_argumant(char **args, char *arg, size_t arg_c)
 	return (new_args);
 }
 
-files_t	*add_file(files_t *files, char *filename, token_type_t type)
+t_files	*add_file(t_files *files, char *filename, t_token_type type)
 {
-	files_t	*new_file;
-	files_t	*temp;
+	t_files	*new_file;
+	t_files	*temp;
 
-	new_file = (files_t *)gc_malloc(sizeof(files_t));
+	new_file = (t_files *)gc_malloc(sizeof(t_files));
 	if (!new_file)
 		return (files);
 	if (!filename)
@@ -53,9 +53,9 @@ files_t	*add_file(files_t *files, char *filename, token_type_t type)
 	return (files);
 }
 
-bool	handle_redir(lol **head, token_node_t *token)
+bool	handle_redir(t_lol **head, t_token_node *token)
 {
-	token_type_t	redirect_type;
+	t_token_type	redirect_type;
 
 	redirect_type = (*head)->token->type;
 	if (redirect_type == TOKEN_HEREDOC || redirect_type == TOKEN_HEREDOC_trunc)
@@ -81,7 +81,7 @@ bool	handle_redir(lol **head, token_node_t *token)
 	return (true);
 }
 
-bool	is_pipe_valid(token_node_t **token, anas_list *list, lol **head)
+bool	is_pipe_valid(t_token_node **token, t_anas_list *list, t_lol **head)
 {
 	if ((*token)->arg_c > 0 || (*token)->file_c > 0)
 	{
@@ -96,11 +96,11 @@ bool	is_pipe_valid(token_node_t **token, anas_list *list, lol **head)
 	return (true);
 }
 
-anas_list	*grammar_check(token_list_t *tokens)
+t_anas_list	*grammar_check(t_token_list *tokens)
 {
-	lol				*head;
-	token_node_t	*token;
-	anas_list		*list;
+	t_lol			*head;
+	t_token_node	*token;
+	t_anas_list		*list;
 
 	if (!initialize(tokens, &head, &token, &list))
 		return (NULL);

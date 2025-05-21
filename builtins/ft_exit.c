@@ -6,11 +6,11 @@
 /*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 16:59:51 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/18 22:07:32 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 15:36:29 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../exec.h"
 
 int	ft_num_inside(char *arg)
 {

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_unset.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 17:10:30 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/18 17:10:32 by abenba           ###   ########.fr       */
+/*   Updated: 2025/05/21 15:59:38 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../exec.h"
 
 int	handle_exit_status(int num)
 {
@@ -44,7 +44,7 @@ void	remove_env_var(const char *key)
 	}
 }
 
-int	ft_unset(token_node_t *tok, int num)
+int	ft_unset(t_token_node *tok, int num)
 {
 	char	*target;
 

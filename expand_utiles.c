@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   expand_utiles.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 02:02:26 by zm                #+#    #+#             */
-/*   Updated: 2025/05/21 02:10:50 by zm               ###   ########.fr       */
+/*   Updated: 2025/05/21 15:54:14 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	setup_buffer(exp_t *exp, size_t add_len)
+void	setup_buffer(t_exp *exp, size_t add_len)
 {
 	exp->result_capacity = add_len + 1;
 	exp->result_buffer = (char *)gc_malloc(exp->result_capacity);
@@ -25,7 +25,7 @@ void	setup_buffer(exp_t *exp, size_t add_len)
 	exp->result_buffer[0] = '\0';
 }
 
-void	append_to_buffer(exp_t *exp, char *str_to_add, size_t add_len)
+void	append_to_buffer(t_exp *exp, char *str_to_add, size_t add_len)
 {
 	char	*new_buffer;
 
@@ -49,17 +49,17 @@ void	append_to_buffer(exp_t *exp, char *str_to_add, size_t add_len)
 	exp->result_len += add_len + 1;
 }
 
-void	append_increment(exp_t *exp)
+void	append_increment(t_exp *exp)
 {
 	append_to_buffer(exp, exp->current_pos, 1);
 	exp->current_pos++;
 }
 
-exp_tools_t	*init_tools(char *or_vl)
+t_exp_tools	*init_tools(char *or_vl)
 {
-	exp_tools_t	*tools;
+	t_exp_tools	*tools;
 
-	tools = gc_malloc(sizeof(exp_tools_t));
+	tools = gc_malloc(sizeof(t_exp_tools));
 	if (!tools)
 		return (NULL);
 	tools->var_name_len = 0;
@@ -74,7 +74,7 @@ exp_tools_t	*init_tools(char *or_vl)
 	return (tools);
 }
 
-void	read_key(exp_t *exp, exp_tools_t *tools)
+void	read_key(t_exp *exp, t_exp_tools *tools)
 {
 	exp->dollar_sign_pos = exp->current_pos;
 	tools->var_name_start = exp->current_pos + 1;

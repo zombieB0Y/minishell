@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_execute.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 18:01:39 by abenba            #+#    #+#             */
-/*   Updated: 2025/05/21 00:19:28 by zm               ###   ########.fr       */
+/*   Updated: 2025/05/21 16:08:57 by zoentifi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../exec.h"
 
-void	ft_exc(token_node_t *tok, int num, char **envchar, int i)
+void	ft_exc(t_token_node *tok, int num, char **envchar, int i)
 {
 	char	**path;
 
@@ -41,7 +41,7 @@ void	ft_exc(token_node_t *tok, int num, char **envchar, int i)
 	}
 }
 
-void	ft_child_process(int i, int pip_num, int pipes[2][2], anas_list *tok)
+void	ft_child_process(int i, int pip_num, int pipes[2][2], t_anas_list *tok)
 {
 	char	**envchar;
 	int		y;
@@ -64,7 +64,7 @@ void	ft_child_process(int i, int pip_num, int pipes[2][2], anas_list *tok)
 	ft_exc(tok->head, pip_num, envchar, y);
 }
 
-void	ft_fork_and_pipe(int pip_num, anas_list *tok, pid_t *pids)
+void	ft_fork_and_pipe(int pip_num, t_anas_list *tok, pid_t *pids)
 {
 	int		pipes[2][2];
 
@@ -93,7 +93,7 @@ void	ft_fork_and_pipe(int pip_num, anas_list *tok, pid_t *pids)
 	}
 }
 
-int	ft_pip(int pip_num, anas_list *tok)
+int	ft_pip(int pip_num, t_anas_list *tok)
 {
 	int		r;
 	int		i;
@@ -114,7 +114,7 @@ int	ft_pip(int pip_num, anas_list *tok)
 	return (func()->status);
 }
 
-int	ft_execute(anas_list *tok)
+int	ft_execute(t_anas_list *tok)
 {
 	int	r;
 
