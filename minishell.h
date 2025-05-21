@@ -204,6 +204,7 @@ tokenize_t				*init_tokenize(const char *input);
 lexer_t					*lexer_create(const char *input);
 void					lexer_advance(lexer_t *lexer);
 bool					lexer_is_at_end(lexer_t *lexer);
+void					*handle_tokens(lol **head, token_node_t *token);
 // Token list operations
 token_list_t			*token_list_create(void);
 void					token_list_add(token_list_t *list, token_t *token);
@@ -255,6 +256,8 @@ void					list_add(anas_list *list, token_node_t *token);
 void					print_anas_list(anas_list *list);
 token_list_t			*remove_surrounding_quotes(token_list_t *list);
 char					*shift_quotes(char *str);
+char					**add_argumant(char **args, char *arg, size_t arg_c);
+bool					handle_redir(lol **head, token_node_t *token);
 //-------print welcome--------
 void					print_welcome(void);
 //-------start function--------

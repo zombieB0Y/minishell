@@ -44,8 +44,10 @@ int	is_valid_llong(char *str)
 			return (0);
 		num *= 10;
 		if (sign == 1)
+		{
 			if (num > LLONG_MAX - (str[i] - '0'))
 				return (0);
+		}
 		else
 			if (-num < LLONG_MIN + (str[i] - '0'))
 				return (0);

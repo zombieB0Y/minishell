@@ -65,6 +65,6 @@ int	process_command(const char *command)
 	list = grammar_check(tokens);
 	if (!list)
 		return (0);
-	print_anas_list(list);
+	// print_anas_list(list);
 	return (ft_execute(list));
 }
