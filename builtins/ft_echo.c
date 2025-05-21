@@ -12,6 +12,13 @@
 
 #include "../minishell.h"
 
+int	echo_error(int num)
+{
+	perror("echo");
+	func()->status = 1;
+	return (handle_exit_status(num));
+}
+
 int	no_arguments(int num)
 {
 	if (write(1, "\n", 1) == -1)
@@ -59,14 +66,15 @@ int	ft_echo(char **arguments, int num)
 	{
 		if (write(1, arguments[i], ft_strlen(arguments[i])) == -1)
 		{
-			perror("echo");
-			func()->status = 1;
-			break ;
+			return (echo_error(num));
 		}
 		i++;
 		if (arguments[i])
 		{
-			write(1, " ", 1);
+			if (write(1, " ", 1) == -1)
+			{
+				return (echo_error(num));
+			}
 		}
 	}
 	if (!flag)

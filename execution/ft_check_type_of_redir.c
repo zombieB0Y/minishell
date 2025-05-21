@@ -49,5 +49,5 @@ void	no_command(token_node_t *tok)
 void	permission_denied(token_node_t *tok)
 {
 	func()->status = 126;
-	error(tok->arguments[0], 2, ": Permission denied\n");
+	error(tok->arguments[0], 2, "Permission denied\n");
 }

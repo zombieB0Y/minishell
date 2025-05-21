@@ -13,13 +13,14 @@
 #ifndef LIBFT_H
 # define LIBFT_H
 
+# include "../minishell.h"
 # include <ctype.h>
 # include <fcntl.h>
+# include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
-# include "../minishell.h"
 
 typedef struct s_list
 {

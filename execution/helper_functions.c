@@ -51,12 +51,12 @@ void	check_if_full_path(token_node_t *tok, char **envchar)
 	if (stat(tok->arguments[0], &st) != 0)
 	{
 		func()->status = 127;
-		error(tok->arguments[0], 2, ": No such file or directory\n");
+		error(tok->arguments[0], 2, "No such file or directory\n");
 	}
 	else if (S_ISDIR(st.st_mode))
 	{
 		func()->status = 126;
-		error(tok->arguments[0], 2, ": Is a directory\n");
+		error(tok->arguments[0], 2, "Is a directory\n");
 	}
 	else if (access(tok->arguments[0], X_OK | R_OK) == 0)
 	{
@@ -71,21 +71,12 @@ void	check_if_full_path(token_node_t *tok, char **envchar)
 
 void	no_path(token_node_t *tok, char **envchar)
 {
-	char *(path) = getcwd(NULL, 0);
-	char *(temp) = ft_strjoin(path, "/");
-	char *(full_cmd) = ft_strjoin(temp, tok->arguments[0]);
-	free(path);
 	if (ft_strcmp(tok->arguments[0], "..") == 0
 		|| ft_strcmp(tok->arguments[0], ".") == 0)
 	{
 		write (2, tok->arguments[0], ft_strlen(tok->arguments[0]));
 		write (2, ": Id a directory\n", 18);
 		func()->status = 126;
-	}
-	else if (access(full_cmd, X_OK) == 0)
-	{
-		execve(full_cmd, tok->arguments, envchar);
-		perror("execve");
 	}
 	else
 		check_if_full_path(tok, envchar);
@@ -101,10 +92,9 @@ void	execute_commend(char *t, char *f, token_node_t *tok, char **e)
 		&& ft_strcmp(tok->arguments[0], ".") != 0
 		&& ft_strcmp(tok->arguments[0], "..") != 0)
 	{
-		ft_redirects(tok, 0);
 		execve(f, tok->arguments, e);
 		ft_copy_in_out();
-		perror("execev");
+		perror("execve");
 		gc_collect();
 		free_env(func()->g_env);
 	}

@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-GCNode	*g_head;
+// GCNode	*g_head;
 
 int	check_args(int ac, char **av)
 {

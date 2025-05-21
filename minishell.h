@@ -29,7 +29,6 @@
 # include <sys/stat.h>
 # include <sys/wait.h>
 # include <unistd.h>
-// # include "diana.h"
 
 # define GREEN "\033[32m"
 # define RED "\033[31m"
@@ -135,6 +134,7 @@ typedef struct GCNode
 	void				*ptr;
 	struct GCNode		*next;
 }						GCNode;
+
 typedef struct expo_list
 {
 	char				*key;
@@ -215,8 +215,7 @@ bool					is_quotes_char(char ch);
 int						is_quoted(int c);
 bool					find_quotes(char *str);
 int						is_whitespace(int c);
-token_t					*token_create(token_type_t type, char *value, char quote);
-
+token_t				*token_create(token_type_t type, char *value, char quote);
 // Token generation
 token_t					*read_operator(lexer_t *lexer);
 token_list_t			*tokenize(const char *input);
@@ -329,8 +328,8 @@ void					in_export(t_env *curr, char **arguments, int i);
 void					in_env(char **arguments, int i);
 int						validate(char *arg, int no_equal);
 void					flag_to_zero(t_env *g_env);
-void					export_print(void);
-void					print_variable(t_env **to_print);
+void					export_print(int num);
+int						print_variable(t_env **to_print, int num);
 void					capture_variable(t_env **to_print);
 void					number_to_print(int *total_count);
 int						check_type_redi(token_node_t *tok, int flag);
@@ -339,4 +338,5 @@ int						ft_redirect_in(files_t *files, int flag);
 int						ft_redirect_out(files_t *files, int flag);
 void					no_command(token_node_t *tok);
 void					permission_denied(token_node_t *tok);
+
 #endif

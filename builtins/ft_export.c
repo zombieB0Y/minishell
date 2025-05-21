@@ -100,7 +100,7 @@ int	ft_export(char **arguments, int num)
 	func()->status = 0;
 	if (!arguments[i])
 	{
-		export_print();
+		export_print(num);
 		flag_to_zero(func()->g_env);
 	}
 	else

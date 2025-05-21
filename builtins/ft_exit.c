@@ -77,14 +77,13 @@ void	not_numeric(char **arguments, int num)
 int	ft_exit(char **arguments, int num)
 {
 	int (i) = 1;
-	ft_copy_in_out();
 	if (!arguments[i])
 	{
-		if (num == 0)
+		if (num == 0 && isatty(STDIN_FILENO))
 			write(2, "exit\n", 5);
-		ft_copy_in_out();
-		gc_collect();
-		free_env(func()->g_env);
+		else if (num == 0)
+			write (2, "\n", 1);
+		free_process();
 		exit(func()->status);
 	}
 	else if (ft_num_inside(arguments[i]) == 1)
@@ -94,8 +93,10 @@ int	ft_exit(char **arguments, int num)
 	else
 	{
 		func()->status = ft_atoi(arguments[i]);
-		if (num == 0)
+		if (num == 0 && isatty(STDIN_FILENO))
 			write(2, "exit\n", 5);
+		else if (num == 0)
+			write (2, "\n", 1);
 		free_process();
 		exit(func()->status);
 	}

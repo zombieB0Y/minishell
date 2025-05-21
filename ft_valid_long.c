@@ -3,55 +3,58 @@
 /*                                                        :::      ::::::::   */
 /*   ft_valid_long.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: abenba <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/18 22:02:24 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/21 02:17:47 by zm               ###   ########.fr       */
+/*   Created: 2025/05/19 09:37:57 by abenba            #+#    #+#             */
+/*   Updated: 2025/05/19 09:37:58 by abenba           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	check(char *str, int *i, int *sign, long long *overflow)
+int	for_norm(long long *num, long long overflow, char str, int sign)
 {
-	if (str[(*i)] == '-')
+	if (*num > overflow)
 	{
-		(*sign) = -1;
-		(*i)++;
+		return (0);
 	}
-	else if (str[(*i)] == '+')
-		(*i)++;
-	if ((*sign) == 1)
-		(*overflow) = LLONG_MAX / 10;
+	*num *= 10;
+	if (sign == 1)
+	{
+		if (*num > LLONG_MAX - (str - '0'))
+			return (0);
+	}
 	else
-		(*overflow) = (LLONG_MIN / 10) * -1;
+	{
+		if (-*(num) < LLONG_MIN + (str - '0'))
+			return (0);
+	}
+	*num += str - '0';
+	return (1);
 }
 
 int	is_valid_llong(char *str)
 {
-	int			i;
-	int			sign;
-	long long	num;
 	long long	overflow;
 
-	i = 0;
-	sign = 1;
-	num = 0;
-	check(str, &i, &sign, &overflow);
+	int (i) = 0;
+	int (sign) = 1;
+	long long (num) = 0;
+	if (str[i] == '-')
+	{
+		sign = -1;
+		i++;
+	}
+	else if (str[i] == '+')
+		i++;
+	if (sign == 1)
+		overflow = LLONG_MAX / 10;
+	else
+		overflow = (LLONG_MIN / 10) * -1;
 	while (str[i])
 	{
-		if (num > overflow)
+		if (for_norm(&num, overflow, str[i], sign) == 0)
 			return (0);
-		num *= 10;
-		if (sign == 1)
-		{
-			if (num > LLONG_MAX - (str[i] - '0'))
-				return (0);
-		}
-		else
-			if (-num < LLONG_MIN + (str[i] - '0'))
-				return (0);
-		num += str[i] - '0';
 		i++;
 	}
 	return (1);
