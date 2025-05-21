@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_help_functions.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 22:26:08 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/20 14:02:50 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 02:00:08 by zm               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,11 +80,4 @@ heredoc_t	*wait_heredoc(heredoc_t *heredoc)
 		}
 	}
 	return (heredoc);
-}
-
-void	*return_herdoc_error(void)
-{
-	ft_putstr_fd("heredoc ?\n", 2);
-	func()->status = 2;
-	return (NULL);
 }

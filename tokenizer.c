@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 22:33:01 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/20 14:00:03 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 02:13:07 by zm               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,13 @@ tokenize_t	*capture_word(tokenize_t *tok)
 	return (tok);
 }
 
+void	update(tokenize_t **tok)
+{
+	(*tok)->token = NULL;
+	(*tok)->value = NULL;
+	(*tok)->start = (*tok)->lexer->position;
+}
+
 token_list_t	*tokenize(const char *input)
 {
 	tokenize_t *(tok) = init_tokenize(input);
@@ -60,11 +67,9 @@ token_list_t	*tokenize(const char *input)
 		if (is_whitespace(tok->lexer->current_char))
 		{
 			lexer_advance(tok->lexer);
-			continue;
+			continue ;
 		}
-		tok->token = NULL;
-		tok->value = NULL;
-		tok->start = tok->lexer->position;
+		update(&tok);
 		if (!capture_word(tok))
 			return (NULL);
 		if (is_operator_char(tok->lexer->current_char)

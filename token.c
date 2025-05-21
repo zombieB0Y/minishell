@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 22:30:51 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/19 22:31:35 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 01:59:40 by zm               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ void	token_list_add(token_list_t *list, token_t *token)
 	if (!node)
 		return ;
 	node->token = token;
+	node->prev = NULL;
 	node->next = NULL;
 	if (!list->head)
 	{
@@ -57,6 +58,7 @@ void	token_list_add(token_list_t *list, token_t *token)
 	else
 	{
 		list->tail->next = node;
+		node->prev = list->tail;
 		list->tail = node;
 	}
 	list->size++;
@@ -84,5 +86,19 @@ void	remove_token_node(lol **head, lol *target)
 		}
 		prev = curr;
 		curr = curr->next;
+	}
+}
+
+void	list_add(anas_list *list, token_node_t *node)
+{
+	if (!list->head)
+	{
+		list->head = node;
+		list->tail = node;
+	}
+	else
+	{
+		list->tail->next = node;
+		list->tail = node;
 	}
 }

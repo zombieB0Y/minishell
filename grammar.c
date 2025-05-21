@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   grammar.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:23 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/19 23:19:36 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 02:01:11 by zm               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,87 +53,32 @@ files_t	*add_file(files_t *files, char *filename, token_type_t type)
 	return (files);
 }
 
-void	list_add(anas_list *list, token_node_t *node)
-{
-	if (!list->head)
-	{
-		list->head = node;
-		list->tail = node;
-	}
-	else
-	{
-		list->tail->next = node;
-		list->tail = node;
-	}
-}
-
-anas_list	*return_pip_error(void)
-{
-	ft_putstr_fd("Syntax error: invalid use of pipe\n", 2);
-	func()->status = 2;
-	return (NULL);
-}
-
-anas_list	*return_redirection_error(void)
-{
-	ft_putstr_fd("Syntax error: invalid redirection\n", 2);
-	func()->status = 2;
-	return (NULL);
-}
-
-bool	is_redir(token_type_t type)
-{
-	return (type == TOKEN_REDIRECT_IN || type == TOKEN_REDIRECT_OUT
-		|| type == TOKEN_APPEND || type == TOKEN_HEREDOC
-		|| type == TOKEN_HEREDOC_trunc);
-}
-
-bool	handle_redir(lol *head, token_node_t *token)
+bool	handle_redir(lol **head, token_node_t *token)
 {
 	token_type_t	redirect_type;
 
-	redirect_type = head->token->type;
+	redirect_type = (*head)->token->type;
 	if (redirect_type == TOKEN_HEREDOC || redirect_type == TOKEN_HEREDOC_trunc)
 	{
-		token->files = add_file(token->files, head->token->value,
+		token->files = add_file(token->files, (*head)->token->value,
 				redirect_type);
 		token->file_c++;
-		head = head->next;
 		return (true);
 	}
 	else
 	{
-		head = head->next;
-		if (head->token->type == TOKEN_WORD)
+		(*head) = (*head)->next;
+		if ((*head)->token->type == TOKEN_WORD)
 		{
-			token->files = add_file(token->files, head->token->value,
+			token->files = add_file(token->files, (*head)->token->value,
 					redirect_type);
 			token->file_c++;
-			return ((head = head->next), true);
+			return (true);
 		}
 		else
 			return (false);
 	}
 	return (true);
-}
-
-void	*handle_tokens(lol **head, token_node_t *token)
-{
-	if ((*head)->token->type == TOKEN_WORD)
-	{
-		token->arguments = add_argumant(token->arguments, (*head)->token->value,
-				token->arg_c);
-		token->arg_c++;
-		(*head) = (*head)->next;
-	}
-	else if (is_redir((*head)->token->type))
-	{
-		if (!handle_redir((*head), token))
-			return (return_redirection_error());
-		else
-			(*head) = (*head)->next;
-	}
-	return ((void *)token);
 }
 
 bool	is_pipe_valid(token_node_t **token, anas_list *list, lol **head)
@@ -147,7 +92,7 @@ bool	is_pipe_valid(token_node_t **token, anas_list *list, lol **head)
 			return (false);
 	}
 	else
-		return (return_pip_error(), false);
+		return (false);
 	return (true);
 }
 
@@ -159,7 +104,7 @@ anas_list	*grammar_check(token_list_t *tokens)
 
 	if (!initialize(tokens, &head, &token, &list))
 		return (NULL);
-	while (head->token->value)
+	while (head && head->token->value)
 	{
 		if (head->token->type == TOKEN_PIPE)
 		{
@@ -170,7 +115,7 @@ anas_list	*grammar_check(token_list_t *tokens)
 					return (NULL);
 			}
 			else
-				return (return_pip_error(), NULL);
+				return (NULL);
 		}
 		else if (!handle_tokens(&head, token))
 			return (NULL);

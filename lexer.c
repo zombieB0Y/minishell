@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 23:18:16 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/19 23:18:19 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 02:01:44 by zm               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,23 @@ token_t	*read_operator(lexer_t *lexer)
 	}
 	else
 		return (NULL);
+}
+
+void	*handle_tokens(lol **head, token_node_t *token)
+{
+	if ((*head)->token->type == TOKEN_WORD)
+	{
+		token->arguments = add_argumant(token->arguments, (*head)->token->value,
+				token->arg_c);
+		token->arg_c++;
+		(*head) = (*head)->next;
+	}
+	else if (is_redir((*head)->token->type))
+	{
+		if (!handle_redir(head, token))
+			return (NULL);
+		else
+			(*head) = (*head)->next;
+	}
+	return ((void *)token);
 }

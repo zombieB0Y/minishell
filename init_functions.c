@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_functions.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 22:17:47 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/19 23:19:11 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 02:03:53 by zm               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,4 +77,20 @@ void	*initialize(token_list_t *tokens, lol **head, token_node_t **token,
 	if (!(*token))
 		return (NULL);
 	return ((void *)token);
+}
+
+exp_t	*init_exp(char *org)
+{
+	exp_t	*new;
+
+	new = (exp_t *)gc_malloc(sizeof(exp_t));
+	if (!new)
+		return (perror("malloc"), NULL);
+	new->dollar_sign_pos = NULL;
+	new->current_pos = org;
+	new->result_buffer = NULL;
+	new->result_len = 0;
+	new->result_capacity = 0;
+	new->expansions_done = 0;
+	return (new);
 }

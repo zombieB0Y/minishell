@@ -1,28 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer_manipulation.c                               :+:      :+:    :+:   */
+/*   stuff.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/21 01:54:12 by zm                #+#    #+#             */
-/*   Updated: 2025/05/21 01:54:18 by zm               ###   ########.fr       */
+/*   Created: 2025/05/21 02:06:35 by zm                #+#    #+#             */
+/*   Updated: 2025/05/21 02:07:03 by zm               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	lexer_advance(lexer_t *lexer)
+int	expand_dollar_sign(exp_t *exp, exp_tools_t *tools, char active_quote_char)
 {
-	if (lexer->position < lexer->input_len)
+	if (active_quote_char == '\'')
 	{
-		lexer->position++;
-		if (lexer->position <= lexer->input_len)
-			lexer->current_char = lexer->input[lexer->position];
+		append_to_buffer(exp, exp->current_pos, 1);
+		exp->current_pos++;
 	}
-}
-
-bool	lexer_is_at_end(lexer_t *lexer)
-{
-	return (lexer->position >= lexer->input_len);
+	else
+	{
+		if (read_dollar_sign(exp, tools))
+			return (1);
+		if (!tools->var_name_buffer)
+			return (perror("malloc"), 2);
+		actual_expand(exp, tools);
+	}
+	return (0);
 }

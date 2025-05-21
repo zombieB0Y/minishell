@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_utiles.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 23:16:55 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/19 23:17:58 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 01:59:07 by zm               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,11 @@ lexer_t	*lexer_create(const char *input)
 		lexer->current_char = '\0';
 	lexer->quotes_count = 0;
 	return (lexer);
+}
+
+bool	is_redir(token_type_t type)
+{
+	return (type == TOKEN_REDIRECT_IN || type == TOKEN_REDIRECT_OUT
+		|| type == TOKEN_APPEND || type == TOKEN_HEREDOC
+		|| type == TOKEN_HEREDOC_trunc);
 }

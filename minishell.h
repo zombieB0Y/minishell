@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zoentifi <zoentifi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zm <zm@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 22:56:25 by zoentifi          #+#    #+#             */
-/*   Updated: 2025/05/19 23:21:53 by zoentifi         ###   ########.fr       */
+/*   Updated: 2025/05/21 02:21:37 by zm               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ typedef struct files
 typedef struct lol_t
 {
 	token_t				*token;
+	struct lol_t		*prev;
 	struct lol_t		*next;
 }						lol;
 typedef struct token_node
@@ -197,6 +198,7 @@ typedef struct heredoc_s
 # endif
 
 // Token operations
+bool					is_redir(token_type_t type);
 tokenize_t				*init_tokenize(const char *input);
 // Lexer operations
 lexer_t					*lexer_create(const char *input);
@@ -212,13 +214,15 @@ bool					is_quotes_char(char ch);
 int						is_quoted(int c);
 bool					find_quotes(char *str);
 int						is_whitespace(int c);
-token_t					*token_create(token_type_t type, char *value,
-							char quote);
+token_t					*token_create(token_type_t type, char *value, char quote);
+
 // Token generation
 token_t					*read_operator(lexer_t *lexer);
 token_list_t			*tokenize(const char *input);
 void					remove_token_node(lol **head, lol *target);
 // Error functions
+anas_list				*return_redirection_error(void);
+anas_list				*return_pip_error(void);
 void					*return_herdoc_error(void);
 void					*return_quoted_error(void);
 // Expand fucntions
@@ -227,6 +231,21 @@ char					*expand_string_variables(char *original_value);
 void					append_to_buffer(exp_t *exp, char *str_to_add,
 							size_t add_len);
 char					*expand_string_variables_herdoc(char *original_value);
+exp_t					*init_exp(char *org);
+int						expand_dollar_sign(exp_t *exp, exp_tools_t *tools,
+							char active_quote_char);
+void					setup_buffer(exp_t *exp, size_t add_len);
+void					append_to_buffer(exp_t *exp, char *str_to_add,
+							size_t add_len);
+void					append_increment(exp_t *exp);
+exp_tools_t				*init_tools(char *or_vl);
+void					read_key(exp_t *exp, exp_tools_t *tools);
+void					actual_expand(exp_t *exp, exp_tools_t *tools);
+void					handle_exp_quotes(char active_quote_char, exp_t *exp,
+							exp_tools_t *tools);
+char					*return_result(exp_t *exp, char *original_value);
+bool					expand_quotes(exp_t *exp, char *active_quote_char);
+bool					read_dollar_sign(exp_t *exp, exp_tools_t *tools);
 // Grammar fucntions
 anas_list				*grammar_check(token_list_t *tokens);
 token_node_t			*init_anas_list(void);
@@ -252,8 +271,8 @@ void					gc_register(void *ptr);
 char					*substr_dup(const char *start, size_t len);
 char					*shitft(char *str);
 void					actual_heredoc(heredoc_t *heredoc);
-heredoc_t				*capture_delimiter(heredoc_t *heredoc,
-							token_list_t *tokens);
+heredoc_t	*capture_delimiter(heredoc_t *heredoc,
+								token_list_t *tokens);
 heredoc_t				*wait_heredoc(heredoc_t *heredoc);
 //--------------SIGNALS--------------
 t_status				*func(void);
